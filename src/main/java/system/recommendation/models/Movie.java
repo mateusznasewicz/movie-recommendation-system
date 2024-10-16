@@ -3,8 +3,7 @@ package system.recommendation.models;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Movie {
-    private final int id;
+public class Movie extends Entity{
     private final Set<User> ratedByUsers = new HashSet<>();
 
     public Movie(int id){
@@ -17,9 +16,5 @@ public class Movie {
 
     public Set<User> getRatedByUsers() {
         return ratedByUsers;
-    }
-
-    public int getId() {
-        return id;
     }
 }
