@@ -1,7 +1,6 @@
-package system.recommendation.collaborative_filtering;
+package system.recommendation.collaborativefiltering;
 
 import system.recommendation.DatasetLoader;
-import system.recommendation.filtering.KNN;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 

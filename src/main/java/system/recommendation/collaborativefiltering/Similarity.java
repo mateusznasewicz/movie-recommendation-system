@@ -1,4 +1,4 @@
-package system.recommendation.collaborative_filtering;
+package system.recommendation.collaborativefiltering;
 
 public interface Similarity<T> {
     double pearsonCorrelation(T a, T b);

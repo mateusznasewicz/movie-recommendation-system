@@ -1,6 +1,5 @@
-package system.recommendation.filtering;
+package system.recommendation.collaborativefiltering;
 
-import system.recommendation.collaborative_filtering.Similarity;
 import system.recommendation.models.Entity;
 
 

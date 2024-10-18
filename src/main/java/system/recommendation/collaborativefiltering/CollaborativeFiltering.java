@@ -1,4 +1,4 @@
-package system.recommendation.collaborative_filtering;
+package system.recommendation.collaborativefiltering;
 
 import system.recommendation.DatasetLoader;
 import system.recommendation.models.Entity;

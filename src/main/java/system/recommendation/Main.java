@@ -1,8 +1,7 @@
 package system.recommendation;
 
-import system.recommendation.collaborative_filtering.CollaborativeFiltering;
-import system.recommendation.collaborative_filtering.ItemBased;
-import system.recommendation.collaborative_filtering.UserBased;
+import system.recommendation.collaborativefiltering.CollaborativeFiltering;
+import system.recommendation.collaborativefiltering.ItemBased;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 
