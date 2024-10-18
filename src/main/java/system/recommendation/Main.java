@@ -2,6 +2,7 @@ package system.recommendation;
 
 import system.recommendation.collaborativefiltering.CollaborativeFiltering;
 import system.recommendation.collaborativefiltering.ItemBased;
+import system.recommendation.matrixfactorization.MatrixFactorization;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 
@@ -11,17 +12,18 @@ import java.util.Map;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         DatasetLoader datasetLoader = new DatasetLoader("ml-latest-small");
-//        CollaborativeFiltering<User> cf = new UserBased(datasetLoader,20,true);
+        Map<Integer, Movie> movies = datasetLoader.getMovies();
+        Map<Integer, User> users = datasetLoader.getUsers();
+        MatrixFactorization mf = new MatrixFactorization(datasetLoader,0.001,0.0001, 100);
+        mf.sgd();
 
-        CollaborativeFiltering<Movie> cf = new ItemBased(datasetLoader,20,true);
-        cf.fillRatings();
-        User user = datasetLoader.getUsers().get(1);
-        System.out.println(user.getPredictedRatings());
-        user.getRatings().forEach((id,rating)->{
-            Map<Integer, Double> predictions = user.getPredictedRatings();
-            if(predictions.containsKey(id)){
-                System.out.println(rating + " , " + predictions.get(id));
-            }
-        });
+        int uid = 1;
+        int mid = 3;
+
+        Movie movie = movies.get(mid);
+        User user = users.get(uid);
+
+        System.out.println(MatrixFactorization.vectorMultiplication(movie.getLatentFeatures(), user.getLatentFeatures()));
+        System.out.println(user.getRating(mid));
     }
 }

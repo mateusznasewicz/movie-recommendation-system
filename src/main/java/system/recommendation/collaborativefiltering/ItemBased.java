@@ -86,4 +86,9 @@ public class ItemBased extends CollaborativeFiltering<Movie>{
     public double cosineSimilarity(Movie a, Movie b) {
         return 0;
     }
+
+    @Override
+    public double euclideanDistance(Movie a, Movie b) {
+        return 0;
+    }
 }

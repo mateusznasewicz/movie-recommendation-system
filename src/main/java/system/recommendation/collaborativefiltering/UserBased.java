@@ -91,4 +91,9 @@ public class UserBased extends CollaborativeFiltering<User> {
     public double cosineSimilarity(User a, User b) {
         return 0;
     }
+
+    @Override
+    public double euclideanDistance(User a, User b) {
+        return 0;
+    }
 }
