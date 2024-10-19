@@ -16,6 +16,7 @@ public class DatasetLoader {
     public DatasetLoader(String datasetFolderName) throws FileNotFoundException {
         System.out.println("Loading data from " + datasetFolderName);
         addMovies(datasetFolderName);
+        addTags(datasetFolderName);
         handleRatings(datasetFolderName);
         System.out.println("Finished loading data from " + datasetFolderName);
     }
@@ -64,8 +65,28 @@ public class DatasetLoader {
                 String[] data = line.split(",");
                 int movieId = Integer.parseInt(data[0]);
                 moviesFakeRealID.put(movieId, ctr);
-                movies.put(ctr, new Movie(ctr));
+                String[] genres = data[2].split("\\|");
+                Movie movie = new Movie(ctr);
+                for(String genre : genres){
+                    movie.addGenre(genre);
+                }
+                movies.put(ctr, movie);
                 ctr++;
+            }
+        }
+    }
+
+    private void addTags(String datasetFolderName) throws FileNotFoundException {
+        try (Scanner scanner = new Scanner(new File(datasetFolderName + "/tags.csv"))){
+            scanner.nextLine();
+            while (scanner.hasNextLine()){
+                String line = scanner.nextLine();
+                String[] data = line.split(",");
+                int movieFakeId = Integer.parseInt(data[1]);
+                String tag = data[2];
+                Integer movieId = moviesFakeRealID.get(movieFakeId);
+                Movie movie = movies.get(movieId);
+                movie.addTag(tag);
             }
         }
     }

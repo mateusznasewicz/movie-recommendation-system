@@ -1,6 +1,7 @@
 package system.recommendation.collaborativefiltering;
 
 import system.recommendation.models.Entity;
+import system.recommendation.similarity.Similarity;
 
 
 import java.util.*;
@@ -54,7 +55,7 @@ public class KNN<T extends Entity>{
         for(int i = 0; i < size; i++){
             for(int j = i; j < size; j++){
                 if(i == j) continue;
-                double sim = simFunction.pearsonCorrelation(this.hashmap.get(i+1), this.hashmap.get(j+1));
+                double sim = simFunction.calculate(this.hashmap.get(i+1), this.hashmap.get(j+1));
                 matrix[i][j] = sim;
                 matrix[j][i] = sim;
             }

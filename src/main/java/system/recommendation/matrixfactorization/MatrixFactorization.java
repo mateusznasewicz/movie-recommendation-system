@@ -22,8 +22,9 @@ public class MatrixFactorization{
     }
 
     public void sgd(){
-        //System.out.println("SGD start");
+        System.out.println("SGD start");
         for(int i = 0; i < this.epochs; i++){
+            System.out.println("Epoch " + i);
             users.forEach((_, user) -> {
                 Map<Integer, Double> ratings = user.getRatings();
                 ratings.forEach((mid, rating) -> {
@@ -36,7 +37,7 @@ public class MatrixFactorization{
                 });
             });
         }
-        //System.out.println("SGD done");
+        System.out.println("SGD done");
     }
 
     private void updateLatentFeatures(double error, double[] f1, double[] f2){
