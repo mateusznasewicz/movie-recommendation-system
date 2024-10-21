@@ -3,7 +3,9 @@ package system.recommendation.service;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class UserService implements RatingService<User> {
     private final Map<Integer, User> users;
@@ -26,5 +28,10 @@ public class UserService implements RatingService<User> {
     @Override
     public boolean isRatedById(int uID, int mID) {
         return users.get(uID).hasRating(mID);
+    }
+
+    @Override
+    public Set<Integer> getEntities(int itemID) {
+        return movies.get(itemID).getRatedByUsers();
     }
 }

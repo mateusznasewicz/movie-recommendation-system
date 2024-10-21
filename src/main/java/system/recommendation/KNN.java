@@ -32,16 +32,17 @@ public class KNN<T extends Entity, G extends  Entity>{
     private Queue<Integer> findNeighbors(int k, T entity, G item){
         int eID = entity.getId();
         int iID = item.getId();
-        int size = hashmap.size();
 
         Queue<Integer> queue = new PriorityQueue<>(k,(b, a) -> Double.compare(simMatrix[eID-1][b-1], simMatrix[eID-1][a-1]));
-        for(int n = 1; n < size+1; n++){
-            if(n == eID || !ratingService.isRatedById(n,iID)) continue;
-            queue.add(n);
-            if (queue.size() > k) {
-                queue.poll();
+        Set<Integer> potentialNeighbors = ratingService.getEntities(iID);
+        potentialNeighbors.forEach(nID ->{
+            if(nID != eID && simMatrix[eID-1][nID-1] > 0){
+                queue.add(nID);
+                if (queue.size() > k) {
+                    queue.poll();
+                }
             }
-        }
+        });
 
         return queue;
     }

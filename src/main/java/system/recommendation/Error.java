@@ -1,9 +1,7 @@
 package system.recommendation;
 
-import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
 
-import java.util.Map;
 
 public class Error {
     public static <T> double MAE(double[][] predicted, RatingService<T> ratingService){

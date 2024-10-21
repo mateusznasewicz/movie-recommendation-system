@@ -12,6 +12,7 @@ public class DatasetLoader {
     private final Map<Integer, User> users = new HashMap<>();
     private final Map<Integer, Movie> movies = new HashMap<>();
     private final Map<Integer, Integer> moviesFakeRealID = new HashMap<>();
+    private final Map<String, Integer> tags = new HashMap<>();
 
     public DatasetLoader(String datasetFolderName) throws FileNotFoundException {
         System.out.println("Loading data from " + datasetFolderName);
@@ -19,6 +20,10 @@ public class DatasetLoader {
         addTags(datasetFolderName);
         handleRatings(datasetFolderName);
         System.out.println("Finished loading data from " + datasetFolderName);
+    }
+
+    public Map<String,Integer> getTags(){
+        return this.tags;
     }
 
     public Map<Integer, User> getUsers() {
@@ -87,6 +92,12 @@ public class DatasetLoader {
                 Integer movieId = moviesFakeRealID.get(movieFakeId);
                 Movie movie = movies.get(movieId);
                 movie.addTag(tag);
+
+                if(!tags.containsKey(tag)) {
+                    tags.put(tag,1);
+                }else{
+                    tags.put(tag,tags.get(tag)+1);
+                }
             }
         }
     }

@@ -10,6 +10,7 @@ import system.recommendation.service.RatingService;
 import system.recommendation.service.UserService;
 import system.recommendation.similarity.AdjustedCosine;
 import system.recommendation.similarity.EuclideanDistance;
+import system.recommendation.similarity.PearsonCorrelation;
 import system.recommendation.similarity.Similarity;
 
 import java.util.Map;
@@ -20,14 +21,12 @@ public class CollaborativeFilteringTest {
         Map<Integer, Movie> movies = datasetLoader.getMovies();
         RatingService<User> rsu = new UserService(users,movies);
         RatingService<Movie> rsm = new MovieService(users);
-        userBased(new EuclideanDistance<>(rsu),rsu,users,movies);
-        itemBased(new EuclideanDistance<>(rsm),rsm,users,movies);
+        userBased(datasetLoader,new AdjustedCosine<>(rsu),rsu);
+        itemBased(datasetLoader,new AdjustedCosine<>(rsm),rsm);
     }
 
-    public static void userBased(Similarity<User> sim, RatingService<User> rs,
-                                 Map<Integer,User> users, Map<Integer, Movie> movies){
-
-        CollaborativeFiltering<User,Movie> cf = new UserBased(users,movies, 10, sim,rs,true);
+    public static void userBased(DatasetLoader datasetLoader,Similarity<User> sim, RatingService<User> rs){
+        CollaborativeFiltering<User,Movie> cf = new UserBased(datasetLoader, 10, sim,rs,true);
         cf.fillRatings();
 
         double[][] predictedRatings = cf.getPredictedRating();
@@ -35,10 +34,9 @@ public class CollaborativeFilteringTest {
         System.out.println("RMSE: " + Error.RMSE(predictedRatings,rs));
     }
 
-    public static void itemBased(Similarity<Movie> sim, RatingService<Movie> rs,
-                                 Map<Integer,User> users, Map<Integer, Movie> movies){
+    public static void itemBased(DatasetLoader datasetLoader,Similarity<Movie> sim, RatingService<Movie> rs){
 
-        CollaborativeFiltering<Movie,User> cf = new ItemBased(movies,users, 10, sim,rs,true);
+        CollaborativeFiltering<Movie,User> cf = new ItemBased(datasetLoader, 10, sim,rs,true);
         cf.fillRatings();
 
         double[][] predictedRatings = cf.getPredictedRating();
