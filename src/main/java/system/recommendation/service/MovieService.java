@@ -17,6 +17,11 @@ public class MovieService implements RatingService<Movie> {
     }
 
     @Override
+    public double getAvg(int id) {
+        return users.get(id).getAvgRating();
+    }
+
+    @Override
     public boolean isRatedById(int mID, int uID) {
         return users.get(uID).hasRating(mID);
     }

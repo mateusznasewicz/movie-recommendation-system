@@ -21,7 +21,7 @@ public class KnnTest {
     public static void testQueue(DatasetLoader datasetLoader){
         Map<Integer, User> users = datasetLoader.getUsers();
         Map<Integer, Movie> movies = datasetLoader.getMovies();
-        RatingService<User> rs = new UserService(users);
+        RatingService<User> rs = new UserService(users,movies);
         Similarity<User> sim = new PearsonCorrelation<>(rs);
         KNN<User,Movie> knn = new KNN<>(users,10,sim,rs);
         User user = users.get(1);

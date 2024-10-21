@@ -2,7 +2,6 @@ package system.recommendation.collaborativefiltering;
 
 import system.recommendation.KNN;
 import system.recommendation.models.Entity;
-import system.recommendation.models.Movie;
 import system.recommendation.service.RatingService;
 import system.recommendation.similarity.Similarity;
 
@@ -11,7 +10,6 @@ import java.util.*;
 public abstract class CollaborativeFiltering<T extends Entity, G extends Entity>{
     private final Map<Integer, T> baseHashmap;
     private final Map<Integer, G> itemHashmap;
-    private final Similarity<T> similarity;
     private final RatingService<T> ratingService;
     private final KNN<T,G> knn;
     private final double[][] predictedRating;
@@ -20,7 +18,6 @@ public abstract class CollaborativeFiltering<T extends Entity, G extends Entity>
     public CollaborativeFiltering(Map<Integer, T> baseHashmap, Map<Integer,G> itemHashmap, int k, Similarity<T> similarity, RatingService<T> ratingService, boolean RATE_ALL){
         this.baseHashmap = baseHashmap;
         this.itemHashmap = itemHashmap;
-        this.similarity = similarity;
         this.knn = new KNN<>(this.baseHashmap, k, similarity,ratingService);
         this.RATE_ALL = RATE_ALL;
         this.ratingService = ratingService;
@@ -56,7 +53,6 @@ public abstract class CollaborativeFiltering<T extends Entity, G extends Entity>
                     predictedRating[eID-1][iID-1] = rating;
                 }
             }
-            System.out.println("Entity: "+eID);
         }
     }
 

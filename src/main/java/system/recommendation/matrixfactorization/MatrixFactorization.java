@@ -21,8 +21,17 @@ public class MatrixFactorization{
         this.epochs = epochs;
     }
 
+    public double[][] getPredictedRating(){
+        double[][] predicted = new double[users.size()][movies.size()];
+        for(int i = 0; i < users.size(); i++){
+            for(int j = 0; j < movies.size(); j++){
+                predicted[i][j] = vectorMultiplication(users.get(i+1).getLatentFeatures(), movies.get(j+1).getLatentFeatures());
+            }
+        }
+        return predicted;
+    }
+
     public void sgd(){
-        System.out.println("SGD start");
         for(int i = 0; i < this.epochs; i++){
             System.out.println("Epoch " + i);
             users.forEach((_, user) -> {
@@ -37,7 +46,6 @@ public class MatrixFactorization{
                 });
             });
         }
-        System.out.println("SGD done");
     }
 
     private void updateLatentFeatures(double error, double[] f1, double[] f2){

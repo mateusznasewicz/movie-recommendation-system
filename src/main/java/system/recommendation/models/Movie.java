@@ -14,7 +14,9 @@ public class Movie extends Entity<Movie>{
         this.id = id;
     }
 
-    public void addUser(int id) {
+    public void addUser(int id, double rating) {
+        int ratingsNumber = ratedByUsers.size();
+        this.avgRating = (this.avgRating*ratingsNumber+rating)/(ratingsNumber+1);
         ratedByUsers.add(id);
     }
     public void addTag(String tag) {
