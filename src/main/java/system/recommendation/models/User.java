@@ -1,19 +1,15 @@
 package system.recommendation.models;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
-public class User extends Entity{
+public class User extends Entity<User>{
     private final int id;
-    private double avgRating = 0;
     private final HashMap<Integer, Double> ratings = new HashMap<>();
-    private final HashMap<Integer, Double> predictedRatings = new HashMap<>();
 
     public User(int id) {
         this.id = id;
-    }
-
-    public void addPredictedRating(int movieId, double rating) {
-        predictedRatings.put(movieId, rating);
     }
 
     public void addRating(int movieId, double rating) {
@@ -26,19 +22,28 @@ public class User extends Entity{
         return id;
     }
 
-    public HashMap<Integer, Double> getPredictedRatings() {
-        return predictedRatings;
+    @Override
+    public Set<Integer> getCommon(User entity) {
+        Set<Integer> commonMovies = new HashSet<>();
+
+        entity.getRatings().forEach((movieID,_) -> {
+            if(this.ratings.containsKey(movieID)){
+                commonMovies.add(movieID);
+            }
+        });
+
+        return commonMovies;
+    }
+
+    public HashMap<Integer, Double> getRatings() {
+        return this.ratings;
     }
 
     public double getRating(int movieId) {
         return this.ratings.get(movieId);
     }
 
-    public double getAvgRating() {
-        return this.avgRating;
-    }
-
-    public HashMap<Integer, Double> getRatings() {
-        return this.ratings;
+    public boolean hasRating(int movieId) {
+        return this.ratings.containsKey(movieId);
     }
 }
