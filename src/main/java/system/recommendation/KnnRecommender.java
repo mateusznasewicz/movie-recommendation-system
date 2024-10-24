@@ -9,7 +9,6 @@ import java.util.Map;
 
 public abstract class KnnRecommender<T extends Entity,G extends Entity> {
     private final RatingService<T> ratingService;
-    private final Similarity<T> similarity;
     private final KNN<T,G> knn;
     private final Map<Integer, T> baseHashmap;
     private final Map<Integer, G> itemHashmap;
@@ -23,7 +22,6 @@ public abstract class KnnRecommender<T extends Entity,G extends Entity> {
                           Similarity<T> sim,
                           boolean rateAll
     ) {
-        this.similarity = sim;
         this.ratingService = ratingService;
         this.baseHashmap = baseHashmap;
         this.itemHashmap = itemHashmap;

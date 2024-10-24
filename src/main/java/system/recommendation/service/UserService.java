@@ -3,16 +3,13 @@ package system.recommendation.service;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class UserService implements RatingService<User> {
-    private final Map<Integer, User> users;
-    private final Map<Integer, Movie> movies;
+public class UserService extends RatingService<User> {
+
     public UserService(Map<Integer,User> users, Map<Integer, Movie> movies) {
-        this.movies = movies;
-        this.users = users;
+        super(users,movies);
     }
 
     @Override
@@ -33,5 +30,10 @@ public class UserService implements RatingService<User> {
     @Override
     public Set<Integer> getEntities(int itemID) {
         return movies.get(itemID).getRatedByUsers();
+    }
+
+    @Override
+    public User getEntity(int id) {
+        return users.get(id);
     }
 }

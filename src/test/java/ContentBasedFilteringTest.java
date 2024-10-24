@@ -9,7 +9,7 @@ import system.recommendation.service.RatingService;
 
 public class ContentBasedFilteringTest {
     public static void run(DatasetLoader datasetLoader){
-        RatingService<Movie> rs = new MovieService(datasetLoader.getUsers());
+        RatingService<Movie> rs = new MovieService(datasetLoader.getUsers(),datasetLoader.getMovies());
         KnnRecommender<Movie, User> cbf = new ContentBasedFiltering(datasetLoader,rs,10,true);
         cbf.fillRatings();
 

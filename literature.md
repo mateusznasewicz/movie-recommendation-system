@@ -1,33 +1,85 @@
-"A collaborative, content-based filtering hybrid movie recommender system" Sagedur Rahman, Wuqi
-DOI : https://www.doi.org/10.56726/IRJMETS43441
+Matrix Factorization:
+1.Maximum-margin matrix factorization
 
-"A Content-Based Collaborative Filtering Movie Recommendation System using Keywords Extractions", M. Mngomezulu and R. Ajoodha, 2022 International Conference on Engineering and Emerging Technologies (ICEET), Kuala Lumpur, Malaysia, 2022, pp. 1-6, doi: 10.1109/ICEET56468.2022.10007345.
+2.Probabilistic Matrix Factorization.
 
-"An improved approach for movie recommendation system", S. Agrawal and P. Jain, 2017 International Conference on I-SMAC (IoT in Social, Mobile, Analytics and Cloud) (I-SMAC), Palladam, India, 2017, pp. 336-342, doi: 10.1109/I-SMAC.2017.8058367
+3.Matrix factorization techniques for recommender systems
 
-"Hybrid Web Recommender Systems" Robin Burke. In: P. Brusilovsky, A. Kobsa, W. Nejdl, W. "The Adaptive Web". Lecture Notes in Computer Science, vol 4321. Springer, Berlin, Heidelberg. https://doi.org/10.1007/978-3-540-72079-9_12 (2007)
+Collaborative Filtering:
+1.Toward the next
+generation of recommender systems: a survey of the state-of-
+the-art and possible extension
 
-"Implementation and Effectiveness Evaluation of Four Common Algorithms of Recommendation Systems - User Collaboration Filter, Item-based Collaborative Filtering, Matrix Factorization and Neural Collaborative Filtering", H. Liu, 2022 International Conference on Cloud Computing, BigData Applications and Software Engineering (CBASE), Suzhou, China, 2022, pp. 224-227, doi:10.1109/CBASE57816.2022.00049
+2.Recommendation based on rational
+inferences in collaborative filtering
 
-"Movie Recommender Systems: Concepts, Methods, Challenges, and Future Directions"
-https://www.mdpi.com/1424-8220/22/13/4904
+3.Introduction to
+Recommender Systems Handbook
 
-"Recommender Systems Handbook", Francesco Ricci, Lior Rokach, Bracha Shapira, Springer New York, 2015, DOI: https://doi.org/10.1007/978-1-4899-7637-6
+4.A new collaborative
+filtering metric that improves the behavior of recommender
+systems,”
 
-Movie Recommender Systems: Concepts, Methods, Challenges, and Future Directions
-https://www.mdpi.com/1424-8220/22/13/4904
+5.Matrix factorization and neighbor based algorithms for the netflix prize problem
 
-S. Agrawal and P. Jain, ”An improved approach for movie recommendation system,” 2017 Inter-
-national Conference on I-SMAC (IoT in Social, Mobile, Analytics and Cloud) (I-SMAC), Palladam,
+6.Improved
+Neighborhood-based Collaborative Filtering
 
-India, 2017, pp. 336-342, doi: 10.1109/I-SMAC.2017.8058367.
+Optimization of algorithms:
 
-H. Liu, ”Implementation and Effectiveness Evaluation of Four Common Algorithms of Recommen-
-dation Systems - User Collaboration Filter, Item-based Collaborative Filtering, Matrix Factoriza-
-tion and Neural Collaborative Filtering,” 2022 International Conference on Cloud Computing, Big
+1.A genetic algorithms-based hybrid recommender system of matrix factorization and neighborhood-based techniques
 
-Data Applications and Software Engineering (CBASE), Suzhou, China, 2022, pp. 224-227, doi:
-10.1109/CBASE57816.2022.00049.
-M. Mngomezulu and R. Ajoodha, ”A Content-Based Collaborative Filtering Movie Recommendation
-System using Keywords Extractions,” 2022 International Conference on Engineering and Emerging
-Technologies (ICEET), Kuala Lumpur, Malaysia, 2022, pp. 1-6, doi: 10.1109/ICEET56468.2022.10007345.
+2.Evolutionary based matrix factorization method for collaborative filtering systems
+
+3.Using Graph Partitioning
+Techniques for Neighbour Selection in User-based Collaborative Filtering.
+
+4.Towards Rec-
+ommender System Using Particle Swarm Optimization Based Web Usage
+Clustering
+
+5.Biclustering Neighborhood-based Collabora-
+tive Filtering Method for Top-n Recommender Systems
+
+6.Improving accuracy of recommendation system
+by means of Item-based Fuzzy Clustering CF
+
+7.Collaborative filtering by PSO-based MMMF
+
+8.Hierarchical PSO clustering based recommender system
+
+9.Hierarchical dynamic neighborhood based PSO for global
+optimization.
+
+10.Fuzzy Co-Clustering and Application to CF
+
+11.User based CF using FCM
+
+12.Matrix factoriza-
+tion techniques for recommender systems
+
+13.Amazon.com recommendation: item-
+to-item collaborative filtering
+
+14.Item-based collaborative filtering recommendation algorithms
+
+15.Recommender Systems for Large-scale E-Commerce: Scalable Neigh-
+borhood Formation Using Clustering.
+
+16.A novel optimization algorithm for rec-
+ommender system using modified fuzzy c-means clustering approach
+
+17.Particle swarm optimization recom-
+mender system
+
+18.Clustering methods for collaborative
+filtering
+
+19.A Particle Swarm Approach
+to Collaborative Filtering based Recommender Systems through Fuzzy Fea-
+tures
+
+20.Collaborative Filtering via Ensembles of Matrix Factorizations.
+
+21.CF recommendation model based on fuzzy
+clustering algorithm

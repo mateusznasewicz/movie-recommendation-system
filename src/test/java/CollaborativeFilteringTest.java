@@ -20,7 +20,7 @@ public class CollaborativeFilteringTest {
         Map<Integer, User> users = datasetLoader.getUsers();
         Map<Integer, Movie> movies = datasetLoader.getMovies();
         RatingService<User> rsu = new UserService(users,movies);
-        RatingService<Movie> rsm = new MovieService(users);
+        RatingService<Movie> rsm = new MovieService(users,movies);
         userBased(datasetLoader,new AdjustedCosine<>(rsu),rsu);
         itemBased(datasetLoader,new AdjustedCosine<>(rsm),rsm);
     }
