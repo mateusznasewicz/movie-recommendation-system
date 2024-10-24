@@ -20,7 +20,6 @@ public abstract class Chromosome{
         this.fitValue = _fitness();
         return this.fitValue;
     }
-
     protected abstract double _fitness();
     public abstract Chromosome mutate();
     public abstract List<Chromosome> crossover(Chromosome p);

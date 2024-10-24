@@ -4,9 +4,7 @@ import system.recommendation.geneticalgorithm.Chromosome;
 import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class MatrixFactorization extends Chromosome{
     private final double regularization;
@@ -69,8 +67,12 @@ public class MatrixFactorization extends Chromosome{
                 double[] uf = this.users[u];
                 double[] mf = this.movies[mid-1];
                 double e = rating - vectorMultiplication(uf, mf);
-                updateLatentFeatures(2*e, uf, mf, regularization, learningRate);
-                updateLatentFeatures(2*e, mf, uf, regularization, learningRate);
+                for(int k = 0; k < uf.length; k++){
+                    double uk = uf[k] + this.learningRate*(e*mf[k]-this.regularization*uf[k]);
+                    double mk = mf[k] + this.learningRate*(e*uf[k]-this.regularization*mf[k]);
+                    uf[k] = uk;
+                    mf[k] = mk;
+                }
             }
         }
     }
@@ -79,21 +81,6 @@ public class MatrixFactorization extends Chromosome{
         for(int i = 0; i < epochs; i++) {
             System.out.println("EPOCH " + i);
             sgd_step();
-        }
-    }
-
-    private void updateLatentFeatures(double error, double[] f1, double[] f2, double regularization, double learningRate){
-        double[] c1 = vectorMultiplication(f1, regularization);
-        double[] c2 = vectorMultiplication(f2, error);
-
-        for(int i = 0; i < c2.length; i++){
-            c2[i] = c2[i] - c1[i];
-        }
-
-        c2 = vectorMultiplication(c2, learningRate);
-
-        for(int i = 0; i < f1.length; i++){
-            f1[i] = f1[i] + c2[i];
         }
     }
 
@@ -106,14 +93,6 @@ public class MatrixFactorization extends Chromosome{
         }
 
         return sum;
-    }
-
-    private double[] vectorMultiplication(double[] f1, double a) {
-        double[] c = f1.clone();
-        for(int i = 0; i < f1.length; i++){
-            c[i] = c[i] * a;
-        }
-        return c;
     }
 
     private double[] initLatentFeatures(int k) {

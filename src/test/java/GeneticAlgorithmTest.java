@@ -19,7 +19,7 @@ public class GeneticAlgorithmTest {
         Map<Integer, Movie> movies = datasetLoader.getMovies();
         RatingService<User> userService = new UserService(users,movies);
         ChromosomeProvider matrixProvider = new MatrixProvider(userService,10,0.001,0.0001);
-        GeneticAlgorithm ga = new GeneticAlgorithm(100,0.5,0.8,10,matrixProvider);
+        GeneticAlgorithm ga = new GeneticAlgorithm(100,0.5,0.8,100,matrixProvider);
         Chromosome best = ga.run();
 
         double[][] predicted = ((MatrixFactorization) best).getPredictedRating();

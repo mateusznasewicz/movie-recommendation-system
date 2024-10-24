@@ -29,6 +29,7 @@ public class GeneticAlgorithm {
 
         for(int i = 0; i < this.iterations; i++)
         {
+            System.out.println("Generation: "+ i);
             Map<Integer,Chromosome> newGeneration = new HashMap<>();
             while(newGeneration.size() < this.populationSize){
                 //selection
@@ -99,7 +100,6 @@ public class GeneticAlgorithm {
                 parents.poll();
             }
         }
-
         return new ArrayList<>(parents);
     }
 }
