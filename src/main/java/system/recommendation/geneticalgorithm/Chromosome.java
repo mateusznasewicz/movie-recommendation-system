@@ -2,24 +2,26 @@ package system.recommendation.geneticalgorithm;
 
 import java.util.List;
 
-public abstract class Chromosome<T>{
-    protected double value;
-    private static int idCounter = 0;
+public abstract class Chromosome{
+    private static int idCtr = 0;
     protected int id;
+    protected double fitValue;
 
-    public double getFitness() {
-        return this.value;
+    public Chromosome(){
+        this.id = idCtr++;
     }
-
-    public int getId() {
+    public double getFitness(){
+        return this.fitValue;
+    }
+    public int getId(){
         return this.id;
     }
-
-    public Chromosome() {
-        this.id = idCounter++;
+    public double fitness(){
+        this.fitValue = _fitness();
+        return this.fitValue;
     }
 
-    public abstract double fitness();
-    public abstract void mutate();
-    public abstract List<T> crossover(T p);
+    protected abstract double _fitness();
+    public abstract Chromosome mutate();
+    public abstract List<Chromosome> crossover(Chromosome p);
 }

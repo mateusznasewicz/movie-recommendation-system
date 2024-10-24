@@ -19,8 +19,8 @@ public class MatrixFactorizationTest {
     }
 
     public static void sgdTest(RatingService<User> userService, Map<Integer, User> users, Map<Integer, Movie> movies){
-        MatrixFactorization mf = new MatrixFactorization(userService, 10);
-        mf.sgd(0.001,0.0001,1000);
+        MatrixFactorization mf = new MatrixFactorization(userService, 10,0.001,0.0001);
+        mf.sgd(1000);
         double[][] predicted = mf.getPredictedRating();
         System.out.println(Error.MAE(predicted,new UserService(users,movies)));
         System.out.println(Error.RMSE(predicted,new UserService(users,movies)));

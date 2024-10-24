@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Movie extends Entity<Movie>{
+public class Movie extends Entity{
     private final Map<String,Integer> tags = new HashMap<>();
     private final Map<String, Double> TFIDF = new HashMap<>();
     private final Set<String> genres = new HashSet<>();
@@ -48,10 +48,10 @@ public class Movie extends Entity<Movie>{
     public Set<Integer> getRatedByUsers() { return ratedByUsers; }
 
     @Override
-    public Set<Integer> getCommon(Movie entity) {
+    public Set<Integer> getCommon(Entity entity) {
         Set<Integer> commonUsers = new HashSet<>();
 
-        entity.getRatedByUsers().forEach(userID -> {
+        ((Movie)entity).getRatedByUsers().forEach(userID -> {
             if(this.ratedByUsers.contains(userID)){
                 commonUsers.add(userID);
             }

@@ -8,19 +8,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class MatrixFactorization extends Chromosome<MatrixFactorization> {
+public class MatrixFactorization extends Chromosome{
+    private final double regularization;
+    private final double learningRate;
     private final double[][] users;
     private final double[][] movies;
     private final RatingService<User> userService;
-    private final int k;
 
-    public MatrixFactorization(RatingService<User> userService, int k) {
+    public MatrixFactorization(RatingService<User> userService, int k, double learningRate, double regularization) {
         int u = userService.getUsers().size();
         int m = userService.getMovies().size();
+        this.learningRate = learningRate;
+        this.regularization = regularization;
         this.users = new double[u][k];
         this.movies = new double[m][k];
         this.userService = userService;
-        this.k = k;
 
         for (int i = 0; i < u; i++) {
             users[i] = initLatentFeatures(k);
@@ -29,15 +31,14 @@ public class MatrixFactorization extends Chromosome<MatrixFactorization> {
         for (int i = 0; i < m; i++) {
             movies[i] = initLatentFeatures(k);
         }
-
-        this.value = fitness();
     }
 
-    public MatrixFactorization(double[][] users, double[][] movies){
+    public MatrixFactorization(double[][] users, double[][] movies, double learningRate, double regularization, RatingService<User> userService){
         this.users = users;
         this.movies = movies;
-        this.k = 0;
-        this.userService = null;
+        this.learningRate = learningRate;
+        this.regularization = regularization;
+        this.userService = userService;
     }
 
     public double[][] getMovies(){
@@ -58,24 +59,26 @@ public class MatrixFactorization extends Chromosome<MatrixFactorization> {
         return predicted;
     }
 
-    public void sgd(double learningRate, double regularization, int epochs){
-
-        for(int i = 0; i < epochs; i++)
-        {
-            System.out.println("EPOCH " + i);
-            for(int u = 0; u < users.length; u++){
-                User user = userService.getEntity(u+1);
-                Map<Integer, Double> ratings = user.getRatings();
-                for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
-                    int mid = entry.getKey();
-                    double rating = entry.getValue();
-                    double[] uf = this.users[u];
-                    double[] mf = this.movies[mid-1];
-                    double e = rating - vectorMultiplication(uf, mf);
-                    updateLatentFeatures(2*e, uf, mf, regularization, learningRate);
-                    updateLatentFeatures(2*e, mf, uf, regularization, learningRate);
-                }
+    private void sgd_step(){
+        for(int u = 0; u < users.length; u++){
+            User user = userService.getEntity(u+1);
+            Map<Integer, Double> ratings = user.getRatings();
+            for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
+                int mid = entry.getKey();
+                double rating = entry.getValue();
+                double[] uf = this.users[u];
+                double[] mf = this.movies[mid-1];
+                double e = rating - vectorMultiplication(uf, mf);
+                updateLatentFeatures(2*e, uf, mf, regularization, learningRate);
+                updateLatentFeatures(2*e, mf, uf, regularization, learningRate);
             }
+        }
+    }
+
+    public void sgd(int epochs){
+        for(int i = 0; i < epochs; i++) {
+            System.out.println("EPOCH " + i);
+            sgd_step();
         }
     }
 
@@ -125,7 +128,7 @@ public class MatrixFactorization extends Chromosome<MatrixFactorization> {
     }
 
     @Override
-    public double fitness() {
+    protected double _fitness() {
         double sum = 0;
 
         for(int u = 0; u < users.length; u++){
@@ -144,51 +147,51 @@ public class MatrixFactorization extends Chromosome<MatrixFactorization> {
     }
 
     @Override
-    public void mutate() {
-
+    public Chromosome mutate() {
+        double[][] u = this.users.clone();
+        double[][] m = this.movies.clone();
+        MatrixFactorization mutated = new MatrixFactorization(u,m,learningRate,regularization,userService);
+        mutated.sgd_step();
+        return mutated;
     }
 
     @Override
-    public List<MatrixFactorization> crossover(MatrixFactorization p){
+    public List<Chromosome> crossover(Chromosome p){
         Random random = new Random();
-        int ux = random.nextInt(this.k);
-        int mx = random.nextInt(this.k);
-        int uy = random.nextInt(this.users.length);
-        int my = random.nextInt(this.movies.length);
-        System.out.println(uy);
+        int usize = this.users.length;
+        int msize = this.movies.length;
+        int k = this.users[0].length;
+        int u = random.nextInt(this.users.length);
+        int m = random.nextInt(this.movies.length);
 
-        int miny = Math.min(uy,my);
-        int maxy = Math.max(uy,my);
+        double[][] pusers = ((MatrixFactorization) p).getUsers();
+        double[][] pmovies = ((MatrixFactorization) p).getMovies();
 
-        double[][] u1 = this.users.clone();
-        double[][] m1 = this.movies.clone();
-        double[][] u2 = p.getUsers().clone();
-        double[][] m2 = p.getMovies().clone();
+        double[][] u1 = new double[usize][k];
+        double[][] m1 = new double[msize][k];
+        double[][] u2 = new double[usize][k];
+        double[][] m2 = new double[msize][k];
 
-        for(int y = miny ; y <= maxy; y++){
-            for(int x = 0; x < k; x++)
-            {
-                if(y != miny && y != maxy){
-                    u1[y][x] = u2[y][x];
-                    m1[y][x] = m2[y][x];
-                    u2[y][x] = this.users[y][x];
-                    m2[y][x] = this.movies[y][x];
-                }
-                else {
-
-                    if((uy < my && y == miny) || (uy < my && x < mx) || (uy > my && y == miny && x > mx) || (uy == my && x < mx)){
-                        m1[y][x] = m2[y][x];
-                        m2[y][x] = this.movies[y][x];
-                    }
-
-                    if((uy < my && y == maxy) || (uy < my && x > ux) || (uy > my && y == maxy && x < ux) || (uy == my && x > ux)){
-                        u1[y][x] = u2[y][x];
-                        u2[y][x] = this.users[y][x];
-                    }
-                }
-            }
+        for(int i = 0; i < u + 1; i++){
+            u1[i] = this.users[i].clone();
+            u2[i] = pusers[i].clone();
         }
 
-        return List.of(new MatrixFactorization(u1,m1),new MatrixFactorization(u2,m2));
+        for(int i = u + 1; i < this.users.length; i++){
+            u1[i] = pusers[i].clone();
+            u2[i] = this.users[i].clone();
+        }
+
+        for(int i = 0; i < m; i++){
+            m1[i] = pmovies[i].clone();
+            m2[i] = this.movies[i].clone();
+        }
+
+        for(int i = m; i < this.movies.length; i++){
+            m1[i] = this.movies[i].clone();
+            m2[i] = pmovies[i].clone();
+        }
+
+        return List.of(new MatrixFactorization(u1,m1,learningRate,regularization,userService),new MatrixFactorization(u2,m2,learningRate,regularization,userService));
     }
 }

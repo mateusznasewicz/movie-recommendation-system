@@ -1,6 +1,6 @@
 package system.recommendation.geneticalgorithm;
 
 
-public interface ChromosomeProvider<T> {
-    T getChromosome();
+public interface ChromosomeProvider {
+    Chromosome getChromosome();
 }
