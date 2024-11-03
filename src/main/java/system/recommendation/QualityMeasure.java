@@ -3,7 +3,7 @@ package system.recommendation;
 import system.recommendation.service.RatingService;
 
 
-public class Error {
+public class QualityMeasure {
     public static <T> double MAE(double[][] predicted, RatingService<T> ratingService){
         double error = 0;
         int n = 0;

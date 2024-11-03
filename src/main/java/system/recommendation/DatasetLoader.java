@@ -55,7 +55,7 @@ public class DatasetLoader {
                     user = users.get(userId);
                 }
 
-                movie.addUser(userId, rating);
+                //movie.addUser(userId, rating);
                 user.addRating(movieId, rating);
             }
         }

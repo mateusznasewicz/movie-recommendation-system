@@ -1,5 +1,5 @@
 import system.recommendation.DatasetLoader;
-import system.recommendation.Error;
+import system.recommendation.QualityMeasure;
 import system.recommendation.KnnRecommender;
 import system.recommendation.contentbasedfiltering.ContentBasedFiltering;
 import system.recommendation.models.Movie;
@@ -14,7 +14,7 @@ public class ContentBasedFilteringTest {
         cbf.fillRatings();
 
         double[][] predictedRatings = cbf.getPredictedRating();
-        System.out.println("MAE: " + Error.MAE(predictedRatings,rs));
-        System.out.println("RMSE: " + Error.RMSE(predictedRatings,rs));
+        System.out.println("MAE: " + QualityMeasure.MAE(predictedRatings,rs));
+        System.out.println("RMSE: " + QualityMeasure.RMSE(predictedRatings,rs));
     }
 }

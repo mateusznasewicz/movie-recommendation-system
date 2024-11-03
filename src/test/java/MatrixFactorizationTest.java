@@ -1,11 +1,12 @@
 import system.recommendation.DatasetLoader;
+import system.recommendation.QualityMeasure;
+import system.recommendation.matrixfactorization.MMMF;
 import system.recommendation.matrixfactorization.MatrixFactorization;
-import system.recommendation.Error;
+import system.recommendation.matrixfactorization.RMF;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
 import system.recommendation.service.UserService;
-
 
 import java.util.Map;
 
@@ -15,14 +16,12 @@ public class MatrixFactorizationTest {
         Map<Integer, Movie> movies = datasetLoader.getMovies();
         RatingService<User> userService = new UserService(users,movies);
 
-        sgdTest(userService,users,movies);
-    }
+        MatrixFactorization mf = new MMMF(userService,10,0.0012,0.0001);
+        mf.sgd(100);
 
-    public static void sgdTest(RatingService<User> userService, Map<Integer, User> users, Map<Integer, Movie> movies){
-        MatrixFactorization mf = new MatrixFactorization(userService, 10,0.001,0.0001);
-        mf.sgd(1000);
-        double[][] predicted = mf.getPredictedRating();
-        System.out.println(Error.MAE(predicted,new UserService(users,movies)));
-        System.out.println(Error.RMSE(predicted,new UserService(users,movies)));
+        double[][] ratings = mf.getPredictedRatings();
+        System.out.println(QualityMeasure.MAE(ratings,userService));
+        System.out.println(QualityMeasure.RMSE(ratings,userService));
+
     }
 }

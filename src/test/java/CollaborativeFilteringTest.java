@@ -4,13 +4,11 @@ import system.recommendation.collaborativefiltering.ItemBased;
 import system.recommendation.collaborativefiltering.UserBased;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
-import system.recommendation.Error;
+import system.recommendation.QualityMeasure;
 import system.recommendation.service.MovieService;
 import system.recommendation.service.RatingService;
 import system.recommendation.service.UserService;
 import system.recommendation.similarity.AdjustedCosine;
-import system.recommendation.similarity.EuclideanDistance;
-import system.recommendation.similarity.PearsonCorrelation;
 import system.recommendation.similarity.Similarity;
 
 import java.util.Map;
@@ -30,8 +28,8 @@ public class CollaborativeFilteringTest {
         cf.fillRatings();
 
         double[][] predictedRatings = cf.getPredictedRating();
-        System.out.println("MAE: " + Error.MAE(predictedRatings,rs));
-        System.out.println("RMSE: " + Error.RMSE(predictedRatings,rs));
+        System.out.println("MAE: " + QualityMeasure.MAE(predictedRatings,rs));
+        System.out.println("RMSE: " + QualityMeasure.RMSE(predictedRatings,rs));
     }
 
     public static void itemBased(DatasetLoader datasetLoader,Similarity<Movie> sim, RatingService<Movie> rs){
@@ -40,7 +38,7 @@ public class CollaborativeFilteringTest {
         cf.fillRatings();
 
         double[][] predictedRatings = cf.getPredictedRating();
-        System.out.println("MAE: " + Error.MAE(predictedRatings,rs));
-        System.out.println("RMSE: " + Error.RMSE(predictedRatings,rs));
+        System.out.println("MAE: " + QualityMeasure.MAE(predictedRatings,rs));
+        System.out.println("RMSE: " + QualityMeasure.RMSE(predictedRatings,rs));
     }
 }

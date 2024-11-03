@@ -1,5 +1,5 @@
 import system.recommendation.DatasetLoader;
-import system.recommendation.KNN;
+import system.recommendation.strategy.KNN;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
@@ -9,7 +9,6 @@ import system.recommendation.similarity.Similarity;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 public class KnnTest {

@@ -3,6 +3,7 @@ package system.recommendation;
 import system.recommendation.models.Entity;
 import system.recommendation.service.RatingService;
 import system.recommendation.similarity.Similarity;
+import system.recommendation.strategy.KNN;
 
 import java.util.List;
 import java.util.Map;

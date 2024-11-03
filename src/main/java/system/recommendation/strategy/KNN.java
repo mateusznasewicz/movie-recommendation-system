@@ -1,4 +1,4 @@
-package system.recommendation;
+package system.recommendation.strategy;
 
 import system.recommendation.models.Entity;
 import system.recommendation.service.RatingService;
