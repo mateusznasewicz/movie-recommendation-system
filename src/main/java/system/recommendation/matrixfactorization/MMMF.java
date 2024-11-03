@@ -4,7 +4,6 @@ import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
 
 import java.util.Map;
-import java.util.Set;
 
 public class MMMF extends MatrixFactorization {
     private double[][] margin;
@@ -40,7 +39,6 @@ public class MMMF extends MatrixFactorization {
                     p = discrete_ratings[discrete_ratings.length-1];
                 }
 
-                System.out.println(p);
                 predicted[i][j] = p;
             }
         }
@@ -49,76 +47,84 @@ public class MMMF extends MatrixFactorization {
 
     @Override
     protected void sgd_step() {
-        double[][] old_margin = margin.clone();
-        double[][] old_users = users.clone();
-        double[][] old_movies = movies.clone();
-
-        //UPDATE THETA
-        for(int i = 0; i< users.length; i++){
-            for(int a = 0; a < discrete_ratings.length; a++){
-                User user = userService.getEntity(i+1);
-                Map<Integer, Double> ratings = user.getRatings();
-                for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
-                    int mid = entry.getKey() - 1;
+        double[][] hk = new double[users.length][movies.length];
+        double[][] hkT = new double[movies.length][users.length];
+        double[][] hj = new double[users.length][discrete_ratings.length];
+        for(int u = 0; u< users.length; u++) {
+            User user = userService.getEntity(u + 1);
+            Map<Integer, Double> ratings = user.getRatings();
+            for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
+                int mid = entry.getKey() - 1;
+                for(int k = 0; k < discrete_ratings.length; k++){
                     double rating = entry.getValue();
-                    double predictedRating = vectorMultiplication(users[i],movies[mid]);
-                    int t = (discrete_ratings[a] >= rating) ? 1 : -1;
-                    double z = t*(old_margin[i][a] - predictedRating);
-                    double h = SmoothedHingeLoss(z);
-                    margin[i][a] -= learningRate*t*h;
+                    double predictedRating = vectorMultiplication(users[u],movies[mid]);
+                    int h = HingeLoss(k,rating,predictedRating,u,margin);
+                    hk[u][mid] += h;
+                    hkT[mid][u] += h;
+                    hj[u][k] += h;
                 }
             }
         }
 
-        //UPDATE USERS
-        for(int i = 0; i < users.length; i++){
-            for(int l = 0; l < users[0].length; l++){
-                users[i][l] = learningRate*regularization*old_users[i][l];
-                User user = userService.getEntity(i+1);
-                Map<Integer,Double> ratings = user.getRatings();
-                for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
-                    int mid = entry.getKey() - 1;
-                    double rating = entry.getValue();
-                    double predictedRating = vectorMultiplication(old_users[i],old_movies[mid]);
-                    for(int a = 0; a < discrete_ratings.length; a++){
-                        int t = (discrete_ratings[a] >= rating) ? 1 : -1;
-                        double z = t*(old_margin[i][a] - predictedRating);
-                        double h = SmoothedHingeLoss(z);
-                        users[i][l] -= learningRate*t*h*old_movies[mid][a];
-                    }
-                }
+        double[][] uc = users.clone();
+        double[][] mc = movies.clone();
+        double[][] x1 = multiplyMatrices(hk,mc);
+        double[][] x2 = multiplyMatrices(hkT,uc);
+        uc = multiplyMatrix(uc,this.regularization);
+        uc = subMatrices(uc,x1);
+        uc = multiplyMatrix(uc,this.learningRate);
+        mc = multiplyMatrix(mc,this.regularization);
+        mc = subMatrices(mc,x2);
+        mc = multiplyMatrix(mc,this.learningRate);
+        double[][] oc = multiplyMatrix(hj,this.learningRate);
+        users = subMatrices(users,uc);
+        movies = subMatrices(movies,mc);
+        margin = subMatrices(margin,oc);
+
+
+        //normalizacja?
+        double lu = 0;
+        double lm = 0;
+        for(double[] user: users) {
+            for (double f : user) {
+                lu += Math.pow(f, 2);
             }
         }
 
-
-        //UPDATE MOVIES
-        for(int j = 0; j< movies.length; j++){
-            for(int l = 0; l < movies[0].length; l++){
-                movies[j][l] -= learningRate*regularization*old_movies[j][l];
-                Set<Integer> usersID = userService.getEntities(j+1);
-                for(int i: usersID){
-                    for(int a = 0; a < discrete_ratings.length; a++){
-                        double rating = userService.getRating(i,j+1);
-                        double predictedRating = vectorMultiplication(old_users[i-1],old_movies[j]);
-                        int t = (discrete_ratings[a] >= rating) ? 1 : -1;
-                        double z = t*(old_margin[i-1][a] - predictedRating);
-                        double h = SmoothedHingeLoss(z);
-                        movies[j][l] -= learningRate*t*h*old_users[i-1][a];
-                    }
-                }
+        for(double[] movie: movies){
+            for(double f: movie){
+                lm += Math.pow(f,2);
             }
         }
+        double unorm = Math.sqrt(lm / lu);
+        double mnorm = Math.sqrt(lu / lm);
+
+        users = multiplyMatrix(users,unorm);
+        movies = multiplyMatrix(movies,mnorm);
+        calcLoss();
     }
 
-    private double SmoothedHingeLoss(double z){
-        if(z < 0){
-            return -1;
-        }
+    private int HingeLoss(int k, double rating, double predictedRating, int u, double[][] threshold){
+        if(discrete_ratings[k] >= rating && threshold[u][k] <= predictedRating + 1) return -1;
+        if(discrete_ratings[k] <= rating && threshold[u][k] >= predictedRating - 1) return 1;
+        return 0;
+    }
 
-        if(z > 1){
-            return 0;
+    private void calcLoss(){
+        double loss = 0;
+        for(int i=0; i<users.length; i++){
+            User u = userService.getEntity(i+1);
+            Map<Integer, Double> ratings = u.getRatings();
+            for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
+                double rating = entry.getValue();
+                int mid = entry.getKey() - 1;
+                double predictedRating = vectorMultiplication(users[i],movies[mid]);
+                for(int k = 0;  k < discrete_ratings.length; k++){
+                    int t = (discrete_ratings[k] >= rating) ? 1 : -1;
+                    loss += Math.max(0,1-(t*(margin[i][k]-predictedRating)));
+                }
+            }
         }
-
-        return z - 1;
+        System.out.println(loss);
     }
 }
