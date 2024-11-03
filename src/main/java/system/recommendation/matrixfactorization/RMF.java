@@ -12,6 +12,17 @@ public class RMF extends MatrixFactorization {
     }
 
     @Override
+    public double[][] getPredictedRatings() {
+        double[][] predicted = new double[users.length][movies.length];
+        for(int i = 0; i < users.length; i++){
+            for(int j = 0; j < movies.length; j++){
+                predicted[i][j] = vectorMultiplication(users[i], movies[j]);
+            }
+        }
+        return predicted;
+    }
+
+    @Override
     protected void sgd_step() {
         for(int u = 0; u < users.length; u++){
             User user = userService.getEntity(u+1);
@@ -30,34 +41,5 @@ public class RMF extends MatrixFactorization {
                 }
             }
         }
-    }
-
-    protected void calcLoss(){
-        double regLoss = 0.0;
-        double hingeLoss = 0.0;
-
-        for (double[] u : users) {
-            for (double val : u) {
-                regLoss += val * val;
-            }
-        }
-
-        for (double[] m : movies) {
-            for (double val : m) {
-                regLoss += val * val;
-            }
-        }
-
-        for(int u = 0; u < users.length; u++)
-        {
-            User user = userService.getEntity(u+1);
-            Map<Integer, Double> ratings = user.getRatings();
-            for(Map.Entry<Integer, Double> entry : ratings.entrySet())
-            {
-                hingeLoss += entry.getValue() - vectorMultiplication(users[u], movies[entry.getKey()-1]);
-            }
-        }
-
-        System.out.println("Reg Loss :" +regLoss*regularization + " Hinge Loss: " + hingeLoss);
     }
 }

@@ -30,18 +30,8 @@ public abstract class MatrixFactorization{
         }
     }
 
-    public double[][] getPredictedRatings(){
-        double[][] predicted = new double[users.length][movies.length];
-        for(int i = 0; i < users.length; i++){
-            for(int j = 0; j < movies.length; j++){
-                predicted[i][j] = vectorMultiplication(users[i], movies[j]);
-            }
-        }
-        return predicted;
-    }
-
+    public abstract double[][] getPredictedRatings();
     protected abstract void sgd_step();
-    protected abstract void calcLoss();
 
     public void sgd(int epochs){
         for(int i = 0; i < epochs; i++) {
