@@ -38,7 +38,7 @@ public class MMMF extends MatrixFactorization {
                 }
 
                 if(!changed){
-                    p = discrete_ratings[discrete_ratings.length-1];
+                    p = discrete_ratings[discrete_ratings.length-1]+0.5;
                 }
 
                 predicted[i][j] = p;
