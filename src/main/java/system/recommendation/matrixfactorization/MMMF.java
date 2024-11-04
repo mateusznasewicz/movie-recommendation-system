@@ -75,7 +75,7 @@ public class MMMF extends MatrixFactorization {
         }
 
         //regularization part
-        regularizationGradient(old_movies,old_users);
+        regularizationGradient(old_users,old_movies);
     }
 
     private double SmoothedHingeLoss(double z){

@@ -42,6 +42,6 @@ public class RMF extends MatrixFactorization {
         }
 
         //regularization part
-        regularizationGradient(old_movies,old_users);
+        regularizationGradient(old_users,old_movies);
     }
 }
