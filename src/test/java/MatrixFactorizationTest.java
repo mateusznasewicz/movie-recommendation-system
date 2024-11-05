@@ -16,7 +16,7 @@ public class MatrixFactorizationTest {
         RatingService<User> userService = new UserService(users,movies);
 
         MatrixFactorization mf = new MMMF(userService,10,0.002,0);
-        mf.gd(10);
+        mf.gd(50);
 
         double[][] ratings = mf.getPredictedRatings();
         System.out.println(QualityMeasure.MAE(ratings,userService));

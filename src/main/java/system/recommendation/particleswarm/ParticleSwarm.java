@@ -17,13 +17,9 @@ public class ParticleSwarm{
     }
 
     public Particle run(){
-        int t = 0;
-        int prevBest = -1;
-        int withoutChange = 0;
         Particle best = null;
-        while(t < 50){
+        for(int t = 0; t < 50; t++){
             double bestLoss = Double.MAX_VALUE;
-            int bestID = -1;
 
             for(int i = 0; i < swarm.size(); i++){
                 Particle p = swarm.get(i);
@@ -31,27 +27,13 @@ public class ParticleSwarm{
                 if(loss < bestLoss){
                     best = p;
                     bestLoss = loss;
-                    bestID = i;
                 }
-                i++;
-            }
-
-//            if(withoutChange > 10){
-//                return best;
-//            }
-
-            if(prevBest != -1 && prevBest == bestID){
-                withoutChange++;
-            }else{
-                withoutChange = 0;
             }
 
             for(Particle p : swarm){
                 p.updateParticle(best,gradientWeight);
             }
 
-            prevBest = bestID;
-            t++;
             System.out.println(t);
         }
         return best;

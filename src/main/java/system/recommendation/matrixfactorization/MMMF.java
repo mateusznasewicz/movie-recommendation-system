@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class MMMF extends MatrixFactorization{
     private final double[][] margin;
-    private final double[] discrete_ratings = {1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5};
+    private final double[] discrete_ratings = {0.5,1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5};
 
     public MMMF(RatingService<User> userService, int features, double learningRate, double regularization){
         super(userService, features, learningRate, regularization);
