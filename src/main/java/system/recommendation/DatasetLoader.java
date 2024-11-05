@@ -14,18 +14,6 @@ public class DatasetLoader {
     private final Map<Integer, Integer> moviesFakeRealID = new HashMap<>();
     private final Map<String, Integer> tags = new HashMap<>();
 
-    private final Map<Double,Byte> ratingMapping = Map.of(
-            1.0,(byte)1,
-            1.5,(byte)2,
-            2.0,(byte)3,
-            2.5,(byte)4,
-            3.0,(byte)5,
-            3.5,(byte)6,
-            4.0,(byte)7,
-            4.5,(byte)8,
-            5.0,(byte)9
-            );
-
     private final boolean divideData;
     private final double testSize = 0.20;
     private final Random random = new Random();
