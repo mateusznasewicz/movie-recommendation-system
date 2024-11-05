@@ -1,18 +1,23 @@
 package system.recommendation;
 
+import system.recommendation.models.Entity;
 import system.recommendation.service.RatingService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class QualityMeasure {
-    public static <T> double MAE(double[][] predicted, RatingService<T> ratingService){
+    public static <T extends Entity> double MAE(double[][] predicted, RatingService<T> ratingService){
         double error = 0;
         int n = 0;
 
-        for(int i = 0; i < predicted.length; i++){
-            for(int j = 0; j < predicted[i].length; j++){
-                double pr = predicted[i][j];
-                if(pr == -1 || !ratingService.isRatedById(i+1,j+1)) continue;
-                error += Math.abs(pr - ratingService.getRating(i+1,j+1));
+        for(int u: ratingService.getEntities()){
+            HashMap<Integer,Double> ratings = ratingService.getEntity(u).getTestRatings();
+            for(Map.Entry<Integer, Double> entry: ratings.entrySet()){
+                int m = entry.getKey()-1;
+                double rating = entry.getValue();
+                error += Math.abs(predicted[u-1][m] - rating);
                 n++;
             }
         }
@@ -20,15 +25,16 @@ public class QualityMeasure {
         return error/n;
     }
 
-    public static <T> double RMSE(double[][] predicted, RatingService<T> ratingService){
+    public static <T extends Entity> double RMSE(double[][] predicted, RatingService<T> ratingService){
         double error = 0;
         int n = 0;
 
-        for(int i = 0; i < predicted.length; i++){
-            for(int j = 0; j < predicted[i].length; j++){
-                double pr = predicted[i][j];
-                if(pr == -1 || !ratingService.isRatedById(i+1,j+1)) continue;
-                error += Math.pow(pr - ratingService.getRating(i+1,j+1),2);
+        for(int u: ratingService.getEntities()){
+            HashMap<Integer,Double> ratings = ratingService.getEntity(u).getTestRatings();
+            for(Map.Entry<Integer, Double> entry: ratings.entrySet()){
+                int m = entry.getKey()-1;
+                double rating = entry.getValue();
+                error += Math.pow(predicted[u-1][m] - rating,2);
                 n++;
             }
         }

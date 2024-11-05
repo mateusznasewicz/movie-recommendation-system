@@ -14,12 +14,32 @@ public class DatasetLoader {
     private final Map<Integer, Integer> moviesFakeRealID = new HashMap<>();
     private final Map<String, Integer> tags = new HashMap<>();
 
-    public DatasetLoader(String datasetFolderName) throws FileNotFoundException {
+    private final Map<Double,Byte> ratingMapping = Map.of(
+            1.0,(byte)1,
+            1.5,(byte)2,
+            2.0,(byte)3,
+            2.5,(byte)4,
+            3.0,(byte)5,
+            3.5,(byte)6,
+            4.0,(byte)7,
+            4.5,(byte)8,
+            5.0,(byte)9
+            );
+
+    private final boolean divideData;
+    private final double testSize = 0.20;
+    private final Random random = new Random();
+
+    public DatasetLoader(String datasetFolderName, boolean divideData) throws FileNotFoundException {
+        this.divideData = divideData;
+
         System.out.println("Loading data from " + datasetFolderName);
         addMovies(datasetFolderName);
         addTags(datasetFolderName);
         handleRatings(datasetFolderName);
         System.out.println("Finished loading data from " + datasetFolderName);
+
+        moviesFakeRealID.clear();
     }
 
     public Map<String,Integer> getTags(){
@@ -51,12 +71,16 @@ public class DatasetLoader {
                 if(!users.containsKey(userId)){
                     user = new User(userId);
                     users.put(userId, user);
+                    if(!divideData)user.setTestRatings(user.getRatings());
                 }else{
                     user = users.get(userId);
                 }
 
-                movie.addUser(userId, rating);
-                user.addRating(movieId, rating);
+                if(divideData && random.nextDouble() < testSize){
+                    user.addTestRating(movieId, rating);
+                }else{
+                    user.addRating(movieId, rating);
+                }
             }
         }
     }

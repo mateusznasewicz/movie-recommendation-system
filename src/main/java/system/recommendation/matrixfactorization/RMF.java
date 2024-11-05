@@ -1,11 +1,12 @@
 package system.recommendation.matrixfactorization;
 
 import system.recommendation.models.User;
+import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
 
 import java.util.Map;
 
-public class RMF extends MatrixFactorization {
+public class RMF extends MatrixFactorization{
 
     public RMF(RatingService<User> userService, int k, double learningRate, double regularization) {
         super(userService, k, learningRate, regularization);
@@ -23,7 +24,7 @@ public class RMF extends MatrixFactorization {
     }
 
     @Override
-    protected void sgd_step() {
+    protected void gd_step() {
         double[][] old_users = users.clone();
         double[][] old_movies = movies.clone();
 
@@ -42,6 +43,16 @@ public class RMF extends MatrixFactorization {
         }
 
         //regularization part
-        regularizationGradient(old_users,old_movies);
+        regularizationGradient(old_users,old_movies,1);
+    }
+
+    @Override
+    protected double calcLoss() {
+        return 0;
+    }
+
+    @Override
+    public void updateParticle(Particle bestParticle, double gradientWeight){
+
     }
 }

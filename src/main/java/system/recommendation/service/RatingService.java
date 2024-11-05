@@ -29,4 +29,6 @@ public abstract class RatingService<T> {
     public abstract boolean isRatedById(int id1, int id2);
     public abstract Set<Integer> getEntities(int itemID);
     public abstract T getEntity(int id);
+    public abstract double getTestRating(int id1, int id2);
+    public abstract Set<Integer> getEntities();
 }

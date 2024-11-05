@@ -1,13 +1,14 @@
 package system.recommendation.matrixfactorization;
 
 import system.recommendation.models.User;
+import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
 
 import java.util.Map;
 import java.util.Random;
 
-public class MMMF extends MatrixFactorization {
-    private double[][] margin;
+public class MMMF extends MatrixFactorization{
+    private final double[][] margin;
     private final double[] discrete_ratings = {1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5};
 
     public MMMF(RatingService<User> userService, int features, double learningRate, double regularization){
@@ -48,12 +49,37 @@ public class MMMF extends MatrixFactorization {
     }
 
     @Override
-    protected void sgd_step() {
+    protected void gd_step() {
         double[][] old_margin = margin.clone();
         double[][] old_users = users.clone();
         double[][] old_movies = movies.clone();
 
-        //Hinge loss part
+        hingeLossGradient(old_users,old_movies,old_margin,1);
+        regularizationGradient(old_users,old_movies,1);
+    }
+
+    @Override
+    protected double calcLoss(){
+        double l = 0;
+        for(int i = 0; i< users.length; i++) {
+            for (int a = 0; a < discrete_ratings.length; a++) {
+                User user = userService.getEntity(i+1);
+                Map<Integer, Double> ratings = user.getRatings();
+                for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
+                    int mid = entry.getKey() - 1;
+                    double rating = entry.getValue();
+                    double predictedRating = vectorMultiplication(users[i],movies[mid]);
+                    int t = (discrete_ratings[a] >= rating) ? 1 : -1;
+                    double z = t*(margin[i][a] - predictedRating);
+                    l += smoothedHingeLoss(z);
+                }
+            }
+        }
+        return l;
+    }
+
+    private void hingeLossGradient(double[][] old_users, double[][] old_movies, double[][] old_margin, double gradientWeight){
+        double weight = gradientWeight*learningRate;
         for(int i = 0; i< users.length; i++){
             for(int a = 0; a < discrete_ratings.length; a++){
                 User user = userService.getEntity(i+1);
@@ -64,21 +90,19 @@ public class MMMF extends MatrixFactorization {
                     double predictedRating = vectorMultiplication(old_users[i],old_movies[mid]);
                     int t = (discrete_ratings[a] >= rating) ? 1 : -1;
                     double z = t*(old_margin[i][a] - predictedRating);
-                    double h = SmoothedHingeLoss(z);
-                    margin[i][a] -= learningRate*t*h;
-                    for(int f = 0; f < discrete_ratings.length; f++){
-                        users[i][f] += learningRate*t*h*old_movies[mid][f];
-                        movies[mid][f] += learningRate*t*h*old_users[i][f];
+                    double h = smoothedHingeLossDerivative(z);
+
+                    margin[i][a] -= weight*t*h;
+                    for(int f = 0; f < users[0].length; f++){
+                        users[i][f] += weight*t*h*old_movies[mid][f];
+                        movies[mid][f] += weight*t*h*old_users[i][f];
                     }
                 }
             }
         }
-
-        //regularization part
-        regularizationGradient(old_users,old_movies);
     }
 
-    private double SmoothedHingeLoss(double z){
+    private double smoothedHingeLossDerivative(double z){
         if(z < 0){
             return -1;
         }
@@ -88,5 +112,37 @@ public class MMMF extends MatrixFactorization {
         }
 
         return z - 1;
+    }
+
+    private double smoothedHingeLoss(double z){
+        if(z < 0){
+            return 0.5 - z;
+        }
+
+        if(z > 1){
+            return 0;
+        }
+
+        return Math.pow(1-z,2)/2;
+    }
+
+    @Override
+    public void updateParticle(Particle bestParticle, double gradientWeight) {
+        double[][] old_margin = margin.clone();
+        double[][] old_users = users.clone();
+        double[][] old_movies = movies.clone();
+        MMMF best = (MMMF) bestParticle;
+
+        //GD part
+        hingeLossGradient(old_users, old_movies, old_margin,1);
+        regularizationGradient(old_users,old_movies,1);
+        //double x = getLoss();
+
+        //Swarm moves towards best solution
+        double weight = learningRate*(1-gradientWeight);
+        moveParticleTowardsSwarm(best.users,old_users,users,weight);
+        moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
+        moveParticleTowardsSwarm(best.margin,old_margin,margin,weight);
+        //System.out.println(x + " " + getLoss());
     }
 }

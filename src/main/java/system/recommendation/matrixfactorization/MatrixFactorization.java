@@ -1,11 +1,12 @@
 package system.recommendation.matrixfactorization;
 
 import system.recommendation.models.User;
+import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
 
 import java.util.*;
 
-public abstract class MatrixFactorization{
+public abstract class MatrixFactorization implements Particle{
     protected final double regularization;
     protected final double learningRate;
     protected  double[][] users;
@@ -31,27 +32,51 @@ public abstract class MatrixFactorization{
     }
 
     public abstract double[][] getPredictedRatings();
-    protected abstract void sgd_step();
+    protected abstract void gd_step();
+    protected abstract double calcLoss();
 
-    public void sgd(int epochs){
+    @Override
+    public double getLoss() {
+        return regularizationLoss() + calcLoss();
+    }
+
+    public void gd(int epochs){
         for(int i = 0; i < epochs; i++) {
             System.out.println("EPOCH " + i);
-            sgd_step();
-            //calcLoss();
+            gd_step();
         }
     }
 
-    protected void regularizationGradient(double[][] old_users, double[][] old_movies){
+    protected void regularizationGradient(double[][] old_users, double[][] old_movies, double gradientWeight){
+        double weight = gradientWeight*learningRate;
         for(int i = 0; i< users.length; i++){
             for(int f = 0; f < users[0].length; f++){
-                users[i][f] -= learningRate*regularization*old_users[i][f];
+                users[i][f] -= weight*regularization*old_users[i][f];
             }
         }
         for(int i = 0; i< movies.length; i++){
             for(int f = 0; f < movies[0].length; f++){
-                movies[i][f] -= learningRate*regularization*old_movies[i][f];
+                movies[i][f] -= weight*regularization*old_movies[i][f];
             }
         }
+    }
+
+    protected double regularizationLoss(){
+        double loss = 0;
+
+        for (double[] m : movies) {
+            for (double val : m) {
+                loss += val * val;
+            }
+        }
+
+        for (double[] u : users) {
+            for (double val : u) {
+                loss += val * val;
+            }
+        }
+
+        return loss*this.regularization;
     }
 
     public static double vectorMultiplication(double[] f1, double[] f2) {

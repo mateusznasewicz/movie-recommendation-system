@@ -2,7 +2,6 @@ import system.recommendation.DatasetLoader;
 import system.recommendation.QualityMeasure;
 import system.recommendation.matrixfactorization.MMMF;
 import system.recommendation.matrixfactorization.MatrixFactorization;
-import system.recommendation.matrixfactorization.RMF;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
@@ -16,8 +15,8 @@ public class MatrixFactorizationTest {
         Map<Integer, Movie> movies = datasetLoader.getMovies();
         RatingService<User> userService = new UserService(users,movies);
 
-        MatrixFactorization mf = new MMMF(userService,10,0.001,0.0001);
-        mf.sgd(50);
+        MatrixFactorization mf = new MMMF(userService,10,0.002,0);
+        mf.gd(10);
 
         double[][] ratings = mf.getPredictedRatings();
         System.out.println(QualityMeasure.MAE(ratings,userService));

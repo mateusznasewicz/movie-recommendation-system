@@ -35,4 +35,14 @@ public class MovieService extends RatingService<Movie> {
     public Movie getEntity(int id) {
         return this.movies.get(id);
     }
+
+    @Override
+    public double getTestRating(int id1, int id2) {
+        return 0;
+    }
+
+    @Override
+    public Set<Integer> getEntities() {
+        return Set.of();
+    }
 }
