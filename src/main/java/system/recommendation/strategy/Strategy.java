@@ -19,7 +19,7 @@ public abstract class Strategy<T extends Entity> {
     }
 
 
-    abstract public List<T> getNeighbors(T item);
+    abstract public List<Integer> getNeighbors(T item);
 
     public double[][] getSimMatrix() {
         return simMatrix;

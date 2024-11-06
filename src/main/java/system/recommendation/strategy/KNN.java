@@ -6,7 +6,7 @@ import system.recommendation.similarity.Similarity;
 
 import java.util.*;
 
-public class KNN<T extends Entity, G extends  Entity> extends Strategy<T>{
+public class KNN<T extends Entity> extends Strategy<T>{
 
 
     public KNN(Map<Integer, T> hashmap, int k, Similarity<T> simFunction) {
@@ -14,9 +14,9 @@ public class KNN<T extends Entity, G extends  Entity> extends Strategy<T>{
     }
 
     @Override
-    public List<T> getNeighbors(T obj){
+    public List<Integer> getNeighbors(T obj){
         Queue<Integer> queue = findNeighbors(this.k,obj);
-        return translateIDtoEntity(queue);
+        return queue.stream().toList();
     }
 
     private Queue<Integer> findNeighbors(int k, T entity){
@@ -33,14 +33,5 @@ public class KNN<T extends Entity, G extends  Entity> extends Strategy<T>{
         }
 
         return queue;
-    }
-
-    private List<T> translateIDtoEntity(Queue<Integer> neighborsID){
-        List<T> neighbors = new ArrayList<>();
-        while(!neighborsID.isEmpty()){
-            int id = neighborsID.poll();
-            neighbors.add(this.hashmap.get(id));
-        }
-        return neighbors;
     }
 }
