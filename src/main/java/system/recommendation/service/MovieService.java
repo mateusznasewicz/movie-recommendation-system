@@ -6,43 +6,34 @@ import system.recommendation.models.User;
 import java.util.Map;
 import java.util.Set;
 
-public class MovieService extends RatingService<Movie> {
+public class MovieService extends RatingService<Movie,User> {
     public MovieService(Map<Integer,User> users, Map<Integer, Movie> movies) {
         super(users,movies);
     }
 
     @Override
-    public double getRating(int mID, int uID) {
-        return users.get(uID).getRating(mID);
+    public double getRating(int eID, int iID) {return movies.get(eID).getRating(iID);}
+
+    @Override
+    public double getAvg(int eID) {return movies.get(eID).getAvgRating();}
+
+    @Override
+    public boolean isRatedById(int eID, int iID) {
+        return movies.get(eID).hasRating(iID);
     }
 
     @Override
-    public double getAvg(int id) {
-        return users.get(id).getAvgRating();
+    public Movie getEntity(int eID) {
+        return this.movies.get(eID);
     }
 
     @Override
-    public boolean isRatedById(int mID, int uID) {
-        return users.get(uID).hasRating(mID);
-    }
+    public Set<Integer> getEntitiesID() {return movies.keySet();}
 
     @Override
-    public Set<Integer> getEntities(int itemID) {
-        return users.get(itemID).getRatings().keySet();
-    }
+    public Map<Integer, Movie> getEntityMap() {return movies;}
 
     @Override
-    public Movie getEntity(int id) {
-        return this.movies.get(id);
-    }
+    public Map<Integer, User> getItemMap() {return users;}
 
-    @Override
-    public double getTestRating(int id1, int id2) {
-        return 0;
-    }
-
-    @Override
-    public Set<Integer> getEntities() {
-        return Set.of();
-    }
 }

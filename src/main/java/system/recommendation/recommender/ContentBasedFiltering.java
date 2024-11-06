@@ -1,7 +1,6 @@
-package system.recommendation.contentbasedfiltering;
+package system.recommendation.recommender;
 
 import system.recommendation.DatasetLoader;
-import system.recommendation.Recommender;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.service.RatingService;

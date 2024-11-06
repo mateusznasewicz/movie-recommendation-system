@@ -8,11 +8,11 @@ import java.util.Map;
 
 
 public class QualityMeasure {
-    public static <T extends Entity> double MAE(double[][] predicted, RatingService<T> ratingService){
+    public static <T extends Entity, G extends Entity> double MAE(double[][] predicted, RatingService<T,G> ratingService){
         double error = 0;
         int n = 0;
 
-        for(int u: ratingService.getEntities()){
+        for(int u: ratingService.getEntitiesID()){
             HashMap<Integer,Double> ratings = ratingService.getEntity(u).getTestRatings();
             for(Map.Entry<Integer, Double> entry: ratings.entrySet()){
                 int m = entry.getKey()-1;
@@ -25,11 +25,11 @@ public class QualityMeasure {
         return error/n;
     }
 
-    public static <T extends Entity> double RMSE(double[][] predicted, RatingService<T> ratingService){
+    public static <T extends Entity, G extends Entity> double RMSE(double[][] predicted, RatingService<T,G> ratingService){
         double error = 0;
         int n = 0;
 
-        for(int u: ratingService.getEntities()){
+        for(int u: ratingService.getEntitiesID()){
             HashMap<Integer,Double> ratings = ratingService.getEntity(u).getTestRatings();
             for(Map.Entry<Integer, Double> entry: ratings.entrySet()){
                 int m = entry.getKey()-1;

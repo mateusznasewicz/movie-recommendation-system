@@ -8,40 +8,36 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public class UserService extends RatingService<User> {
+public class UserService extends RatingService<User,Movie> {
 
     public UserService(Map<Integer,User> users, Map<Integer, Movie> movies) {
         super(users,movies);
     }
 
     @Override
-    public double getRating(int uID, int mID) {
-        return users.get(uID).getRating(mID);
+    public double getRating(int eID, int iID) { return users.get(eID).getRating(iID); }
+
+    @Override
+    public double getAvg(int eID) {
+        return movies.get(eID).getAvgRating();
     }
 
     @Override
-    public double getAvg(int id) {
-        return movies.get(id).getAvgRating();
+    public boolean isRatedById(int eID, int iID) {
+        return users.get(eID).hasRating(iID);
     }
 
     @Override
-    public boolean isRatedById(int uID, int mID) {
-        return users.get(uID).hasRating(mID);
+    public User getEntity(int eID) {
+        return users.get(eID);
     }
 
     @Override
-    public Set<Integer> getEntities(int itemID) {
-        return null;
-    }
+    public Set<Integer> getEntitiesID() { return users.keySet(); }
 
     @Override
-    public User getEntity(int id) {
-        return users.get(id);
-    }
+    public Map<Integer, User> getEntityMap() { return users; }
 
     @Override
-    public double getTestRating(int id1, int id2) { return users.get(id1).getTestRating(id2); }
-
-    @Override
-    public Set<Integer> getEntities() { return users.keySet();}
+    public Map<Integer, Movie> getItemMap() { return movies; }
 }

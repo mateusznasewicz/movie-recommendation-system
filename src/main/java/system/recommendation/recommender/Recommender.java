@@ -1,9 +1,7 @@
-package system.recommendation;
+package system.recommendation.recommender;
 
 import system.recommendation.models.Entity;
 import system.recommendation.service.RatingService;
-import system.recommendation.similarity.Similarity;
-import system.recommendation.strategy.KNN;
 import system.recommendation.strategy.Strategy;
 
 import java.util.List;
@@ -16,14 +14,10 @@ public abstract class Recommender<T extends Entity,G extends Entity> {
     private final Map<Integer, G> itemHashmap;
     private final double[][] predictedRating;
 
-    public Recommender(RatingService<T> ratingService,
-                       Map<Integer, T> baseHashmap,
-                       Map<Integer, G> itemHashmap,
-                       Strategy<T> strategy
-                       ) {
+    public Recommender(RatingService<T> ratingService, Strategy<T> strategy) {
         this.ratingService = ratingService;
-        this.baseHashmap = baseHashmap;
-        this.itemHashmap = itemHashmap;
+        this.baseHashmap = ratingService.getEntityMap();
+        this.itemHashmap = ratingService.getItemMap();
         this.strategy = strategy;
         this.predictedRating = new double[baseHashmap.size()][itemHashmap.size()];
     }
