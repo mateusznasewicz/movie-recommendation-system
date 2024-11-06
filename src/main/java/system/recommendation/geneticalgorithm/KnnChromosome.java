@@ -1,7 +1,6 @@
 package system.recommendation.geneticalgorithm;
 
 import system.recommendation.models.Entity;
-import system.recommendation.recommender.Recommender;
 import system.recommendation.service.RatingService;
 
 import java.util.*;
@@ -12,7 +11,7 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
 
     private final T item;
     private final RatingService<T,G> ratingService;
-    private final Random random = new Random();
+    private final SplittableRandom random = new SplittableRandom();
 
     public KnnChromosome(T item, RatingService<T,G> ratingService, List<Integer> n, double[][] simMatrix) {
         this.item = item;
@@ -22,7 +21,7 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
 
         for(int i = 0; i < n.size(); i++) {
             neighbors[i] = n.get(i);
-            weights[i] = simMatrix[item.getId()-1][n.get(i)-1] + (random.nextDouble() * 0.2) - 0.1;
+            weights[i] = simMatrix[item.getId()-1][n.get(i)-1] + random.nextDouble(-0.1, 0.1);
         }
     }
 
@@ -73,6 +72,7 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
         int i = 0;
         for(int nID: neighbors){
             double sim = weights[i];
+            i++;
             if(!ratingService.isRatedById(nID, iID))continue;
             numerator += sim * ratingService.getRating(nID,iID);
             denominator += Math.abs(sim);
@@ -96,7 +96,6 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
 
         var c1 = new KnnChromosome<>(item, ratingService, neighbors, w1);
         var c2 = new KnnChromosome<>(item, ratingService, neighbors, w2);
-
         return List.of(c1,c2);
     }
 }

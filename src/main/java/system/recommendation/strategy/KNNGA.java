@@ -1,8 +1,6 @@
 package system.recommendation.strategy;
 
 import system.recommendation.geneticalgorithm.Chromosome;
-import system.recommendation.recommender.CollaborativeFiltering;
-import system.recommendation.recommender.Recommender;
 import system.recommendation.geneticalgorithm.GeneticAlgorithm;
 import system.recommendation.geneticalgorithm.KnnChromosome;
 import system.recommendation.models.Entity;

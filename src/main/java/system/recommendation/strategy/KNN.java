@@ -18,14 +18,14 @@ public class KNN<T extends Entity> extends Strategy<T>{
 
     @Override
     public List<Integer> getNeighbors(T obj){
-        Queue<Integer> queue = findNeighbors(this.k,obj);
+        Queue<Integer> queue = findNeighbors(this.k,obj);;
         return queue.stream().toList();
     }
 
     private Queue<Integer> findNeighbors(int k, T entity){
         int eID = entity.getId();
 
-        Queue<Integer> queue = new PriorityQueue<>(k,(b, a) -> Double.compare(simMatrix[eID-1][b-1], simMatrix[eID-1][a-1]));
+        Queue<Integer> queue = new PriorityQueue<>(k,(a, b) -> Double.compare(simMatrix[eID-1][a-1], simMatrix[eID-1][b-1]));
         for(int nID = 1; nID < hashmap.size()+1; nID++){
             if(nID != eID && simMatrix[eID-1][nID-1] > 0){
                 queue.add(nID);

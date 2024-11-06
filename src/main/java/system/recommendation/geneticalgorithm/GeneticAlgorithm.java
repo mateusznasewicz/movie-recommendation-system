@@ -1,10 +1,9 @@
 package system.recommendation.geneticalgorithm;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class GeneticAlgorithm {
+    private static final SplittableRandom random = new SplittableRandom();
 
     public static Chromosome run(List<Chromosome> population, int epochs){
         Chromosome best = null;
@@ -12,11 +11,13 @@ public class GeneticAlgorithm {
 
         for(int e = 0; e < epochs; e++)
         {
-            List<Chromosome> newPopulation = new ArrayList<>();
-
             double[] fitness = new double[population.size()];
             double totalFitness = 0;
-            double bestLocal = Double.MAX_VALUE;
+
+            int elitismSize = (population.size()/5) / 2;
+            Queue<Integer> elitism = new PriorityQueue<>(elitismSize, (a,b)->Double.compare(fitness[b], fitness[a]));
+
+            List<Chromosome> newPopulation = new ArrayList<>();
 
             for(int i = 0; i < fitness.length; i++){
                 fitness[i] = population.get(i).fitness();
@@ -25,17 +26,15 @@ public class GeneticAlgorithm {
                 if(fitness[i] < bestFit){
                     best = population.get(i);
                     bestFit = fitness[i];
-                    System.out.println("best " + e);
                 }
 
+                elitism.add(i);
+                if(elitism.size() > elitismSize){
+                    elitism.poll();
+                }
             }
 
-//            for(double i: fitness){
-//                System.out.println(i);
-//            }
-
-
-            for(int i = 0; i < population.size()/2; i++){
+            for(int i = 0; i < (population.size()-elitismSize)/2; i++){
                 Chromosome p1 = rouletteWheel(population,fitness,totalFitness);
                 Chromosome p2 = rouletteWheel(population,fitness,totalFitness);
                 List<Chromosome> children = p1.crossover(p2,0.4);
@@ -43,7 +42,11 @@ public class GeneticAlgorithm {
             }
 
             for(Chromosome c: newPopulation){
-                c.mutate(0.015);
+                c.mutate(0.02);
+            }
+
+            while(!elitism.isEmpty()){
+                newPopulation.add(population.get(elitism.poll()));
             }
 
             population = newPopulation;
@@ -53,8 +56,8 @@ public class GeneticAlgorithm {
     }
 
     private static Chromosome rouletteWheel(List<Chromosome> population, double[] fitness, double totalFitness){
-        Random random = new Random();
-        double r = random.nextDouble() * totalFitness;
+
+        double r = random.nextDouble(totalFitness);
         double cumulativeFitness = 0;
 
         for(int i = 0; i < fitness.length; i++){
