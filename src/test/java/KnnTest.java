@@ -22,10 +22,10 @@ public class KnnTest {
         Map<Integer, Movie> movies = datasetLoader.getMovies();
         RatingService<User> rs = new UserService(users,movies);
         Similarity<User> sim = new PearsonCorrelation<>(rs);
-        KNN<User,Movie> knn = new KNN<>(users,10,sim,rs);
+        KNN<User,Movie> knn = new KNN<>(users,10,sim);
         User user = users.get(1);
         Movie movie = movies.get(1);
-        List<User> neighbors = knn.getNeighbors(user,movie);
+        List<User> neighbors = knn.getNeighbors(user);
         System.out.println(neighbors.size());
         neighbors.forEach(n -> {
             double s = sim.calculate(n,user);
