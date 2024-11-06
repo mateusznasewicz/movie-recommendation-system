@@ -15,15 +15,17 @@ import java.util.Map;
 
 public class KNNGA<T extends Entity, G extends Entity> extends Strategy<T> {
 
+    private final int epochs;
     private final int populationSize;
     private final KNN<T> knn;
     private final Recommender<T, G> recommender;
 
-    public KNNGA(Map<Integer, T> hashmap, RatingService<T,G> ratingService, Similarity<T> simFunction, int populationSize, int k) {
+    public KNNGA(Map<Integer, T> hashmap, RatingService<T,G> ratingService, Similarity<T> simFunction, int populationSize, int k, int epochs) {
         super(hashmap, k, simFunction);
         this.populationSize = populationSize;
         this.knn = new KNN<>(hashmap,k,simFunction);
         this.recommender = new CollaborativeFiltering<>(ratingService,knn);
+        this.epochs = epochs;
     }
 
     List<Chromosome> initPopulation(T item){
@@ -39,7 +41,6 @@ public class KNNGA<T extends Entity, G extends Entity> extends Strategy<T> {
     public List<Integer> getNeighbors(T item) {
         List<Chromosome> population = initPopulation(item);
         Chromosome best = GeneticAlgorithm.run(population);
-        List<Integer> n = ((KnnChromosome<T,G>) best).getNeighbors();
-        return n;
+        return ((KnnChromosome<T,G>) best).getNeighbors();
     }
 }
