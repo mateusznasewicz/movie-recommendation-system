@@ -5,10 +5,10 @@ import system.recommendation.service.RatingService;
 
 import java.util.Set;
 
-public class AdjustedCosine<T extends  Entity> implements Similarity<T> {
-    private final RatingService<T> ratingService;
+public class AdjustedCosine<T extends  Entity, G extends Entity> implements Similarity<T> {
+    private final RatingService<T,G> ratingService;
 
-    public AdjustedCosine(RatingService<T> ratingService){
+    public AdjustedCosine(RatingService<T,G> ratingService){
         this.ratingService = ratingService;
     }
     @Override

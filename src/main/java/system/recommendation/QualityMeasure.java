@@ -17,7 +17,10 @@ public class QualityMeasure {
             for(Map.Entry<Integer, Double> entry: ratings.entrySet()){
                 int m = entry.getKey()-1;
                 double rating = entry.getValue();
-                error += Math.abs(predicted[u-1][m] - rating);
+                double pr = predicted[u-1][m];
+                if(pr == -1) continue;
+
+                error += Math.abs(pr - rating);
                 n++;
             }
         }
@@ -34,7 +37,10 @@ public class QualityMeasure {
             for(Map.Entry<Integer, Double> entry: ratings.entrySet()){
                 int m = entry.getKey()-1;
                 double rating = entry.getValue();
-                error += Math.pow(predicted[u-1][m] - rating,2);
+                double pr = predicted[u-1][m];
+                if(pr == -1) continue;
+
+                error += Math.pow(pr - rating,2);
                 n++;
             }
         }
