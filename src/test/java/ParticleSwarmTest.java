@@ -15,7 +15,7 @@ public class ParticleSwarmTest {
     public static void run(DatasetLoader datasetLoader){
         Map<Integer, Movie> movies = datasetLoader.getMovies();
         Map<Integer,User> users = datasetLoader.getUsers();
-        RatingService<User> ratingService = new UserService(users,movies);
+        RatingService<User,Movie> ratingService = new UserService(users,movies);
         ParticleProvider provider = new MMMFprovider(ratingService,10,0.002,0);
         ParticleSwarm ps = new ParticleSwarm(provider,100,0);
         MMMF best = (MMMF) ps.run();

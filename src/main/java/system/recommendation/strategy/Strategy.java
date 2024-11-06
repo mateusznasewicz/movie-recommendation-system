@@ -13,9 +13,15 @@ public abstract class Strategy<T extends Entity> {
     protected final int k;
 
     public Strategy(Map<Integer, T> hashmap, int k, Similarity<T> simFunction){
-        this.simMatrix = computeNeighbors(simFunction);
         this.hashmap = hashmap;
         this.k = k;
+        this.simMatrix = computeNeighbors(simFunction);
+    }
+
+    public Strategy(Map<Integer, T> hashmap, int k, double[][] simMatrix){
+        this.hashmap = hashmap;
+        this.k = k;
+        this.simMatrix = simMatrix;
     }
 
 
@@ -32,8 +38,14 @@ public abstract class Strategy<T extends Entity> {
 
         for(int i = 0; i < size; i++){
             for(int j = i; j < size; j++){
-                if(i == j) continue;
-                double sim = simFunction.calculate(this.hashmap.get(i+1), this.hashmap.get(j+1));
+                T a = this.hashmap.get(i+1);
+                T b = this.hashmap.get(j+1);
+                double sim;
+                if(i==j || a.getCommon(b).size() < 7){
+                    sim = -1;
+                }else{
+                    sim = simFunction.calculate(a, b);
+                }
                 matrix[i][j] = sim;
                 matrix[j][i] = sim;
             }

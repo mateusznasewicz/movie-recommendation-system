@@ -1,5 +1,6 @@
 package system.recommendation.matrixfactorization;
 
+import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
@@ -8,7 +9,7 @@ import java.util.Map;
 
 public class RMF extends MatrixFactorization{
 
-    public RMF(RatingService<User> userService, int k, double learningRate, double regularization) {
+    public RMF(RatingService<User, Movie> userService, int k, double learningRate, double regularization) {
         super(userService, k, learningRate, regularization);
     }
 

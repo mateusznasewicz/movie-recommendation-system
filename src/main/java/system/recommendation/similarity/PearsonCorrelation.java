@@ -5,10 +5,10 @@ import system.recommendation.models.Entity;
 
 import java.util.Set;
 
-public class PearsonCorrelation<T extends Entity> implements Similarity<T>{
-    private final RatingService<T> ratingService;
+public class PearsonCorrelation<T extends Entity, G extends Entity> implements Similarity<T>{
+    private final RatingService<T,G> ratingService;
 
-    public PearsonCorrelation(RatingService<T> ratingService){
+    public PearsonCorrelation(RatingService<T,G> ratingService){
         this.ratingService = ratingService;
     }
 

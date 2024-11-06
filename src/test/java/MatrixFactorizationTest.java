@@ -13,7 +13,7 @@ public class MatrixFactorizationTest {
     public static void run(DatasetLoader datasetLoader){
         Map<Integer, User> users = datasetLoader.getUsers();
         Map<Integer, Movie> movies = datasetLoader.getMovies();
-        RatingService<User> userService = new UserService(users,movies);
+        RatingService<User,Movie> userService = new UserService(users,movies);
 
         MatrixFactorization mf = new MMMF(userService,10,0.002,0);
         mf.gd(50);

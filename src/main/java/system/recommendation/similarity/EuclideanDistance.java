@@ -5,10 +5,10 @@ import system.recommendation.service.RatingService;
 
 import java.util.Set;
 
-public class EuclideanDistance<T extends Entity> implements Similarity<T>{
-    private final RatingService<T> ratingService;
+public class EuclideanDistance<T extends Entity, G extends Entity> implements Similarity<T>{
+    private final RatingService<T,G> ratingService;
 
-    public EuclideanDistance(RatingService<T> ratingService){
+    public EuclideanDistance(RatingService<T,G> ratingService){
         this.ratingService = ratingService;
     }
 

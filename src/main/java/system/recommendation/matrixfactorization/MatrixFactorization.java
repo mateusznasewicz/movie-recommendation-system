@@ -1,5 +1,6 @@
 package system.recommendation.matrixfactorization;
 
+import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
@@ -11,11 +12,11 @@ public abstract class MatrixFactorization implements Particle{
     protected final double learningRate;
     protected  double[][] users;
     protected  double[][] movies;
-    protected final RatingService<User> userService;
+    protected final RatingService<User, Movie> userService;
 
-    public MatrixFactorization(RatingService<User> userService, int features, double learningRate, double regularization) {
-        int u = userService.getUsers().size();
-        int m = userService.getMovies().size();
+    public MatrixFactorization(RatingService<User,Movie> userService, int features, double learningRate, double regularization) {
+        int u = userService.getEntityMap().size();
+        int m = userService.getItemMap().size();
         this.learningRate = learningRate;
         this.regularization = regularization;
         this.users = new double[u][features];

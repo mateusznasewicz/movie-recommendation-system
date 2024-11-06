@@ -11,36 +11,40 @@ import system.recommendation.similarity.Similarity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class KNNGA<T extends Entity, G extends Entity> extends Strategy<T> {
 
     private final int epochs;
     private final int populationSize;
     private final KNN<T> knn;
-    private final Recommender<T, G> recommender;
+    private final RatingService<T,G> ratingService;
 
-    public KNNGA(Map<Integer, T> hashmap, RatingService<T,G> ratingService, Similarity<T> simFunction, int populationSize, int k, int epochs) {
-        super(hashmap, k, simFunction);
+    public KNNGA(RatingService<T,G> ratingService, Similarity<T> simFunction, int populationSize, int k, int epochs) {
+        super(ratingService.getEntityMap(), k, simFunction);
         this.populationSize = populationSize;
-        this.knn = new KNN<>(hashmap,k,simFunction);
-        this.recommender = new CollaborativeFiltering<>(ratingService,knn);
+        this.knn = new KNN<>(ratingService.getEntityMap(),k,simMatrix);
         this.epochs = epochs;
+        this.ratingService = ratingService;
     }
 
     List<Chromosome> initPopulation(T item){
-        List<Chromosome> population = new ArrayList<>();
         List<Integer> neighbors = knn.getNeighbors(item);
+        if(neighbors.isEmpty()) return null;
+        List<Chromosome> population = new ArrayList<>();
+
         for(int i = 0; i < populationSize; i++){
-            population.add(new KnnChromosome<>(item,neighbors,recommender));
+            population.add(new KnnChromosome<>(item,ratingService,neighbors,simMatrix));
         }
         return population;
     }
 
     @Override
     public List<Integer> getNeighbors(T item) {
+        System.out.println(item.getId());
         List<Chromosome> population = initPopulation(item);
-        Chromosome best = GeneticAlgorithm.run(population);
+        if(population == null) return List.of();
+
+        Chromosome best = GeneticAlgorithm.run(population,epochs);
         return ((KnnChromosome<T,G>) best).getNeighbors();
     }
 }

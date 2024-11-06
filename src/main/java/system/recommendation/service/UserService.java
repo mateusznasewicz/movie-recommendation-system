@@ -1,10 +1,8 @@
 package system.recommendation.service;
 
-import system.recommendation.models.Entity;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 

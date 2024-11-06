@@ -6,8 +6,10 @@ import java.io.FileNotFoundException;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         DatasetLoader datasetLoader = new DatasetLoader("ml-latest-small",true);
+//        KnnTest.run(datasetLoader);
+        KNNGATEST.run(datasetLoader);
 //        long startTime = System.currentTimeMillis();
-        ParticleSwarmTest.run(datasetLoader);
+        //ParticleSwarmTest.run(datasetLoader);
 //        System.out.println(System.currentTimeMillis() - startTime);
 //        ContentBasedFilteringTest.run(datasetLoader);
 //        long startTime = System.currentTimeMillis();

@@ -1,5 +1,6 @@
 package system.recommendation.matrixfactorization;
 
+import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
@@ -11,7 +12,7 @@ public class MMMF extends MatrixFactorization{
     private final double[][] margin;
     private final double[] discrete_ratings = {0.5,1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5};
 
-    public MMMF(RatingService<User> userService, int features, double learningRate, double regularization){
+    public MMMF(RatingService<User, Movie> userService, int features, double learningRate, double regularization){
         super(userService, features, learningRate, regularization);
         this.margin = new double[users.length][discrete_ratings.length];
         Random random = new Random();

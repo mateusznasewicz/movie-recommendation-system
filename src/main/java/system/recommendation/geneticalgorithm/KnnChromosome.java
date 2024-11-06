@@ -2,6 +2,7 @@ package system.recommendation.geneticalgorithm;
 
 import system.recommendation.models.Entity;
 import system.recommendation.recommender.Recommender;
+import system.recommendation.service.RatingService;
 
 import java.util.*;
 
@@ -10,26 +11,26 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
     private final double[] weights;
 
     private final T item;
-    private final Recommender<T,G> recommender;
+    private final RatingService<T,G> ratingService;
+    private final Random random = new Random();
 
-    public KnnChromosome(T item, List<Integer> n, Recommender<T,G> recommender) {
+    public KnnChromosome(T item, RatingService<T,G> ratingService, List<Integer> n, double[][] simMatrix) {
         this.item = item;
-        this.recommender = recommender;
-        double[][] simMatrix = recommender.getSimMatrix();
+        this.ratingService = ratingService;
         neighbors = new int[n.size()];
         weights = new double[n.size()];
 
         for(int i = 0; i < n.size(); i++) {
             neighbors[i] = n.get(i);
-            weights[i] = simMatrix[item.getId()-1][n.get(i)-1];
+            weights[i] = simMatrix[item.getId()-1][n.get(i)-1] + (random.nextDouble() * 0.2) - 0.1;
         }
     }
 
-    public KnnChromosome(T item, Recommender<T,G> recommender, int[] neighbors, double[] weights) {
+    public KnnChromosome(T item, RatingService<T,G> ratingService, int[] neighbors, double[] weights) {
         this.item = item;
         this.neighbors = neighbors;
         this.weights = weights;
-        this.recommender = recommender;
+        this.ratingService = ratingService;
     }
 
     public List<Integer> getNeighbors(){
@@ -38,7 +39,6 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
 
     @Override
     public void mutate(double chance){
-        Random random = new Random();
         for(int i = 0; i < weights.length; i++) {
             if(random.nextDouble() < chance) {
                 weights[i] = random.nextDouble();
@@ -51,22 +51,35 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
         double error = 0;
         int n = 0;
 
-        int eID = this.item.getId();
         Map<Integer,Double> ratings = item.getRatings();
-        List<Integer> neighbors = getNeighbors();
 
         for(Map.Entry<Integer,Double> entry : ratings.entrySet()) {
             int iID = entry.getKey();
             double rating = entry.getValue();
-            double predicted = recommender.predict(eID,iID,neighbors);
+            double predicted = predict(iID);
 
             if(predicted == -1) continue;
-
             error += Math.abs(predicted - rating);
             n++;
         }
 
         return error/n;
+    }
+
+    private double predict(int iID){
+        double numerator = 0;
+        double denominator = 0;
+
+        int i = 0;
+        for(int nID: neighbors){
+            double sim = weights[i];
+            if(!ratingService.isRatedById(nID, iID))continue;
+            numerator += sim * ratingService.getRating(nID,iID);
+            denominator += Math.abs(sim);
+        }
+
+        if(numerator == 0) return -1;
+        return numerator / denominator;
     }
 
     @Override
@@ -77,12 +90,13 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
         double[] p2 = ((KnnChromosome<T,G>) p).weights;
 
         for(int i = 0; i < weights.length; i++) {
-            w1[i] = p1[i] * weight + (1 - weight)*p2[i];
-            w2[i] = p2[i] * weight + (1 - weight)*p1[i];
+            w1[i] = p1[i]*weight + (1-weight)*p2[i];
+            w2[i] = p2[i]*weight + (1-weight)*p1[i];
         }
 
-        var c1 = new KnnChromosome<>(item, recommender, neighbors, w1);
-        var c2 = new KnnChromosome<>(item, recommender, neighbors, w2);
+        var c1 = new KnnChromosome<>(item, ratingService, neighbors, w1);
+        var c2 = new KnnChromosome<>(item, ratingService, neighbors, w2);
+
         return List.of(c1,c2);
     }
 }
