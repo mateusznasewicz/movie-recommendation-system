@@ -41,8 +41,6 @@ public class KMeans<T extends Entity, G extends Entity> extends Strategy<T> {
     private void calculateCenter(int c){
         Set<Integer> members = membership.get(c);
         T centroid = centroids.get(c);
-        centroid.getRatings().clear();
-        centroid.setAvgRating(0.0);
 
         int s = ratingService.getItemMap().size();
         for(int itemID = 1; itemID < s; itemID++){
@@ -55,7 +53,7 @@ public class KMeans<T extends Entity, G extends Entity> extends Strategy<T> {
                 }
             }
             if(n != 0){
-                centroid.addRating(itemID, rating/n);
+                centroid.setRating(itemID, rating/n);
             }
         }
     }
