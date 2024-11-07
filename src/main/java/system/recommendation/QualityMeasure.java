@@ -11,9 +11,10 @@ public class QualityMeasure {
     public static <T extends Entity, G extends Entity> double MAE(double[][] predicted, RatingService<T,G> ratingService){
         double error = 0;
         int n = 0;
-
+        int total = 0;
         for(int u: ratingService.getEntitiesID()){
             HashMap<Integer,Double> ratings = ratingService.getEntity(u).getTestRatings();
+            total += ratings.size();
             for(Map.Entry<Integer, Double> entry: ratings.entrySet()){
                 int m = entry.getKey()-1;
                 double rating = entry.getValue();
@@ -24,7 +25,7 @@ public class QualityMeasure {
                 n++;
             }
         }
-
+        System.out.println(n+"/"+total);
         return error/n;
     }
 
