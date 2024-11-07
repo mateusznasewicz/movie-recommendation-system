@@ -9,6 +9,16 @@ public abstract class Entity{
     protected double avgRating = 0;
     protected final HashMap<Integer, Double> ratings = new HashMap<>();
     protected HashMap<Integer, Double> testRatings = new HashMap<>();
+    private static int unknownID = -1;
+
+    public Entity(int id){
+        this.id = id;
+    }
+
+    public Entity(){
+        this.id = unknownID;
+        unknownID--;
+    }
 
     public int getId(){
         return id;
@@ -20,13 +30,20 @@ public abstract class Entity{
     public HashMap<Integer, Double> getTestRatings() { return this.testRatings; }
     public void setTestRatings(HashMap<Integer, Double> ratings) { this.testRatings = ratings; }
 
-    public boolean hasRating(int movieId) {
-        return this.ratings.containsKey(movieId);
+    public boolean hasRating(int itemID) {
+        return this.ratings.containsKey(itemID);
     }
 
     public void addRating(int itemID, double rating) {
         int ratingsNumber = this.ratings.size();
         this.avgRating = (this.avgRating*ratingsNumber+rating)/(ratingsNumber+1);
+        ratings.put(itemID, rating);
+    }
+
+    public void setRating(int itemID, double rating) {
+        int ratingsNumber = this.ratings.size();
+        double oldRating = ratings.get(itemID);
+        this.avgRating = (this.avgRating*ratingsNumber+rating-oldRating)/ratingsNumber;
         ratings.put(itemID, rating);
     }
 

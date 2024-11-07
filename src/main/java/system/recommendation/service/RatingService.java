@@ -8,21 +8,39 @@ import system.recommendation.models.User;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class RatingService<T,G> {
-    protected Map<Integer, User> users;
-    protected Map<Integer, Movie> movies;
+public abstract class RatingService<T extends  Entity,G extends  Entity> {
+    protected Map<Integer, T> entityMap;
+    protected Map<Integer, G> itemMap;
 
-    public RatingService(Map<Integer, User> users, Map<Integer, Movie> movies){
-        this.users = users;
-        this.movies = movies;
+    public RatingService(Map<Integer, T> entityMap, Map<Integer, G> itemMap){
+        this.entityMap = entityMap;
+        this.itemMap = itemMap;
     }
 
-    public abstract double getRating(int id1, int id2);
-    public abstract double getAvg(int id);
-    public abstract boolean isRatedById(int id1, int id2);
-    public abstract T getEntity(int id);
-    public abstract Set<Integer> getEntitiesID();
+    public double getRating(int id1, int id2){
+        return entityMap.get(id1).getRating(id2);
+    }
 
-    public abstract Map<Integer,T> getEntityMap();
-    public abstract Map<Integer,G> getItemMap();
+    public double getAvg(int id){
+        return itemMap.get(id).getAvgRating();
+    }
+
+    public boolean isRatedById(int id1, int id2){
+        return entityMap.get(id1).hasRating(id2);
+    }
+
+    public T getEntity(int id){
+        return entityMap.get(id);
+    }
+
+    public Set<Integer> getEntitiesID(){
+        return entityMap.keySet();
+    }
+
+    public Map<Integer,T> getEntityMap(){
+        return this.entityMap;
+    }
+    public Map<Integer,G> getItemMap(){
+        return this.itemMap;
+    }
 }

@@ -11,7 +11,7 @@ public class Movie extends Entity{
     private final Set<String> genres = new HashSet<>();
 
     public Movie(int id){
-        this.id = id;
+        super(id);
     }
 
     public void putTFIDF(String word, double tfidf){
