@@ -137,13 +137,11 @@ public class MMMF extends MatrixFactorization{
         //GD part
         hingeLossGradient(old_users, old_movies, old_margin,1);
         regularizationGradient(old_users,old_movies,1);
-        //double x = getLoss();
 
         //Swarm moves towards best solution
         double weight = learningRate*(1-gradientWeight);
         moveParticleTowardsSwarm(best.users,old_users,users,weight);
         moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
         moveParticleTowardsSwarm(best.margin,old_margin,margin,weight);
-        //System.out.println(x + " " + getLoss());
     }
 }
