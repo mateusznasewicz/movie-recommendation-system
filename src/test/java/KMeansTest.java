@@ -17,7 +17,7 @@ public class KMeansTest {
     public static void run(DatasetLoader datasetLoader) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         RatingService<User, Movie> rs = new UserService(datasetLoader.getUsers(), datasetLoader.getMovies());
         Similarity<User> sim = new PearsonCorrelation<>(rs);
-        Strategy<User> strategy = new KMeans<>(10,rs,sim);
+        Strategy<User> strategy = new KMeans<>(10,10,rs,sim);
         Recommender<User, Movie> recommender = new CollaborativeFiltering<>(rs,strategy);
         double[][] predicted = recommender.getPredictedRating();
 

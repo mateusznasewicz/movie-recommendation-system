@@ -40,7 +40,12 @@ public abstract class RatingService<T extends  Entity,G extends  Entity> {
     public Map<Integer,T> getEntityMap(){
         return this.entityMap;
     }
+
     public Map<Integer,G> getItemMap(){
         return this.itemMap;
+    }
+
+    public void addEntity(T entity){
+        this.entityMap.put(entity.getId(), entity);
     }
 }

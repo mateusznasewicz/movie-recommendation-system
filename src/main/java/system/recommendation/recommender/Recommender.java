@@ -28,7 +28,8 @@ public abstract class Recommender<T extends Entity,G extends Entity> {
     }
 
     private void fillRatings(){
-        for(int eID = 1; eID < baseHashmap.size()+1; eID++){
+        for(int eID : baseHashmap.keySet()){
+            if(eID < 0) continue;
             T entity = baseHashmap.get(eID);
             List<Integer> neighbors = strategy.getNeighbors(entity);
             for(Integer iID : entity.getTestRatings().keySet()){
@@ -44,8 +45,9 @@ public abstract class Recommender<T extends Entity,G extends Entity> {
         double[][] simMatrix = strategy.getSimMatrix();
 
         for(Integer nID: neighbors){
-            if(!ratingService.isRatedById(nID, iID))continue;
             double sim = simMatrix[eID-1][nID-1];
+            if(!ratingService.isRatedById(nID, iID) || sim < 0)continue;
+
             numerator += sim * ratingService.getRating(nID,iID);
             denominator += Math.abs(sim);
         }

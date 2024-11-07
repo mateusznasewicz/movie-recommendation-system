@@ -18,7 +18,6 @@ public class PearsonCorrelation<T extends Entity, G extends Entity> implements S
         double s1 = 0;
         double s2 = 0;
         Set<Integer> common = a.getCommon(b);
-        if(common.isEmpty()) return 0;
 
         for(Integer id: common){
             int aID = a.getId();

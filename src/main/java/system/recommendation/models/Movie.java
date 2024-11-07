@@ -13,6 +13,7 @@ public class Movie extends Entity{
     public Movie(int id){
         super(id);
     }
+    public Movie() { super(); }
 
     public void putTFIDF(String word, double tfidf){
         this.TFIDF.put(word, tfidf);

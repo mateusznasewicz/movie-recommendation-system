@@ -17,7 +17,7 @@ public class KMeans<T extends Entity, G extends Entity> extends Strategy<T> {
     private final RatingService<T ,G> ratingService;
     private final Similarity<T> simFunction;
 
-    public KMeans(int k, RatingService<T, G> ratingService, Similarity<T> simFunction) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public KMeans(int k, int epochs,RatingService<T, G> ratingService, Similarity<T> simFunction) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(ratingService.getEntityMap(), k, simFunction);
         this.ratingService = ratingService;
         this.simFunction = simFunction;
@@ -26,18 +26,26 @@ public class KMeans<T extends Entity, G extends Entity> extends Strategy<T> {
         for(int i = 0; i < k; i++){
             T centroid = randomCentroid(ratingService,clazz);
             centroids.add(centroid);
+            ratingService.addEntity(centroid);
         }
 
-        for(int i = 0; i < 100; i++){
+        for(int i = 0; i < epochs; i++){
             step();
+            for(int c = 0; c < centroids.size(); c++){
+                System.out.print(c + ":" + membership.get(c).size() + "||");
+            }
+            System.out.println();
         }
     }
 
     private void calculateCenter(int c){
         Set<Integer> members = membership.get(c);
         T centroid = centroids.get(c);
+        centroid.getRatings().clear();
+        centroid.setAvgRating(0.0);
 
-        for(int itemID: centroid.getRatings().keySet()){
+        int s = ratingService.getItemMap().size();
+        for(int itemID = 1; itemID < s; itemID++){
             int n = 0;
             double rating = 0;
             for(int memberID: members){
@@ -46,7 +54,9 @@ public class KMeans<T extends Entity, G extends Entity> extends Strategy<T> {
                     n++;
                 }
             }
-            centroid.setRating(itemID, rating/n);
+            if(n != 0){
+                centroid.addRating(itemID, rating/n);
+            }
         }
     }
 
@@ -60,21 +70,21 @@ public class KMeans<T extends Entity, G extends Entity> extends Strategy<T> {
     private void step(){
         initMembership();
 
-        int entitiesSize = ratingService.getEntityMap().size();
-        for(int i = 0; i < entitiesSize; i++){
-            double closestDist = Double.MAX_VALUE;
-            int closestID = -1;
-            T entity = ratingService.getEntity(i+1);
+        for(int i : ratingService.getEntitiesID()){
+            if(i < 0)continue;
+
+            double bestSim = -1;
+            int closestID = 0;
+            T entity = ratingService.getEntity(i);
 
             for (int c = 0; c < centroids.size() ; c++) {
-                double dist = simFunction.calculate(entity, centroids.get(c));
-                if (dist < closestDist) {
+                double sim = simFunction.calculate(entity, centroids.get(c));
+                if (sim > bestSim) {
                     closestID = c;
-                    closestDist = dist;
+                    bestSim = sim;
                 }
             }
-
-            membership.get(closestID).add(i+1);
+            membership.get(closestID).add(i);
         }
 
         for(int c = 0; c < centroids.size(); c++){
@@ -100,7 +110,7 @@ public class KMeans<T extends Entity, G extends Entity> extends Strategy<T> {
     public List<Integer> getNeighbors(T item) {
         for(Set<Integer> cluster: membership){
             if(cluster.contains(item.getId())){
-                return (List<Integer>) cluster;
+                return cluster.stream().toList();
             }
         }
         return null;

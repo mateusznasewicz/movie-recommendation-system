@@ -24,6 +24,7 @@ public abstract class Entity{
         return id;
     }
     public double getAvgRating() { return avgRating; }
+    public void setAvgRating(double avgRating) { this.avgRating = avgRating; }
     public HashMap<Integer, Double> getRatings() {
         return this.ratings;
     }
@@ -37,13 +38,6 @@ public abstract class Entity{
     public void addRating(int itemID, double rating) {
         int ratingsNumber = this.ratings.size();
         this.avgRating = (this.avgRating*ratingsNumber+rating)/(ratingsNumber+1);
-        ratings.put(itemID, rating);
-    }
-
-    public void setRating(int itemID, double rating) {
-        int ratingsNumber = this.ratings.size();
-        double oldRating = ratings.get(itemID);
-        this.avgRating = (this.avgRating*ratingsNumber+rating-oldRating)/ratingsNumber;
         ratings.put(itemID, rating);
     }
 
