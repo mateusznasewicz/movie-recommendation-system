@@ -16,9 +16,9 @@ public class MatrixFactorizationTest {
         Map<Integer, User> users = datasetLoader.getUsers();
         Map<Integer, Movie> movies = datasetLoader.getMovies();
         RatingService<User,Movie> userService = new UserService(users,movies);
-//        NMFtest(userService,1000);
+        NMFtest(userService,1000);
 //        RMFtest(userService,1000);
-        MMMFtest(userService,1000);
+//        MMMFtest(userService,1000);
     }
 
     private static void NMFtest(RatingService<User,Movie> userService, int epochs){
@@ -31,7 +31,7 @@ public class MatrixFactorizationTest {
     }
 
     private static void RMFtest(RatingService<User,Movie> userService, int epochs){
-        MatrixFactorization mf = new RMF(userService,10,0.002,0.01);
+        MatrixFactorization mf = new RMF(userService,10,0.0002,0.01);
         mf.gd(epochs);
 
         double[][] ratings = mf.getPredictedRatings();
