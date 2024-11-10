@@ -13,7 +13,7 @@ public abstract class MatrixFactorization{
     protected  double[][] movies;
     protected final RatingService<User, Movie> userService;
 
-    public MatrixFactorization(RatingService<User,Movie> userService, int features, double learningRate, double regularization, boolean nonNegative) {
+    public MatrixFactorization(RatingService<User,Movie> userService, int features, double learningRate, double regularization, boolean nonNegative, double stdDev) {
         int u = userService.getEntityMap().size();
         int m = userService.getItemMap().size();
         this.learningRate = learningRate;
@@ -23,21 +23,36 @@ public abstract class MatrixFactorization{
         this.userService = userService;
 
         for (int i = 0; i < u; i++) {
-            users[i] = initLatentFeatures(features, nonNegative);
+            users[i] = initLatentFeatures(features, nonNegative,stdDev);
         }
 
         for (int i = 0; i < m; i++) {
-            movies[i] = initLatentFeatures(features, nonNegative);
+            movies[i] = initLatentFeatures(features, nonNegative,stdDev);
         }
     }
 
-    public MatrixFactorization(RatingService<User,Movie> userService, int features, double learningRate){
-        this(userService, features, learningRate, 0, true);
+    public MatrixFactorization(RatingService<User,Movie> userService, int features, double learningRate,double stdDev){
+        this(userService, features, learningRate, 0, true, stdDev);
+    }
+
+    public MatrixFactorization(double[][] users, double[][] movies, double learningRate, double regularization, RatingService<User,Movie> userService){
+        this.users = users;
+        this.movies = movies;
+        this.regularization = regularization;
+        this.learningRate = learningRate;
+        this.userService = userService;
+    }
+
+    public double[][] getMovies() {
+        return movies;
+    }
+
+    public double[][] getUsers() {
+        return users;
     }
 
     public abstract double[][] getPredictedRatings();
     protected abstract void gd_step();
-    protected abstract double calcLoss();
 
     public void gd(int epochs){
         for(int i = 0; i < epochs; i++) {
@@ -99,13 +114,11 @@ public abstract class MatrixFactorization{
         return predicted;
     }
 
-    private double[] initLatentFeatures(int k, boolean nonNegative) {
+    private double[] initLatentFeatures(int k, boolean nonNegative, double stdDev) {
         double[] latentFeatures = new double[k];
         for(int i = 0; i < k; i++){
             Random random = new Random();
-            double mean = 0.0;
-            double stdDev = 0.01;
-            latentFeatures[i] = mean + stdDev * random.nextGaussian();
+            latentFeatures[i] = stdDev * random.nextGaussian();
             if(nonNegative){
                 latentFeatures[i] = Math.abs(latentFeatures[i]);
             }

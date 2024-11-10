@@ -22,6 +22,6 @@ public class MMMFprovider implements ParticleProvider {
 
     @Override
     public Particle initParticle() {
-        return new MMMF(userService, features, learningRate, regularization);
+        return new MMMF(userService, features, learningRate, regularization,0.01);
     }
 }

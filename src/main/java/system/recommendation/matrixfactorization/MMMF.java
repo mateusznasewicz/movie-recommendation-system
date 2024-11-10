@@ -12,8 +12,8 @@ public class MMMF extends MatrixFactorization implements Particle{
     private final double[][] margin;
     private final double[] discrete_ratings = {0.5,1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5};
 
-    public MMMF(RatingService<User, Movie> userService, int features, double learningRate, double regularization){
-        super(userService, features, learningRate, regularization, false);
+    public MMMF(RatingService<User, Movie> userService, int features, double learningRate, double regularization, double stdDev){
+        super(userService, features, learningRate, regularization, false, stdDev);
         this.margin = new double[users.length][discrete_ratings.length];
         Random random = new Random();
         for(int i = 0; i< users.length; i++){
@@ -57,26 +57,6 @@ public class MMMF extends MatrixFactorization implements Particle{
 
         hingeLossGradient(old_users,old_movies,old_margin,1);
         regularizationGradient(old_users,old_movies,1);
-    }
-
-    @Override
-    protected double calcLoss(){
-        double l = 0;
-        for(int i = 0; i< users.length; i++) {
-            for (int a = 0; a < discrete_ratings.length; a++) {
-                User user = userService.getEntity(i+1);
-                Map<Integer, Double> ratings = user.getRatings();
-                for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
-                    int mid = entry.getKey() - 1;
-                    double rating = entry.getValue();
-                    double predictedRating = vectorMultiplication(users[i],movies[mid]);
-                    int t = (discrete_ratings[a] >= rating) ? 1 : -1;
-                    double z = t*(margin[i][a] - predictedRating);
-                    l += smoothedHingeLoss(z);
-                }
-            }
-        }
-        return l;
     }
 
     private void hingeLossGradient(double[][] old_users, double[][] old_movies, double[][] old_margin, double gradientWeight){
@@ -143,5 +123,25 @@ public class MMMF extends MatrixFactorization implements Particle{
         moveParticleTowardsSwarm(best.users,old_users,users,weight);
         moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
         moveParticleTowardsSwarm(best.margin,old_margin,margin,weight);
+    }
+
+    @Override
+    public double getLoss() {
+        double l = 0;
+        for (int i = 0; i < users.length; i++) {
+            for (int a = 0; a < discrete_ratings.length; a++) {
+                User user = userService.getEntity(i + 1);
+                Map<Integer, Double> ratings = user.getRatings();
+                for (Map.Entry<Integer, Double> entry : ratings.entrySet()) {
+                    int mid = entry.getKey() - 1;
+                    double rating = entry.getValue();
+                    double predictedRating = vectorMultiplication(users[i], movies[mid]);
+                    int t = (discrete_ratings[a] >= rating) ? 1 : -1;
+                    double z = t * (margin[i][a] - predictedRating);
+                    l += smoothedHingeLoss(z);
+                }
+            }
+        }
+        return l + regularizationLoss();
     }
 }

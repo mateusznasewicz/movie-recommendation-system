@@ -7,8 +7,8 @@ import system.recommendation.service.RatingService;
 import java.util.Map;
 
 public class NMF extends MatrixFactorization {
-    public NMF(RatingService<User, Movie> userService, int features, double learningRate) {
-        super(userService, features, learningRate);
+    public NMF(RatingService<User, Movie> userService, int features, double learningRate, double stdDev) {
+        super(userService, features, learningRate, stdDev);
     }
 
     @Override
@@ -38,10 +38,5 @@ public class NMF extends MatrixFactorization {
                 }
             }
         }
-    }
-
-    @Override
-    protected double calcLoss() {
-        return 0;
     }
 }

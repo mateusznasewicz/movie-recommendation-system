@@ -11,6 +11,7 @@ public class GeneticAlgorithm {
 
         for(int e = 0; e < epochs; e++)
         {
+            System.out.println("Epoch " + e);
             double[] fitness = new double[population.size()];
             double totalFitness = 0;
 
@@ -33,6 +34,8 @@ public class GeneticAlgorithm {
                     elitism.poll();
                 }
             }
+
+            System.out.println(bestFit);
 
             for(int i = 0; i < (population.size()-elitismSize)/2; i++){
                 Chromosome p1 = rouletteWheel(population,fitness,totalFitness);

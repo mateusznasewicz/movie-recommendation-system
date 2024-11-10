@@ -29,14 +29,14 @@ public class RMFGA{
         List<Chromosome> population = new ArrayList<>();
 
         for(int i = 0; i < populationSize; i++){
-            population.add(new RMF(userService, k, learningRate, regularization));
+            population.add(new RMF(userService, k, learningRate, regularization,0.1));
         }
         return population;
     }
 
     public RMF run(int populationSize, int epochs){
         List<Chromosome> population = initPopulation(populationSize);
-        Chromosome best = GeneticAlgorithm.run(population,epochs,0.02);
+        Chromosome best = GeneticAlgorithm.run(population,epochs,0.3);
         return (RMF) best;
     }
 }
