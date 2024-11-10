@@ -14,7 +14,7 @@ public class GeneticAlgorithm {
             double[] fitness = new double[population.size()];
             double totalFitness = 0;
 
-            int elitismSize = (population.size()/10) / 2;
+            int elitismSize = (population.size()/5) / 2;
             Queue<Integer> elitism = new PriorityQueue<>(elitismSize, (a,b)->Double.compare(fitness[b], fitness[a]));
 
             int bestID = -1;

@@ -3,22 +3,32 @@ import system.recommendation.QualityMeasure;
 import system.recommendation.matrixfactorization.*;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
+import system.recommendation.particleswarm.*;
 import system.recommendation.service.RatingService;
 import system.recommendation.service.UserService;
 
 import java.util.Map;
 
+@SuppressWarnings("unchecked")
 public class MatrixFactorizationTest {
     private final static double learningRate = 0.0002;
     private final static double regularization = 0.02;
     private final static int k = 10;
-    private final static int populationSize = 50;
-    private final static int epochs = 100;
+    private final static int populationSize = 10;
+    private final static int epochs = 1000;
+    private final static double stdDev = 0.01;
+    private final static double gradientWeight = 0.7;
 
     public static void run(DatasetLoader datasetLoader){
         Map<Integer, User> users = datasetLoader.getUsers();
         Map<Integer, Movie> movies = datasetLoader.getMovies();
         RatingService<User,Movie> userService = new UserService(users,movies);
+        ParticleProvider<MMMF> mmmFprovider = new MMMFprovider(userService,k,learningRate,regularization);
+        ParticleProvider<NMF> nmFprovider = new NMFprovider(userService,k,learningRate);
+        ParticleProvider<RMF> rmFprovider = new RMFprovider(userService,k,learningRate,regularization);
+
+        swarmTest(userService,rmFprovider);
+
 //        NMFtest(userService);
 //        RMFtest(userService);
 //        MMMFtest(userService);
@@ -69,5 +79,14 @@ public class MatrixFactorizationTest {
         double[][] ratings = best.getPredictedRatings();
         System.out.println(QualityMeasure.MAE(ratings,userService));
         System.out.println(QualityMeasure.RMSE(ratings,userService));
+    }
+
+    private static <T extends MatrixFactorization> void swarmTest(RatingService<User,Movie> ratingService, ParticleProvider<T> pp){
+        ParticleSwarm ps = new ParticleSwarm(pp,populationSize,gradientWeight);
+        T best = (T) ps.run(epochs);
+        double[][] predicted = best.getPredictedRatings();
+
+        System.out.println(QualityMeasure.MAE(predicted,ratingService));
+        System.out.println(QualityMeasure.RMSE(predicted,ratingService));
     }
 }

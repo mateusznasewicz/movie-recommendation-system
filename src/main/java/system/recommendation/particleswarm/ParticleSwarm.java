@@ -16,32 +16,38 @@ public class ParticleSwarm{
 
     public Particle run(int epochs){
         Particle globalBest = null;
-        double globalBestLoss = Double.MAX_VALUE;
+        double globalLoss = Double.MAX_VALUE;
 
-        for(int t = 0; t < epochs; t++){
-            double bestLoss = Double.MAX_VALUE;
-            Particle best = null;
+        for(int t = 0; t < epochs; t++)
+        {
+//            double localLoss = Double.MAX_VALUE;
+//            Particle localBest = null;
+            int bestID = -1;
 
             for(int i = 0; i < swarm.size(); i++){
                 Particle p = swarm.get(i);
                 double loss = p.getLoss();
 
-                if(loss < bestLoss){
-                    best = p;
-                    bestLoss = loss;
-                }
+//                if(loss < localLoss){
+//                    localBest = p;
+//                    localLoss = loss;
+//                }
 
-                if(loss < globalBestLoss){
-                    globalBest = p;
-                    globalBestLoss = loss;
+                if(loss < globalLoss){
+                    bestID = i;
+                    globalLoss = loss;
                 }
+            }
+
+            if(bestID != -1){
+                globalBest = swarm.get(bestID).copyParticle();
             }
 
             for(Particle p : swarm){
-                p.updateParticle(best,gradientWeight);
+                p.updateParticle(globalBest,gradientWeight);
             }
 
-            System.out.println(t);
+            System.out.println("Epoch " + t + "||"+globalLoss);
         }
         return globalBest;
     }

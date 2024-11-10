@@ -1,25 +1,24 @@
 package system.recommendation.particleswarm;
 
-import system.recommendation.matrixfactorization.RMF;
+import system.recommendation.matrixfactorization.NMF;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
 
-public class RMFprovider implements ParticleProvider<RMF>{
+public class NMFprovider implements ParticleProvider<NMF> {
+
     private final RatingService<User, Movie> userService;
     private final int features;
     private final double learningRate;
-    private final double regularization;
 
-    public RMFprovider(RatingService<User,Movie> userService, int features, double learningRate, double regularization){
+    public NMFprovider(RatingService<User, Movie> userService, int features, double learningRate){
         this.userService = userService;
         this.features = features;
         this.learningRate = learningRate;
-        this.regularization = regularization;
     }
 
     @Override
     public Particle initParticle() {
-        return new RMF(userService, features, learningRate, regularization,0.01);
+        return new NMF(userService, features, learningRate, 0.01);
     }
 }

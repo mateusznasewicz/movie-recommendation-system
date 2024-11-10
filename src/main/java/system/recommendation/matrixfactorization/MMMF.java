@@ -23,6 +23,11 @@ public class MMMF extends MatrixFactorization implements Particle{
         }
     }
 
+    public MMMF(double[][] users, double[][] movies, double[][] margin, double learningRate, double regularization ,RatingService<User,Movie> ratingService){
+        super(users,movies,learningRate,regularization,ratingService);
+        this.margin = margin;
+    }
+
     @Override
     public double[][] getPredictedRatings() {
         double[][] predicted = new double[users.length][movies.length];
@@ -108,6 +113,11 @@ public class MMMF extends MatrixFactorization implements Particle{
     }
 
     @Override
+    public Particle copyParticle() {
+        return new MMMF(users.clone(),movies.clone(),margin.clone(),learningRate,regularization,userService);
+    }
+
+    @Override
     public void updateParticle(Particle bestParticle, double gradientWeight) {
         double[][] old_margin = margin.clone();
         double[][] old_users = users.clone();
@@ -115,11 +125,11 @@ public class MMMF extends MatrixFactorization implements Particle{
         MMMF best = (MMMF) bestParticle;
 
         //GD part
-        hingeLossGradient(old_users, old_movies, old_margin,1);
-        regularizationGradient(old_users,old_movies,1);
+        hingeLossGradient(old_users, old_movies, old_margin,gradientWeight);
+        regularizationGradient(old_users,old_movies,gradientWeight);
 
         //Swarm moves towards best solution
-        double weight = learningRate;
+        double weight = learningRate*(1-gradientWeight);
         moveParticleTowardsSwarm(best.users,old_users,users,weight);
         moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
         moveParticleTowardsSwarm(best.margin,old_margin,margin,weight);

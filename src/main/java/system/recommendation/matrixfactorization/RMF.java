@@ -33,6 +33,11 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] old_users = users.clone();
         double[][] old_movies = movies.clone();
 
+        lossGradient(old_users, old_movies,1);
+        regularizationGradient(old_users,old_movies,1);
+    }
+
+    private void lossGradient(double[][] old_users, double[][] old_movies, double gradientWeight){
         for(int u = 0; u < users.length; u++){
             User user = userService.getEntity(u+1);
             Map<Integer, Double> ratings = user.getRatings();
@@ -40,15 +45,13 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
                 int mid = entry.getKey() - 1;
                 double rating = entry.getValue();
                 double e = rating - vectorMultiplication(old_users[u], old_movies[mid]);
+                double weight = learningRate*e*gradientWeight;
                 for(int f = 0; f < users[0].length; f++){
-                    users[u][f] += learningRate*e*old_movies[mid][f];
-                    movies[mid][f] += learningRate*e*old_users[u][f];
+                    users[u][f] += weight*old_movies[mid][f];
+                    movies[mid][f] += weight*old_users[u][f];
                 }
             }
         }
-
-        //regularization part
-        regularizationGradient(old_users,old_movies,1);
     }
 
     @Override
@@ -72,7 +75,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
             }
         }
 
-        return e;
+        return e + regularizationLoss();
     }
 
     @Override
@@ -93,12 +96,27 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
     }
 
     @Override
-    public void updateParticle(Particle bestParticle, double gradientWeight) {
+    public Particle copyParticle() {
+        return new RMF(users.clone(),movies.clone(),learningRate,regularization,userService);
+    }
 
+    @Override
+    public void updateParticle(Particle bestParticle, double gradientWeight) {
+        double[][] old_movies = movies.clone();
+        double[][] old_users = users.clone();
+        RMF best = (RMF) bestParticle;
+
+        lossGradient(old_users,old_movies,gradientWeight);
+        regularizationGradient(old_users,old_movies,gradientWeight);
+
+
+        double weight = learningRate*(1-gradientWeight);
+        moveParticleTowardsSwarm(best.users,old_users,users,weight);
+        moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
     }
 
     @Override
     public double getLoss() {
-        return 0;
+        return fitness();
     }
 }
