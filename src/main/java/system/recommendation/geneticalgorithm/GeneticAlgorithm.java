@@ -5,7 +5,7 @@ import java.util.*;
 public class GeneticAlgorithm {
     private static final SplittableRandom random = new SplittableRandom();
 
-    public static Chromosome run(List<Chromosome> population, int epochs){
+    public static Chromosome run(List<Chromosome> population, int epochs, double mutationRate){
         Chromosome best = null;
         double bestFit = Double.MAX_VALUE;
 
@@ -42,7 +42,7 @@ public class GeneticAlgorithm {
             }
 
             for(Chromosome c: newPopulation){
-                c.mutate(0.02);
+                c.mutate(mutationRate);
             }
 
             while(!elitism.isEmpty()){

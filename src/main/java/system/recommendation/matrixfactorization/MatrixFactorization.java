@@ -2,12 +2,11 @@ package system.recommendation.matrixfactorization;
 
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
-import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
 
 import java.util.*;
 
-public abstract class MatrixFactorization implements Particle{
+public abstract class MatrixFactorization{
     protected final double regularization;
     protected final double learningRate;
     protected  double[][] users;
@@ -39,11 +38,6 @@ public abstract class MatrixFactorization implements Particle{
     public abstract double[][] getPredictedRatings();
     protected abstract void gd_step();
     protected abstract double calcLoss();
-
-    @Override
-    public double getLoss() {
-        return regularizationLoss() + calcLoss();
-    }
 
     public void gd(int epochs){
         for(int i = 0; i < epochs; i++) {

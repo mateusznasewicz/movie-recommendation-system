@@ -8,7 +8,7 @@ import system.recommendation.service.RatingService;
 import java.util.Map;
 import java.util.Random;
 
-public class MMMF extends MatrixFactorization{
+public class MMMF extends MatrixFactorization implements Particle{
     private final double[][] margin;
     private final double[] discrete_ratings = {0.5,1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5};
 

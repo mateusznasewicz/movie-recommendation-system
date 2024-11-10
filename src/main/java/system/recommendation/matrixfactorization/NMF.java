@@ -2,7 +2,6 @@ package system.recommendation.matrixfactorization;
 
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
-import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
 
 import java.util.Map;
@@ -44,10 +43,5 @@ public class NMF extends MatrixFactorization {
     @Override
     protected double calcLoss() {
         return 0;
-    }
-
-    @Override
-    public void updateParticle(Particle bestParticle, double gradientWeight) {
-
     }
 }

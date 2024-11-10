@@ -10,23 +10,21 @@ import system.recommendation.similarity.Similarity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KNNGA<T extends Entity, G extends Entity> extends Strategy<T> {
+public class KNNGA<T extends Entity, G extends Entity> extends KNN<T> {
 
     private final int epochs;
     private final int populationSize;
-    private final KNN<T> knn;
     private final RatingService<T,G> ratingService;
 
     public KNNGA(RatingService<T,G> ratingService, Similarity<T> simFunction, int populationSize, int k, int epochs) {
         super(ratingService.getEntityMap(), k, simFunction);
         this.populationSize = populationSize;
-        this.knn = new KNN<>(ratingService.getEntityMap(),k,simMatrix);
         this.epochs = epochs;
         this.ratingService = ratingService;
     }
 
     List<Chromosome> initPopulation(T item){
-        List<Integer> neighbors = knn.getNeighbors(item);
+        List<Integer> neighbors = getNeighbors(item);
         if(neighbors.isEmpty()) return null;
         List<Chromosome> population = new ArrayList<>();
 
@@ -42,7 +40,7 @@ public class KNNGA<T extends Entity, G extends Entity> extends Strategy<T> {
         List<Chromosome> population = initPopulation(item);
         if(population == null) return List.of();
 
-        Chromosome best = GeneticAlgorithm.run(population,epochs);
+        Chromosome best = GeneticAlgorithm.run(population,epochs,0.02);
         return ((KnnChromosome<T,G>) best).getNeighbors();
     }
 }
