@@ -65,6 +65,11 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
         return error/n;
     }
 
+    @Override
+    public Chromosome copy() {
+        return null;
+    }
+
     private double predict(int iID){
         double numerator = 0;
         double denominator = 0;

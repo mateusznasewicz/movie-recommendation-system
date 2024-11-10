@@ -2,7 +2,6 @@ package system.recommendation.matrixfactorization;
 
 import system.recommendation.geneticalgorithm.Chromosome;
 import system.recommendation.geneticalgorithm.GeneticAlgorithm;
-import system.recommendation.geneticalgorithm.KnnChromosome;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
@@ -29,7 +28,9 @@ public class RMFGA{
         List<Chromosome> population = new ArrayList<>();
 
         for(int i = 0; i < populationSize; i++){
-            population.add(new RMF(userService, k, learningRate, regularization,0.1));
+            RMF individual = new RMF(userService, k, learningRate, regularization,0.1);
+            individual.gd_step();
+            population.add(individual);
         }
         return population;
     }

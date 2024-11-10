@@ -11,22 +11,20 @@ public class GeneticAlgorithm {
 
         for(int e = 0; e < epochs; e++)
         {
-            System.out.println("Epoch " + e);
             double[] fitness = new double[population.size()];
             double totalFitness = 0;
 
-            int elitismSize = (population.size()/5) / 2;
+            int elitismSize = (population.size()/10) / 2;
             Queue<Integer> elitism = new PriorityQueue<>(elitismSize, (a,b)->Double.compare(fitness[b], fitness[a]));
 
-            List<Chromosome> newPopulation = new ArrayList<>();
-
+            int bestID = -1;
             for(int i = 0; i < fitness.length; i++){
                 fitness[i] = population.get(i).fitness();
                 totalFitness += fitness[i];
 
                 if(fitness[i] < bestFit){
-                    best = population.get(i);
                     bestFit = fitness[i];
+                    bestID = i;
                 }
 
                 elitism.add(i);
@@ -35,8 +33,10 @@ public class GeneticAlgorithm {
                 }
             }
 
-            System.out.println(bestFit);
-
+            if(bestID != -1){
+                best = population.get(bestID).copy();
+            }
+            List<Chromosome> newPopulation = new ArrayList<>();
             for(int i = 0; i < (population.size()-elitismSize)/2; i++){
                 Chromosome p1 = rouletteWheel(population,fitness,totalFitness);
                 Chromosome p2 = rouletteWheel(population,fitness,totalFitness);
@@ -53,6 +53,7 @@ public class GeneticAlgorithm {
             }
 
             population = newPopulation;
+            System.out.println("Epoch " + e + "||"+bestFit);
         }
 
         return best;
