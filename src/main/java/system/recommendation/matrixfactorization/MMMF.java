@@ -13,12 +13,12 @@ public class MMMF extends MatrixFactorization{
     private final double[] discrete_ratings = {0.5,1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5};
 
     public MMMF(RatingService<User, Movie> userService, int features, double learningRate, double regularization){
-        super(userService, features, learningRate, regularization);
+        super(userService, features, learningRate, regularization, false);
         this.margin = new double[users.length][discrete_ratings.length];
         Random random = new Random();
         for(int i = 0; i< users.length; i++){
             for(int j = 0; j < discrete_ratings.length; j++){
-                margin[i][j] = random.nextGaussian();
+                margin[i][j] = random.nextGaussian() + 0.01;
             }
         }
     }
@@ -139,7 +139,7 @@ public class MMMF extends MatrixFactorization{
         regularizationGradient(old_users,old_movies,1);
 
         //Swarm moves towards best solution
-        double weight = learningRate*(1-gradientWeight);
+        double weight = learningRate;
         moveParticleTowardsSwarm(best.users,old_users,users,weight);
         moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
         moveParticleTowardsSwarm(best.margin,old_margin,margin,weight);

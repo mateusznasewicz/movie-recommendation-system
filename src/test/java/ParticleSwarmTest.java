@@ -16,9 +16,9 @@ public class ParticleSwarmTest {
         Map<Integer, Movie> movies = datasetLoader.getMovies();
         Map<Integer,User> users = datasetLoader.getUsers();
         RatingService<User,Movie> ratingService = new UserService(users,movies);
-        ParticleProvider provider = new MMMFprovider(ratingService,10,0.002,0);
-        ParticleSwarm ps = new ParticleSwarm(provider,10,0);
-        MMMF best = (MMMF) ps.run();
+        ParticleProvider provider = new MMMFprovider(ratingService,10,0.002,0.01);
+        ParticleSwarm ps = new ParticleSwarm(provider,50,1);
+        MMMF best = (MMMF) ps.run(50);
         double[][] predicted = best.getPredictedRatings();
 
         System.out.println(QualityMeasure.MAE(predicted,ratingService));

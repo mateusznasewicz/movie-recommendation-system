@@ -4,29 +4,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParticleSwarm{
-    private ParticleProvider particleProvider;
-    private List<Particle> swarm = new ArrayList<>();
-    private double gradientWeight;
+    private final List<Particle> swarm = new ArrayList<>();
+    private final double gradientWeight;
 
     public ParticleSwarm(ParticleProvider pp, int swarmSize, double gradientWeight){
-        this.particleProvider = pp;
         this.gradientWeight = gradientWeight;
         for(int i = 0; i < swarmSize; i++){
-            swarm.add(particleProvider.initParticle());
+            swarm.add(pp.initParticle());
         }
     }
 
-    public Particle run(){
-        Particle best = null;
-        for(int t = 0; t < 50; t++){
+    public Particle run(int epochs){
+        Particle globalBest = null;
+        double globalBestLoss = Double.MAX_VALUE;
+
+        for(int t = 0; t < epochs; t++){
             double bestLoss = Double.MAX_VALUE;
+            Particle best = null;
 
             for(int i = 0; i < swarm.size(); i++){
                 Particle p = swarm.get(i);
                 double loss = p.getLoss();
+
                 if(loss < bestLoss){
                     best = p;
                     bestLoss = loss;
+                }
+
+                if(loss < globalBestLoss){
+                    globalBest = p;
+                    globalBestLoss = loss;
                 }
             }
 
@@ -36,6 +43,6 @@ public class ParticleSwarm{
 
             System.out.println(t);
         }
-        return best;
+        return globalBest;
     }
 }

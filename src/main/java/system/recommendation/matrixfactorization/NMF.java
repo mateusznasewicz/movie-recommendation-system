@@ -7,10 +7,9 @@ import system.recommendation.service.RatingService;
 
 import java.util.Map;
 
-public class RMF extends MatrixFactorization{
-
-    public RMF(RatingService<User, Movie> userService, int k, double learningRate, double regularization) {
-        super(userService, k, learningRate, regularization, false);
+public class NMF extends MatrixFactorization {
+    public NMF(RatingService<User, Movie> userService, int features, double learningRate) {
+        super(userService, features, learningRate);
     }
 
     @Override
@@ -29,16 +28,17 @@ public class RMF extends MatrixFactorization{
             for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
                 int mid = entry.getKey() - 1;
                 double rating = entry.getValue();
-                double e = rating - vectorMultiplication(old_users[u], old_movies[mid]);
+                double predicted = vectorMultiplication(old_users[u], old_movies[mid]);
+                double ratingToPredicted = rating/predicted;
                 for(int f = 0; f < users[0].length; f++){
-                    users[u][f] += learningRate*e*old_movies[mid][f];
-                    movies[mid][f] += learningRate*e*old_users[u][f];
+                    users[u][f] += learningRate*old_movies[mid][f]*ratingToPredicted;
+                    movies[mid][f] += learningRate*old_users[u][f]*ratingToPredicted;
+
+                    users[u][f] -= learningRate*old_movies[mid][f];
+                    movies[mid][f] -= learningRate*old_users[u][f];
                 }
             }
         }
-
-        //regularization part
-        regularizationGradient(old_users,old_movies,1);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class RMF extends MatrixFactorization{
     }
 
     @Override
-    public void updateParticle(Particle bestParticle, double gradientWeight){
+    public void updateParticle(Particle bestParticle, double gradientWeight) {
 
     }
 }

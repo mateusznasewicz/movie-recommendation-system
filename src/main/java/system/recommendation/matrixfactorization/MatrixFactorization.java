@@ -14,7 +14,7 @@ public abstract class MatrixFactorization implements Particle{
     protected  double[][] movies;
     protected final RatingService<User, Movie> userService;
 
-    public MatrixFactorization(RatingService<User,Movie> userService, int features, double learningRate, double regularization) {
+    public MatrixFactorization(RatingService<User,Movie> userService, int features, double learningRate, double regularization, boolean nonNegative) {
         int u = userService.getEntityMap().size();
         int m = userService.getItemMap().size();
         this.learningRate = learningRate;
@@ -24,12 +24,16 @@ public abstract class MatrixFactorization implements Particle{
         this.userService = userService;
 
         for (int i = 0; i < u; i++) {
-            users[i] = initLatentFeatures(features);
+            users[i] = initLatentFeatures(features, nonNegative);
         }
 
         for (int i = 0; i < m; i++) {
-            movies[i] = initLatentFeatures(features);
+            movies[i] = initLatentFeatures(features, nonNegative);
         }
+    }
+
+    public MatrixFactorization(RatingService<User,Movie> userService, int features, double learningRate){
+        this(userService, features, learningRate, 0, true);
     }
 
     public abstract double[][] getPredictedRatings();
@@ -49,15 +53,15 @@ public abstract class MatrixFactorization implements Particle{
     }
 
     protected void regularizationGradient(double[][] old_users, double[][] old_movies, double gradientWeight){
-        double weight = gradientWeight*learningRate;
+        double weight = gradientWeight*learningRate*regularization;
         for(int i = 0; i< users.length; i++){
             for(int f = 0; f < users[0].length; f++){
-                users[i][f] -= weight*regularization*old_users[i][f];
+                users[i][f] -= weight*old_users[i][f];
             }
         }
         for(int i = 0; i< movies.length; i++){
             for(int f = 0; f < movies[0].length; f++){
-                movies[i][f] -= weight*regularization*old_movies[i][f];
+                movies[i][f] -= weight*old_movies[i][f];
             }
         }
     }
@@ -91,13 +95,26 @@ public abstract class MatrixFactorization implements Particle{
         return sum;
     }
 
-    private double[] initLatentFeatures(int k) {
+    protected double[][] multiplyFactorizedMatrices(){
+        double[][] predicted = new double[users.length][movies.length];
+        for(int i = 0; i < users.length; i++){
+            for(int j = 0; j < movies.length; j++){
+                predicted[i][j] = vectorMultiplication(users[i], movies[j]);
+            }
+        }
+        return predicted;
+    }
+
+    private double[] initLatentFeatures(int k, boolean nonNegative) {
         double[] latentFeatures = new double[k];
         for(int i = 0; i < k; i++){
             Random random = new Random();
             double mean = 0.0;
             double stdDev = 0.01;
             latentFeatures[i] = mean + stdDev * random.nextGaussian();
+            if(nonNegative){
+                latentFeatures[i] = Math.abs(latentFeatures[i]);
+            }
         }
         return latentFeatures;
     }
