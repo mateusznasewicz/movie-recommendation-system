@@ -9,14 +9,13 @@ import system.recommendation.service.RatingService;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RMFGA{
-
+public class NMFGA {
     private final RatingService<User, Movie> userService;
     private final int k;
     private final double learningRate;
     private final double regularization;
 
-    public RMFGA(RatingService<User, Movie> userService, int k, double learningRate, double regularization) {
+    public NMFGA(RatingService<User, Movie> userService, int k, double learningRate, double regularization) {
         this.userService = userService;
         this.k = k;
         this.learningRate = learningRate;
@@ -27,16 +26,16 @@ public class RMFGA{
         List<Chromosome> population = new ArrayList<>();
 
         for(int i = 0; i < populationSize; i++){
-            RMF individual = new RMF(userService, k, learningRate, regularization,0.01);
+            NMF individual = new NMF(userService, k, learningRate,0.01);
             individual.gd_step();
             population.add(individual);
         }
         return population;
     }
 
-    public RMF run(int populationSize, int epochs){
+    public NMF run(int populationSize, int epochs){
         List<Chromosome> population = initPopulation(populationSize);
         Chromosome best = GeneticAlgorithm.run(population,epochs,0.3);
-        return (RMF) best;
+        return (NMF) best;
     }
 }

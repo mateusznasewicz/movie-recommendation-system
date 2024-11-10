@@ -43,6 +43,14 @@ public abstract class MatrixFactorization{
         this.userService = userService;
     }
 
+    public MatrixFactorization(double[][] users, double[][] movies, double learningRate, RatingService<User,Movie> userService){
+        this.users = users;
+        this.movies = movies;
+        this.learningRate = learningRate;
+        this.userService = userService;
+        this.regularization = 0;
+    }
+
     public double[][] getMovies() {
         return movies;
     }

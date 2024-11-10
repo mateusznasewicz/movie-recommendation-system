@@ -22,7 +22,8 @@ public class MatrixFactorizationTest {
 //        NMFtest(userService);
 //        RMFtest(userService);
 //        MMMFtest(userService);
-        RMFGAtest(userService);
+//        RMFGAtest(userService);
+//        NMFGAtest(userService);
     }
 
     private static void NMFtest(RatingService<User,Movie> userService){
@@ -59,6 +60,14 @@ public class MatrixFactorizationTest {
         double[][] ratings = best.getPredictedRatings();
         System.out.println(QualityMeasure.MAE(ratings,userService));
         System.out.println(QualityMeasure.RMSE(ratings,userService));
-        System.out.println(best.fitness());
+    }
+
+    private static void NMFGAtest(RatingService<User,Movie> userService){
+        NMFGA mf = new NMFGA(userService,k,learningRate,regularization);
+        NMF best = mf.run(populationSize,epochs);
+
+        double[][] ratings = best.getPredictedRatings();
+        System.out.println(QualityMeasure.MAE(ratings,userService));
+        System.out.println(QualityMeasure.RMSE(ratings,userService));
     }
 }

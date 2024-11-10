@@ -49,36 +49,12 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
         //regularization part
         regularizationGradient(old_users,old_movies,1);
-        //System.out.println(fitness());
     }
 
     @Override
     public void mutate(double chance) {
         if(rand.nextDouble() >= chance) return;
         gd_step();
-
-//        int u = rand.nextInt(users.length);
-//        User user = userService.getEntity(u+1);
-//        Map<Integer, Double> ratings = user.getRatings();
-//
-//        List<Integer> mIDs = new ArrayList<>(ratings.keySet());
-//        int m = rand.nextInt(mIDs.size());
-//        int mID =  mIDs.get(m) - 1;
-//        double rating = ratings.get(mID+1);
-//
-//        double[] old_users = users[u].clone();
-//        double[] old_movies = movies[mID].clone();
-//        double e = rating - vectorMultiplication(old_users, old_movies);
-//
-//        for(int f = 0; f < users[0].length; f++){
-//            users[u][f] -= regularization*learningRate*old_users[f];
-//            movies[mID][f] -= regularization*learningRate*old_movies[f];
-//
-//            users[u][f] += 2*e*learningRate*old_movies[f];
-//            movies[mID][f] += 2*e*learningRate*old_users[f];
-//        }
-
-        //System.out.println(fit + "||" + fitness());
     }
 
     @Override
@@ -92,7 +68,6 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
                 double rating = entry.getValue();
                 int mid = entry.getKey() - 1;
                 double predicted = vectorMultiplication(users[u], movies[mid]);
-                //System.out.println(predicted + "||" + rating);
                 e += Math.pow(rating - predicted,2);
             }
         }
@@ -107,9 +82,6 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
     @Override
     public List<Chromosome> crossover(Chromosome p2, double weight) {
-        int usize = this.users.length;
-        int msize = this.movies.length;
-        int k = this.users[0].length;
         double[][] pusers = ((RMF) p2).getUsers();
         double[][] pmovies = ((RMF) p2).getMovies();
         double[][] u1 = users.clone();
@@ -117,10 +89,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] u2 = pusers.clone();
         double[][] m2 = movies.clone();
 
-
-
-        List<Chromosome> l = List.of(new RMF(u1,m1,learningRate,regularization,userService),new RMF(u2,m2,learningRate,regularization,userService));
-        return l;
+        return List.of(new RMF(u1,m1,learningRate,regularization,userService),new RMF(u2,m2,learningRate,regularization,userService));
     }
 
     @Override
