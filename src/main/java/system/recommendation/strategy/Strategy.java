@@ -25,13 +25,6 @@ public abstract class Strategy<T extends Entity> {
         this.k = 0;
     }
 
-    public Strategy(){
-        this.simMatrix = null;
-        this.k = 0;
-        this.hashmap = null;
-    }
-
-
     abstract public List<Integer> getNeighbors(T item);
 
     public double[][] getSimMatrix() {

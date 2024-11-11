@@ -11,15 +11,13 @@ public abstract class Recommender<T extends Entity,G extends Entity> {
     private final RatingService<T,G> ratingService;
     private final Strategy<T> strategy;
     private final Map<Integer, T> baseHashmap;
-    private final Map<Integer, G> itemHashmap;
     private final double[][] predictedRating;
 
     public Recommender(RatingService<T,G> ratingService, Strategy<T> strategy) {
         this.ratingService = ratingService;
         this.baseHashmap = ratingService.getEntityMap();
-        this.itemHashmap = ratingService.getItemMap();
         this.strategy = strategy;
-        this.predictedRating = new double[baseHashmap.size()][itemHashmap.size()];
+        this.predictedRating = new double[baseHashmap.size()][ratingService.getItemMap().size()];
     }
 
     public double[][] getPredictedRating(){

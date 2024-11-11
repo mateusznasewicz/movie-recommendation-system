@@ -2,6 +2,7 @@ package system.recommendation.strategy;
 
 import system.recommendation.models.Entity;
 import system.recommendation.service.RatingService;
+import system.recommendation.similarity.EuclideanDistance;
 import system.recommendation.similarity.Similarity;
 
 import java.lang.reflect.InvocationTargetException;
@@ -12,22 +13,19 @@ import java.util.SplittableRandom;
 @SuppressWarnings("unchecked")
 public abstract class Clustering<T extends Entity, G extends Entity> extends Strategy<T>{
     protected final RatingService<T ,G> ratingService;
-    protected final Similarity<T> simFunction;
+    protected final Similarity<T> distFunction;
     protected final List<T> centroids = new ArrayList<>();
-    protected final int k;
     protected final SplittableRandom rand = new SplittableRandom();
     private final Class<T> clazz;
 
     public Clustering(RatingService<T, G> ratingService, Similarity<T> simFunction, int k) {
-        super();
+        super(ratingService.getEntityMap(), k, simFunction);
         this.ratingService = ratingService;
-        this.simFunction = simFunction;
-        this.k = k;
-
+        this.distFunction = new EuclideanDistance<>(ratingService);
         this.clazz = (Class<T>) ratingService.getEntity(1).getClass();
     }
 
-    public abstract void step();
+    protected abstract void step();
 
     protected T randomCentroid(RatingService<T, G> ratingService, Class<T> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         T centroid = clazz.getDeclaredConstructor().newInstance();
@@ -43,7 +41,7 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
         return centroid;
     }
 
-    protected void calcCentroids(){
+    protected void calcCentroids(int epochs) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         for(int i = 0; i < k; i++){
             T centroid = randomCentroid(ratingService,clazz);
             centroids.add(centroid);

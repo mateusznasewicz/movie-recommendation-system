@@ -11,8 +11,9 @@ import java.util.*;
 public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G> {
     private List<Set<Integer>> membership;
 
-    public KMeans(int k, int epochs,RatingService<T, G> ratingService, Similarity<T> simFunction) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public KMeans(int k,RatingService<T, G> ratingService, Similarity<T> simFunction) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(ratingService, simFunction, k);
+        calcCentroids(10);
     }
 
     private void calculateCenter(int c){
@@ -20,7 +21,7 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G> 
         T centroid = centroids.get(c);
 
         int s = ratingService.getItemMap().size();
-        for(int itemID = 1; itemID < s; itemID++){
+        for(int itemID = 1; itemID < s+1; itemID++){
             int n = 0;
             double rating = 0;
             for(int memberID: members){
@@ -42,21 +43,22 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G> 
         }
     }
 
-    private void step(){
+    @Override
+    protected void step(){
         initMembership();
 
         for(int i : ratingService.getEntitiesID()){
             if(i < 0)continue;
 
-            double bestSim = -1;
+            double bestDist = -1;
             int closestID = 0;
             T entity = ratingService.getEntity(i);
 
             for (int c = 0; c < centroids.size() ; c++) {
-                double sim = simFunction.calculate(entity, centroids.get(c));
-                if (sim > bestSim) {
+                double dist = distFunction.calculate(entity, centroids.get(c));
+                if (dist < bestDist) {
                     closestID = c;
-                    bestSim = sim;
+                    bestDist = dist;
                 }
             }
             membership.get(closestID).add(i);
