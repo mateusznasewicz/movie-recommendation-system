@@ -1,7 +1,6 @@
 package system.recommendation.strategy;
 
 import system.recommendation.models.Entity;
-import system.recommendation.service.RatingService;
 import system.recommendation.similarity.Similarity;
 
 import java.util.List;
@@ -35,6 +34,7 @@ public abstract class Strategy<T extends Entity> {
         System.out.println("Generating similarity matrix");
         int size = this.hashmap.size();
         double[][] matrix = new double[size][size];
+        System.out.println(size);
 
         for(int i = 0; i < size; i++){
             for(int j = i; j < size; j++){

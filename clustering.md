@@ -18,3 +18,5 @@ Item-based Fuzzy Clustering Collaborative Filtering
 7.Collaborative filtering recommendation based on fuzzy clustering of user preferences
 
 8.A movie rating prediction system of user propensity analysis based on collaborative filtering and fuzzy system
+
+9.Analysis of parameter selections for fuzzy c-means

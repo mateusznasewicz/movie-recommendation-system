@@ -16,11 +16,15 @@ public class EuclideanDistance<T extends Entity, G extends Entity> implements Si
     public double calculate(T a, T b) {
         double result = 0;
         Set<Integer> common = a.getCommon(b);
-        if(common.isEmpty()) return 0;
+        if(common.isEmpty()) {
+            System.out.println("KJHSDFJHKFSDKJHFSD");
+            return -1;
+        }
+
+        int aID = a.getId();
+        int bID = b.getId();
 
         for(Integer id: common){
-            int aID = a.getId();
-            int bID = b.getId();
             double r1 = ratingService.getRating(aID,id);
             double r2 = ratingService.getRating(bID,id);
             result += Math.pow(r1-r2,2);

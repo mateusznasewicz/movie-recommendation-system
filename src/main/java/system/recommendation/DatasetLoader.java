@@ -10,22 +10,37 @@ import java.util.*;
 public class DatasetLoader {
 
     private final Map<Integer, User> users = new HashMap<>();
-    private final Map<Integer, Movie> movies = new HashMap<>();
-    private final Map<Integer, Integer> moviesFakeRealID = new HashMap<>();
+    private Map<Integer, Movie> movies = new HashMap<>();
+    private static Map<Integer, Integer> moviesFakeRealID = new HashMap<>();
     private final Map<String, Integer> tags = new HashMap<>();
 
     private final boolean divideData;
     private final double testSize = 0.20;
+    private boolean itemBased;
     private final Random random = new Random();
 
-    public DatasetLoader(String datasetFolderName, boolean divideData) throws FileNotFoundException {
+    public DatasetLoader(String datasetFolderName, boolean divideData, boolean itemBased) throws FileNotFoundException {
         this.divideData = divideData;
+        this.itemBased = itemBased;
 
         System.out.println("Loading data from " + datasetFolderName);
         addMovies(datasetFolderName);
         addTags(datasetFolderName);
         handleRatings(datasetFolderName);
         System.out.println("Finished loading data from " + datasetFolderName);
+
+
+        if(itemBased){
+            movies.entrySet().removeIf(entry -> entry.getValue().getRatings().size() < 7);
+            Map<Integer, Movie> newMap = new HashMap<>();
+
+            int i = 1;
+            for(Movie m : movies.values()) {
+                m.setId(i);
+                newMap.put(i++,m);
+            }
+            movies = newMap;
+        }
 
         moviesFakeRealID.clear();
     }
@@ -65,9 +80,17 @@ public class DatasetLoader {
                 }
 
                 if(divideData && random.nextDouble() < testSize){
-                    user.addTestRating(movieId, rating);
+                    if(itemBased){
+                        movie.addTestRating(userId, rating);
+                    }else{
+                        user.addTestRating(movieId, rating);
+                    }
                 }else{
-                    user.addRating(movieId, rating);
+                    if(itemBased){
+                        movie.addRating(userId, rating);
+                    }else{
+                        user.addRating(movieId, rating);
+                    }
                 }
             }
         }

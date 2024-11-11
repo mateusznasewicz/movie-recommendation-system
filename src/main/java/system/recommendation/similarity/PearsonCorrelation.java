@@ -18,10 +18,10 @@ public class PearsonCorrelation<T extends Entity, G extends Entity> implements S
         double s1 = 0;
         double s2 = 0;
         Set<Integer> common = a.getCommon(b);
+        int aID = a.getId();
+        int bID = b.getId();
 
         for(Integer id: common){
-            int aID = a.getId();
-            int bID = b.getId();
             numerator += (ratingService.getRating(aID,id) - a.getAvgRating())*(ratingService.getRating(bID,id) - b.getAvgRating());
             s1 += Math.pow((ratingService.getRating(aID,id) - a.getAvgRating()),2);
             s2 += Math.pow((ratingService.getRating(bID,id) - b.getAvgRating()),2);

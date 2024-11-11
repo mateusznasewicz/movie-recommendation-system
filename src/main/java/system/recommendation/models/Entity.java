@@ -23,6 +23,9 @@ public abstract class Entity{
     public int getId(){
         return id;
     }
+    public void setId(int id){
+        this.id = id;
+    }
     public double getAvgRating() { return avgRating; }
     public HashMap<Integer, Double> getRatings() {
         return this.ratings;

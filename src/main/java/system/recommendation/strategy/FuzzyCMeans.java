@@ -11,17 +11,19 @@ import java.util.*;
 public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<T,G>  {
 
     private double[][] fuzzyMembership;
-    private double fuzzines = 1.7;
+    private double fuzzines = 1.5;
 
-    public FuzzyCMeans(RatingService<T,G> ratingService, Similarity<T> simFunction, int k) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public FuzzyCMeans(RatingService<T,G> ratingService, Similarity<T> simFunction, int k, double fuzzines) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(ratingService, simFunction, k);
         Map<Integer, T> entityMap = ratingService.getEntityMap();
         this.fuzzyMembership = new double[entityMap.size()][k];
+        this.fuzzines = fuzzines;
     }
 
     @Override
     protected void step() {
         calcFuzzyMembership();
+
         for(int c = 0; c < centroids.size(); c++){
             calculateCenter(c);
         }
@@ -42,18 +44,22 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
 
     private void calculateCenter(int c){
         T centroid = centroids.get(c);
+        centroid.clear();
+
         int s = ratingService.getItemMap().size();
         for(int itemID = 0 ; itemID < s; itemID++){
-            double rating = -1;
+            double rating = 0;
             double denominator = 0;
             for(int u = 0; u < fuzzyMembership.length; u++){
-                if(!ratingService.isRatedById(u+1, itemID+1))continue;
-                double w = Math.pow(fuzzyMembership[u][c],fuzzines);
-                rating += ratingService.getRating(u+1, itemID+1) * w;
-                denominator += w;
+                if(ratingService.isRatedById(u+1, itemID+1)) {
+                    double w = Math.pow(fuzzyMembership[u][c],fuzzines);
+                    rating += ratingService.getRating(u+1, itemID+1) * w;
+                    denominator += w;
+                }
             }
-            if(rating != -1){
-                centroid.setRating(itemID+1, rating/denominator);
+
+            if(rating != 0){
+                centroid.addRating(itemID+1, rating/denominator);
             }
         }
     }
@@ -69,15 +75,14 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
                 for(int k = 0; k < fuzzyMembership[i].length; k++) {
                     T c2 = centroids.get(k);
                     double d2 = distFunction.calculate(entity, c2);
-                    sum += Math.pow((d1/d2),pow);
+                    sum += Math.pow(d1/d2,pow);
                 }
                 fuzzyMembership[i][j] = 1 / sum;
             }
         }
-        for(double[] membership : fuzzyMembership){
-            System.out.println(Arrays.toString(membership));
-        }
-
+//        for(double[] membership : fuzzyMembership){
+//            System.out.println(Arrays.toString(membership));
+//        }
     }
 
     private List<Integer> getNeighborsFromCluster(int n, int c, int id){
@@ -120,19 +125,19 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
 
     public List<Integer> fewClusters(int c, int n, T item){
         int id = item.getId();
-        List<Integer> neighbors = new ArrayList<>();
+        Set<Integer> neighbors = new HashSet<>();
         List<Integer> clusters = getClusters(c, id);
 
         for(int cluster: clusters){
             neighbors.addAll(getNeighborsFromCluster(n, cluster, id));
         }
-
-        return neighbors;
+        System.out.println(neighbors.size());
+        return neighbors.stream().toList();
     }
 
     @Override
     public List<Integer> getNeighbors(T item) {
-        return bestCluster(50,item);
+        return fewClusters(3,100,item);
 //        return bestCluster(50,item);
     }
 }

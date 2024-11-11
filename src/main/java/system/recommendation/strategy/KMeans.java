@@ -49,8 +49,8 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G> 
         for(int c = 0; c < centroids.size(); c++){
             T centroid = centroids.get(c);
             for(Integer u: membership.get(c)){
-                T user = ratingService.getEntity(u);
-                loss += distFunction.calculate(user,centroid);
+                T entity = ratingService.getEntity(u);
+                loss += distFunction.calculate(entity,centroid);
             }
         }
         return loss;
@@ -63,7 +63,7 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G> 
         for(int i : ratingService.getEntitiesID()){
             if(i < 0)continue;
 
-            double bestDist = -1;
+            double bestDist = Double.MAX_VALUE;
             int closestID = 0;
             T entity = ratingService.getEntity(i);
 
