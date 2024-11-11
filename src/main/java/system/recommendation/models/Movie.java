@@ -14,6 +14,9 @@ public class Movie extends Entity{
         super(id);
     }
     public Movie() { super(); }
+    public Movie(int id, double avg, HashMap<Integer, Double> ratings){
+        super(id,avg,ratings);
+    }
 
     public void putTFIDF(String word, double tfidf){
         this.TFIDF.put(word, tfidf);

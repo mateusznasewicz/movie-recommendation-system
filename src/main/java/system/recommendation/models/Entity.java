@@ -20,6 +20,12 @@ public abstract class Entity{
         unknownID--;
     }
 
+    public Entity(int id, double avg, HashMap<Integer, Double> ratings){
+        this.id = id;
+        this.avgRating = avg;
+        this.ratings.putAll(ratings);
+    }
+
     public int getId(){
         return id;
     }

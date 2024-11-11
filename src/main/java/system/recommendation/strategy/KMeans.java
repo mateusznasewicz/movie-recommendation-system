@@ -28,7 +28,7 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         }
 
         for(T centroid: centroids){
-//            this.centroids.add();
+            this.centroids.add();
         }
     }
 

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KmeansPSO<T extends Entity, G extends Entity> {
+    private RatingService<T, G> ratingService;
     private int swarmSize;
     private int k;
 
@@ -24,9 +25,10 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
         for(int i = 0; i < swarmSize; i++){
             swarm.add(new KMeans<>(k,rs));
         }
+        this.ratingService = rs;
     }
 
-    public KMeans<T, G> run(int epochs){
+    public KMeans<T, G> run(int epochs) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         KMeans<T,G> globalBest = null;
         double globalLoss = Double.MAX_VALUE;
 
@@ -46,7 +48,7 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
                 if(loss < localLoss[i]){
                     localLoss[i] = loss;
                     KMeans<T,G> curr = swarm.get(i);
-                    localBest.set(i,new KMeans<>(curr));
+                    localBest.set(i,new KMeans<>(curr.getMembership(),curr.getCentroids(),k,ratingService));
                 }
             }
 
