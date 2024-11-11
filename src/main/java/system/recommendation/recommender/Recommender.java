@@ -27,7 +27,6 @@ public abstract class Recommender<T extends Entity,G extends Entity> {
 
     private void fillRatings(){
         for(int eID : baseHashmap.keySet()){
-            if(eID < 0) continue;
             T entity = baseHashmap.get(eID);
             List<Integer> neighbors = strategy.getNeighbors(entity);
             for(Integer iID : entity.getTestRatings().keySet()){

@@ -40,6 +40,7 @@ public class DatasetLoader {
                 newMap.put(i++,m);
             }
             movies = newMap;
+            System.out.println(movies.size());
         }
 
         moviesFakeRealID.clear();

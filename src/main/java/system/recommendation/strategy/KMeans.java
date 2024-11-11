@@ -12,18 +12,21 @@ import java.util.*;
 public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
     private List<Set<Integer>> membership;
 
+    //do przewidywania
     public KMeans(int k,RatingService<T, G> ratingService, Similarity<T> simFunction) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(ratingService, simFunction, k);
         initCentroids();
         assignMembership();
     }
 
+    //nowe w pso
     public KMeans(int k,RatingService<T, G> ratingService) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(k,ratingService);
         initCentroids();
         assignMembership();
     }
 
+    //kopiowanie w pso
     public KMeans(List<Set<Integer>> membership, List<T> centroids, int k, RatingService<T, G> ratingService) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(k,ratingService);
 

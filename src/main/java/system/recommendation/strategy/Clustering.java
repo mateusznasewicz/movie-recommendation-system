@@ -7,6 +7,7 @@ import system.recommendation.similarity.Similarity;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.SplittableRandom;
 
@@ -19,14 +20,14 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
     private final Class<T> clazz;
 
     public Clustering(RatingService<T, G> ratingService, Similarity<T> simFunction, int k) {
-        super(ratingService.getEntityMap(), k, simFunction);
+        super(new HashMap<>(ratingService.getEntityMap()), k, simFunction);
         this.ratingService = ratingService;
         this.distFunction = new EuclideanDistance<>(ratingService);
         this.clazz = (Class<T>) ratingService.getEntity(1).getClass();
     }
 
-    public Clustering(int k, RatingService<T, G> ratingService) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        super(ratingService.getEntityMap(),k);
+    public Clustering(int k, RatingService<T, G> ratingService) {
+        super(new HashMap<>(ratingService.getEntityMap()),k);
         this.ratingService = ratingService;
         this.clazz = (Class<T>) ratingService.getEntity(1).getClass();
         this.distFunction = new EuclideanDistance<>(ratingService);

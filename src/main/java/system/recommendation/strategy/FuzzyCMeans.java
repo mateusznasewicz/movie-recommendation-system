@@ -1,7 +1,6 @@
 package system.recommendation.strategy;
 
 import system.recommendation.models.Entity;
-import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
 import system.recommendation.similarity.Similarity;
 
