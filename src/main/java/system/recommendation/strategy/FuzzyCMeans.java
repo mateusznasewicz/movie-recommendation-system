@@ -1,25 +1,22 @@
 package system.recommendation.strategy;
 
 import system.recommendation.models.Entity;
+import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
 import system.recommendation.similarity.Similarity;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<T,G> {
+public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<T,G>  {
 
-    double[][] fuzzyMembership;
+    private double[][] fuzzyMembership;
     private double fuzzines = 2;
 
     public FuzzyCMeans(RatingService<T,G> ratingService, Similarity<T> simFunction, int k) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(ratingService, simFunction, k);
         Map<Integer, T> entityMap = ratingService.getEntityMap();
         this.fuzzyMembership = new double[entityMap.size()][k];
-
-
-        calcCentroids(10);
     }
 
     @Override
@@ -30,13 +27,22 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
         }
     }
 
+    @Override
+    protected double calcLoss(){
+        double loss = 0;
+        for(int i = 0; i <  fuzzyMembership.length; i++){
+            T entity = ratingService.getEntity(i+1);
+            for(int j = 0; j < centroids.size(); j++){
+                T centroid = centroids.get(j);
+                loss += distFunction.calculate(entity,centroid) * fuzzyMembership[i][j];
+            }
+        }
+        return loss;
+    }
+
     private void calculateCenter(int c){
         T centroid = centroids.get(c);
         double denominator = 0;
-
-        for(int u = 0; u < fuzzyMembership.length; u++){
-            denominator += Math.pow(fuzzyMembership[u][c],fuzzines);
-        }
 
         int s = ratingService.getItemMap().size();
         for(int itemID = 0 ; itemID < s; itemID++){
@@ -44,10 +50,11 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
             for(int u = 0; u < fuzzyMembership.length; u++){
                 if(ratingService.isRatedById(u+1, itemID+1)){
                     rating += ratingService.getRating(u+1, itemID+1) * Math.pow(fuzzyMembership[u][c],fuzzines);
+                    denominator += Math.pow(fuzzyMembership[u][c],fuzzines);
                 }
             }
             if(rating != -1){
-                centroid.setRating(itemID, rating/denominator);
+                centroid.setRating(itemID+1, rating/denominator);
             }
         }
     }
@@ -70,16 +77,59 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
         }
     }
 
-    public void bestCluster(int n){
+    private List<Integer> getNeighborsFromCluster(int n, int c, int id){
+        Queue<Integer> neighbors = new PriorityQueue<>(n, (a,b) -> Double.compare(fuzzyMembership[a-1][c],fuzzyMembership[b-1][c]));
 
+        for(int i = 0; i < fuzzyMembership.length; i++){
+            if(i == id - 1) continue;
+            neighbors.add(i+1);
+            if(neighbors.size() > n) neighbors.poll();
+        }
+
+        return neighbors.stream().toList();
     }
 
-    public void fewClusters(int c, int n){
+    private List<Integer> getClusters(int n, int id){
+        Queue<Integer> clusters = new PriorityQueue<>(n, (a,b) -> Double.compare(fuzzyMembership[id-1][a],fuzzyMembership[id-1][b]));
 
+        for(int i = 0; i < centroids.size(); i++){
+            clusters.add(i);
+            if(clusters.size() > n) clusters.poll();
+        }
+
+        return clusters.stream().toList();
+    }
+
+    public List<Integer> bestCluster(int n, T item){
+        int id = item.getId();
+        double[] membership = fuzzyMembership[id-1];
+
+        int cluster = 0;
+        double best = membership[0];
+        for(int i = 0; i < membership.length; i++){
+            if(membership[i] < best){
+                cluster = i;
+                best = membership[i];
+            }
+        }
+        return getNeighborsFromCluster(n, cluster, id);
+    }
+
+    public List<Integer> fewClusters(int c, int n, T item){
+        int id = item.getId();
+        List<Integer> neighbors = new ArrayList<>();
+        List<Integer> clusters = getClusters(c, id);
+
+        for(int cluster: clusters){
+            neighbors.addAll(getNeighborsFromCluster(n, cluster, id));
+        }
+
+        return neighbors;
     }
 
     @Override
-    public List<Integer> getNeighbors(Entity item) {
-        return List.of();
+    public List<Integer> getNeighbors(T item) {
+        return bestCluster(50,item);
+//        return bestCluster(50,item);
     }
 }

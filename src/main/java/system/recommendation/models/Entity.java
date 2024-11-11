@@ -47,6 +47,11 @@ public abstract class Entity{
         ratings.put(itemID, rating);
     }
 
+    public void clear(){
+        this.ratings.clear();
+        this.avgRating = 0;
+    }
+
     public void addTestRating(int itemID, double rating){
         testRatings.put(itemID, rating);
     }

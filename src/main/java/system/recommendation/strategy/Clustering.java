@@ -26,6 +26,7 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
     }
 
     protected abstract void step();
+    protected abstract double calcLoss();
 
     protected T randomCentroid(RatingService<T, G> ratingService, Class<T> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         T centroid = clazz.getDeclaredConstructor().newInstance();
@@ -41,7 +42,7 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
         return centroid;
     }
 
-    protected void calcCentroids(int epochs) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void calcCentroids(int epochs) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         for(int i = 0; i < k; i++){
             T centroid = randomCentroid(ratingService,clazz);
             centroids.add(centroid);
@@ -50,6 +51,7 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
 
         for(int i = 0; i < epochs; i++){
             step();
+            System.out.println(i + "||" + calcLoss());
         }
     }
 }

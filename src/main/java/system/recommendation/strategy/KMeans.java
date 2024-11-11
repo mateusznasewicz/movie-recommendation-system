@@ -13,12 +13,12 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G> 
 
     public KMeans(int k,RatingService<T, G> ratingService, Similarity<T> simFunction) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(ratingService, simFunction, k);
-        calcCentroids(10);
     }
 
     private void calculateCenter(int c){
         Set<Integer> members = membership.get(c);
         T centroid = centroids.get(c);
+        centroid.clear();
 
         int s = ratingService.getItemMap().size();
         for(int itemID = 1; itemID < s+1; itemID++){
@@ -31,7 +31,7 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G> 
                 }
             }
             if(n != 0){
-                centroid.setRating(itemID, rating/n);
+                centroid.addRating(itemID, rating/n);
             }
         }
     }
@@ -41,6 +41,19 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G> 
         for(int c = 0; c < centroids.size(); c++){
             membership.add(new HashSet<>());
         }
+    }
+
+    @Override
+    protected double calcLoss(){
+        double loss = 0;
+        for(int c = 0; c < centroids.size(); c++){
+            T centroid = centroids.get(c);
+            for(Integer u: membership.get(c)){
+                T user = ratingService.getEntity(u);
+                loss += distFunction.calculate(user,centroid);
+            }
+        }
+        return loss;
     }
 
     @Override
