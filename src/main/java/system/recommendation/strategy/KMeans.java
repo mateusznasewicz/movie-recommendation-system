@@ -8,11 +8,28 @@ import system.recommendation.similarity.Similarity;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G> {
+public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
     private List<Set<Integer>> membership;
 
-    public KMeans(int k,RatingService<T, G> ratingService, Similarity<T> simFunction) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public KMeans(int k,RatingService<T, G> ratingService, Similarity<T> simFunction){
         super(ratingService, simFunction, k);
+    }
+
+    public KMeans(int k,RatingService<T, G> ratingService) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        super(k,ratingService);
+    }
+
+    public KMeans(List<Set<Integer>> membership, List<T> centroids, int k, RatingService<T, G> ratingService) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        super(k,ratingService);
+
+        this.membership = new ArrayList<>();
+        for(Set<Integer> members: membership){
+            membership.add(new HashSet<>(members));
+        }
+
+        for(T centroid: centroids){
+//            this.centroids.add();
+        }
     }
 
     private void calculateCenter(int c){
@@ -44,7 +61,7 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G> 
     }
 
     @Override
-    protected double calcLoss(){
+    public double calcLoss(){
         double loss = 0;
         for(int c = 0; c < centroids.size(); c++){
             T centroid = centroids.get(c);
@@ -90,5 +107,17 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G> 
             }
         }
         return null;
+    }
+
+    public void updateParticle(){
+
+    }
+
+    public void updateVelocity(KMeans<T,G> v){
+        double r1 = 0.127;
+        double r2 = 0.0975;
+        double c1 = 1.42;
+        double c2 = 1.42;
+        double w = 0.72;
     }
 }

@@ -1,5 +1,6 @@
 import system.recommendation.DatasetLoader;
 import system.recommendation.QualityMeasure;
+import system.recommendation.models.Entity;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.recommender.CollaborativeFiltering;
@@ -17,7 +18,7 @@ import system.recommendation.strategy.Strategy;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class KMeansTest {
+public class KMeansTest<T extends Entity, G extends Entity> {
     private final static int epochs = 10;
     private final static int k = 10;
 

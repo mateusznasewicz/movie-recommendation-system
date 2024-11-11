@@ -35,4 +35,13 @@ Engineering, 2011, vol. 26, pp. 48–68, https://doi.org/10.1111/j.1467-8667.201
 
 12.B. Zhang and Y. Rahmat-Samii, "Including design sensitivity into Particle Swarm
 Optimization: Adaptive gradient-based techniques," Asia-Pacific Microwave Con-
-ference (APMC), Nanjing, China, 2015, pp. 1-3, doi: 10.1109/APMC.2015.7411803.
+ference (APMC), Nanjing, China, 2015, pp. 1-3, doi: 10.1109/APMC.2015.7411803.\
+
+13.Laishram, A., Sahu, S. P., Padmanabhan, V., & Udgata, S. K., “Collaborative fil-
+tering, matrix factorization and population based search: the nexus unveiled,”
+International Conference on Neural Information Processing, September 2016, pp
+
+14.Wasid, M., Kant, V.: A particle swarm approach to collaborative filtering based recommender systems through fuzzy features. Procedia Comput. Sci. 54, 440–448 (2015)
+https://doi.org/10.1016/j.procs.2015.06.051 
+
+15.Ujjin, S., Bentley, P.J.: Particle swarm optimization recommender system. In: Proceedings of the 2003 IEEE Swarm Intelligence Symposium, SIS 2003, pp. 124–131. IEEE (2003) 
