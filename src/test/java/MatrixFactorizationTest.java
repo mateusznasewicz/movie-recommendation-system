@@ -14,8 +14,8 @@ public class MatrixFactorizationTest {
     private final static double learningRate = 0.0002;
     private final static double regularization = 0.002;
     private final static int k = 10;
-    private final static int populationSize = 10;
-    private final static int epochs = 1000;
+    private final static int populationSize = 100;
+    private final static int epochs = 100;
     private final static double gradientWeight = 0.7;
 
     public static void run(DatasetLoader datasetLoader){
@@ -26,14 +26,14 @@ public class MatrixFactorizationTest {
         ParticleProvider<NMF> nmFprovider = new NMFprovider(userService,k,learningRate);
         ParticleProvider<RMF> rmFprovider = new RMFprovider(userService,k,learningRate,regularization);
 
-        double mae = swarmTest(userService,rmFprovider)[0];
-        System.out.println(mae);
+//        double mae = swarmTest(userService,rmFprovider)[0];
+//        System.out.println(mae);
 
 //        NMFtest(userService);
 //        RMFtest(userService);
 //        MMMFtest(userService);
-//        double mae = MMMFtest(userService)[0];
-//        System.out.println(mae);
+        double mae = RMFtest(userService)[0];
+        System.out.println(mae);
 //        RMFtest(userService);
 //        NMFGAtest(userService);
     }

@@ -112,34 +112,34 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
     @Override
     public void memetic(double chance) {
         if(rand.nextDouble() >= chance) return;
-        gd_step();
-//        double[][] old_users = users.clone();
-//        double[][] old_movies = movies.clone();
-//        List<Integer> perm = new ArrayList<>(users.length);
-//        for(int i = 0; i < users.length; i++){
-//            perm.add(i);
-//        }
-//        Collections.shuffle(perm);
-//
-//        for(int u = 0; u < users.length/4; u++){
-//            int uid = perm.get(u);
-//            User user = userService.getEntity(uid+1);
-//            Map<Integer, Double> ratings = user.getRatings();
-//            for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
-//                int mid = entry.getKey() - 1;
-//                double rating = entry.getValue();
-//                double e = rating - vectorMultiplication(old_users[uid], old_movies[mid]);
-//                double w1 = learningRate*e*2;
-//                double w2 = learningRate*regularization;
-//                for(int f = 0; f < users[0].length; f++){
-//                    users[uid][f] += w1*old_movies[mid][f];
-//                    movies[mid][f] += w1*old_users[uid][f];
-//
-//                    users[uid][f] -= w2*old_users[uid][f];
-//                    movies[mid][f] -= w2*old_movies[mid][f];
-//                }
-//            }
-//        }
+
+        double[][] old_users = users.clone();
+        double[][] old_movies = movies.clone();
+        List<Integer> perm = new ArrayList<>(users.length);
+        for(int i = 0; i < users.length; i++){
+            perm.add(i);
+        }
+        Collections.shuffle(perm);
+
+        for(int u = 0; u < users.length/4; u++){
+            int uid = perm.get(u);
+            User user = userService.getEntity(uid+1);
+            Map<Integer, Double> ratings = user.getRatings();
+            for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
+                int mid = entry.getKey() - 1;
+                double rating = entry.getValue();
+                double e = rating - vectorMultiplication(old_users[uid], old_movies[mid]);
+                double w1 = learningRate*e*2;
+                double w2 = learningRate*regularization;
+                for(int f = 0; f < users[0].length; f++){
+                    users[uid][f] += w1*old_movies[mid][f];
+                    movies[mid][f] += w1*old_users[uid][f];
+
+                    users[uid][f] -= w2*old_users[uid][f];
+                    movies[mid][f] -= w2*old_movies[mid][f];
+                }
+            }
+        }
     }
 
     @Override

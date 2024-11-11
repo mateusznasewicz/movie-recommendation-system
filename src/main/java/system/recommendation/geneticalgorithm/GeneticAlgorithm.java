@@ -21,7 +21,7 @@ public class GeneticAlgorithm {
             int bestID = -1;
             for(int i = 0; i < fitness.length; i++){
                 fitness[i] = population.get(i).fitness();
-//                System.out.println(fitness[i]);
+                System.out.println(fitness[i]);
                 totalFitness += 1.0 / fitness[i];
 
                 if(fitness[i] < bestFit){
@@ -55,7 +55,7 @@ public class GeneticAlgorithm {
             }
 
             for(Chromosome c: newPopulation){
-//                c.mutate(0.05);
+                c.mutate(0.05);
                 c.memetic(0.3);
             }
 

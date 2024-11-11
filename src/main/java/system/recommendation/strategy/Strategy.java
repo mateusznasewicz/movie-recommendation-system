@@ -1,6 +1,7 @@
 package system.recommendation.strategy;
 
 import system.recommendation.models.Entity;
+import system.recommendation.service.RatingService;
 import system.recommendation.similarity.Similarity;
 
 import java.util.List;
@@ -22,6 +23,12 @@ public abstract class Strategy<T extends Entity> {
         this.hashmap = hashmap;
         this.simMatrix = computeNeighbors(simFunction);
         this.k = 0;
+    }
+
+    public Strategy(){
+        this.simMatrix = null;
+        this.k = 0;
+        this.hashmap = null;
     }
 
 
