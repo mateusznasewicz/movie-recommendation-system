@@ -60,6 +60,33 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
     public void memetic(double chance) {
         if(rand.nextDouble() >= chance) return;
         gd_step();
+//        double[][] old_users = users.clone();
+//        double[][] old_movies = movies.clone();
+//        List<Integer> perm = new ArrayList<>(users.length);
+//        for(int i = 0; i < users.length; i++){
+//            perm.add(i);
+//        }
+//        Collections.shuffle(perm);
+//
+//        for(int u = 0; u < users.length/4; u++){
+//            int uid = perm.get(u);
+//            User user = userService.getEntity(uid+1);
+//            Map<Integer, Double> ratings = user.getRatings();
+//            for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
+//                int mid = entry.getKey() - 1;
+//                double rating = entry.getValue();
+//                double e = rating - vectorMultiplication(old_users[uid], old_movies[mid]);
+//                double w1 = learningRate*e*2;
+//                double w2 = learningRate*regularization;
+//                for(int f = 0; f < users[0].length; f++){
+//                    users[uid][f] += w1*old_movies[mid][f];
+//                    movies[mid][f] += w1*old_users[uid][f];
+//
+//                    users[uid][f] -= w2*old_users[uid][f];
+//                    movies[mid][f] -= w2*old_movies[mid][f];
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -95,7 +122,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] m2 = movies.clone();
 
         List<Chromosome> l = List.of(new RMF(u1,m1,learningRate,regularization,userService),new RMF(u2,m2,learningRate,regularization,userService));
-        System.out.println(fitness() + "||" + p2.fitness() + "||" + l.get(0).fitness() + "||" + l.get(1).fitness());
+//        System.out.println(fitness() + "||" + p2.fitness() + "||" + l.get(0).fitness() + "||" + l.get(1).fitness());
         return l;
     }
 
