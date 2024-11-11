@@ -8,7 +8,7 @@ import java.util.*;
 
 public abstract class MatrixFactorization{
     protected final double regularization;
-    protected final double learningRate;
+    protected double learningRate;
     protected  double[][] users;
     protected  double[][] movies;
     protected final RatingService<User, Movie> userService;
@@ -65,7 +65,6 @@ public abstract class MatrixFactorization{
     public void gd(int epochs){
         for(int i = 0; i < epochs; i++) {
             gd_step();
-            System.out.println("EPOCH " + i);
         }
     }
 

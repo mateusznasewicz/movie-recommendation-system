@@ -40,12 +40,17 @@ public class GeneticAlgorithm {
             for(int i = 0; i < (population.size()-elitismSize)/2; i++){
                 Chromosome p1 = rouletteWheel(population,fitness,totalFitness);
                 Chromosome p2 = rouletteWheel(population,fitness,totalFitness);
+
                 List<Chromosome> children = p1.crossover(p2,0.4);
                 newPopulation.addAll(children);
             }
 
             for(Chromosome c: newPopulation){
-                c.mutate(mutationRate);
+                c.mutate(0.05);
+            }
+
+            for(Chromosome c: newPopulation){
+                c.memetic(0.3);
             }
 
             while(!elitism.isEmpty()){
@@ -53,7 +58,7 @@ public class GeneticAlgorithm {
             }
 
             population = newPopulation;
-            System.out.println("Epoch " + e + "||"+bestFit);
+            System.out.println("EPOCH " + e + ": " + bestFit);
         }
 
         return best;

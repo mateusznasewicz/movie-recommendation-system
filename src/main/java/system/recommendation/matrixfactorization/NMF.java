@@ -62,6 +62,11 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
     }
 
     @Override
+    public void memetic(double chance) {
+
+    }
+
+    @Override
     public double fitness() {
         double fit = 0;
 

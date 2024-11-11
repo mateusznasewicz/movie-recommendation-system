@@ -6,10 +6,7 @@ import system.recommendation.models.User;
 import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.SplittableRandom;
+import java.util.*;
 
 public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
@@ -56,6 +53,11 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
     @Override
     public void mutate(double chance) {
+        
+    }
+
+    @Override
+    public void memetic(double chance) {
         if(rand.nextDouble() >= chance) return;
         gd_step();
     }
@@ -88,11 +90,13 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] pusers = ((RMF) p2).getUsers();
         double[][] pmovies = ((RMF) p2).getMovies();
         double[][] u1 = users.clone();
-        double[][] m1 = pmovies.clone();
         double[][] u2 = pusers.clone();
+        double[][] m1 = pmovies.clone();
         double[][] m2 = movies.clone();
 
-        return List.of(new RMF(u1,m1,learningRate,regularization,userService),new RMF(u2,m2,learningRate,regularization,userService));
+        List<Chromosome> l = List.of(new RMF(u1,m1,learningRate,regularization,userService),new RMF(u2,m2,learningRate,regularization,userService));
+        System.out.println(fitness() + "||" + p2.fitness() + "||" + l.get(0).fitness() + "||" + l.get(1).fitness());
+        return l;
     }
 
     @Override

@@ -46,6 +46,11 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
     }
 
     @Override
+    public void memetic(double chance) {
+
+    }
+
+    @Override
     public double fitness(){
         double error = 0;
         int n = 0;
