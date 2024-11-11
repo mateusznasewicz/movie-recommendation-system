@@ -8,6 +8,7 @@ import system.recommendation.similarity.Similarity;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
     private List<Set<Integer>> membership;
 
@@ -26,9 +27,10 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         for(Set<Integer> members: membership){
             membership.add(new HashSet<>(members));
         }
-
+        Class<T> clazz = (Class<T>) centroids.getFirst().getClass();
         for(T centroid: centroids){
-            this.centroids.add();
+            T c = clazz.getConstructor(int.class,double.class,HashMap.class).newInstance(centroid.getId(),centroid.getAvgRating(),centroid.getRatings());
+            this.centroids.add(c);
         }
     }
 
@@ -79,6 +81,14 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
 
     @Override
     protected void step(){
+        assignMembership();
+
+        for(int c = 0; c < centroids.size(); c++){
+            calculateCenter(c);
+        }
+    }
+
+    public void assignMembership(){
         initMembership();
 
         for(int i : ratingService.getEntitiesID()){
@@ -96,10 +106,6 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
                 }
             }
             membership.get(closestID).add(i);
-        }
-
-        for(int c = 0; c < centroids.size(); c++){
-            calculateCenter(c);
         }
     }
 

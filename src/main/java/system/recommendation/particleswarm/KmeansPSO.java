@@ -26,6 +26,10 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
             swarm.add(new KMeans<>(k,rs));
         }
         this.ratingService = rs;
+
+        for(int i = 0; i < localLoss.length; i++){
+            localLoss[i] = Double.MAX_VALUE;
+        }
     }
 
     public KMeans<T, G> run(int epochs) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -38,6 +42,7 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
 
             for(int i = 0; i < swarmSize; i++){
                 KMeans<T,G> km = swarm.get(i);
+                km.assignMembership();
                 double loss = km.calcLoss();
 
                 if(loss < globalLoss){
