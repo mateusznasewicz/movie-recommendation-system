@@ -14,8 +14,8 @@ public class MatrixFactorizationTest {
     private final static double learningRate = 0.0002;
     private final static double regularization = 0.002;
     private final static int k = 10;
-    private final static int populationSize = 100;
-    private final static int epochs = 100;
+    private final static int populationSize = 10;
+    private final static int epochs = 1000;
     private final static double gradientWeight = 0.7;
 
     public static void run(DatasetLoader datasetLoader){
@@ -26,13 +26,14 @@ public class MatrixFactorizationTest {
         ParticleProvider<NMF> nmFprovider = new NMFprovider(userService,k,learningRate);
         ParticleProvider<RMF> rmFprovider = new RMFprovider(userService,k,learningRate,regularization);
 
-//        swarmTest(userService,rmFprovider);
+        double mae = swarmTest(userService,rmFprovider)[0];
+        System.out.println(mae);
 
 //        NMFtest(userService);
 //        RMFtest(userService);
 //        MMMFtest(userService);
-        double mae = RMFGAtest(userService)[0];
-        System.out.println(mae);
+//        double mae = MMMFtest(userService)[0];
+//        System.out.println(mae);
 //        RMFtest(userService);
 //        NMFGAtest(userService);
     }
@@ -55,13 +56,12 @@ public class MatrixFactorizationTest {
         return new double[]{QualityMeasure.MAE(ratings,userService),QualityMeasure.RMSE(ratings,userService)};
     }
 
-    private static void MMMFtest(RatingService<User,Movie> userService){
+    private static double[] MMMFtest(RatingService<User,Movie> userService){
         MatrixFactorization mf = new MMMF(userService,k,learningRate,regularization,0.01);
         mf.gd(epochs);
 
         double[][] ratings = mf.getPredictedRatings();
-        System.out.println(QualityMeasure.MAE(ratings,userService));
-        System.out.println(QualityMeasure.RMSE(ratings,userService));
+        return new double[]{QualityMeasure.MAE(ratings,userService),QualityMeasure.RMSE(ratings,userService)};
     }
 
     private static double[] RMFGAtest(RatingService<User,Movie> userService){
@@ -82,12 +82,11 @@ public class MatrixFactorizationTest {
         System.out.println(QualityMeasure.RMSE(ratings,userService));
     }
 
-    private static <T extends MatrixFactorization> void swarmTest(RatingService<User,Movie> ratingService, ParticleProvider<T> pp){
+    private static <T extends MatrixFactorization> double[] swarmTest(RatingService<User,Movie> ratingService, ParticleProvider<T> pp){
         ParticleSwarm ps = new ParticleSwarm(pp,populationSize,gradientWeight);
         T best = (T) ps.run(epochs);
         double[][] predicted = best.getPredictedRatings();
 
-        System.out.println(QualityMeasure.MAE(predicted,ratingService));
-        System.out.println(QualityMeasure.RMSE(predicted,ratingService));
+        return new double[]{QualityMeasure.MAE(predicted,ratingService),QualityMeasure.RMSE(predicted,ratingService)};
     }
 }

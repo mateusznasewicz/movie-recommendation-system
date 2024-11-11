@@ -11,6 +11,7 @@ import system.recommendation.strategy.KNN;
 import system.recommendation.strategy.Strategy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class RMFGA{

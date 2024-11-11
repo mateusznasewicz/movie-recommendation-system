@@ -20,18 +20,11 @@ public class ParticleSwarm{
 
         for(int t = 0; t < epochs; t++)
         {
-//            double localLoss = Double.MAX_VALUE;
-//            Particle localBest = null;
             int bestID = -1;
 
             for(int i = 0; i < swarm.size(); i++){
                 Particle p = swarm.get(i);
                 double loss = p.getLoss();
-
-//                if(loss < localLoss){
-//                    localBest = p;
-//                    localLoss = loss;
-//                }
 
                 if(loss < globalLoss){
                     bestID = i;

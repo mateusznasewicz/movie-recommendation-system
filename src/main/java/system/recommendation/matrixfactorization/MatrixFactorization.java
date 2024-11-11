@@ -65,6 +65,7 @@ public abstract class MatrixFactorization{
     public void gd(int epochs){
         for(int i = 0; i < epochs; i++) {
             gd_step();
+            System.out.println("EPOCH " + i);
         }
     }
 

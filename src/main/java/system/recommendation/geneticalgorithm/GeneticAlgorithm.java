@@ -8,12 +8,15 @@ public class GeneticAlgorithm {
     public static Chromosome run(List<Chromosome> population, int epochs, double mutationRate){
         Chromosome best = null;
         double bestFit = Double.MAX_VALUE;
+        int elitismSize = (population.size()/5)/2;
 
         for(int e = 0; e < epochs; e++)
         {
             System.out.println("===");
             double[] fitness = new double[population.size()];
             double totalFitness = 0;
+
+            Queue<Integer> elitism = new PriorityQueue<>(elitismSize, (a,b)->Double.compare(fitness[b], fitness[a]));
 
             int bestID = -1;
             for(int i = 0; i < fitness.length; i++){
@@ -25,22 +28,24 @@ public class GeneticAlgorithm {
                     bestFit = fitness[i];
                     bestID = i;
                 }
+
+                elitism.add(i);
+                if(elitism.size() > elitismSize){
+                    elitism.poll();
+                }
             }
 
             if(bestID != -1){
                 best = population.get(bestID).copy();
             }
+
             List<Chromosome> newPopulation = new ArrayList<>();
-            Set<ParentPair> crossovers = new HashSet<>();
-            for(int i = 0; i < population.size()/2; i++){
+            for(int i = 0; i < (population.size()-elitismSize)/2; i++){
                 ChromosomePairID pp1 = rouletteWheel(population,fitness,totalFitness);
                 ChromosomePairID pp2;
-                ParentPair pairID;
                 do{
                      pp2 = rouletteWheel(population,fitness,totalFitness);
-                     pairID = new ParentPair(pp1.getId(),pp2.getId());
-                }while(crossovers.contains(pairID) || pp1.getId() == pp2.getId());
-                crossovers.add(pairID);
+                }while(pp1.getId() == pp2.getId());
 
                 Chromosome p1 = pp1.getChromosome();
                 Chromosome p2 = pp2.getChromosome();
@@ -50,8 +55,12 @@ public class GeneticAlgorithm {
             }
 
             for(Chromosome c: newPopulation){
-                c.mutate(0.05);
+//                c.mutate(0.05);
                 c.memetic(0.3);
+            }
+
+            while(!elitism.isEmpty()){
+                newPopulation.add(population.get(elitism.poll()));
             }
 
             population = newPopulation;

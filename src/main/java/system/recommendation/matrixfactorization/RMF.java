@@ -75,16 +75,15 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
         double r = rand.nextDouble(totalDist[u]);
         double cumulativeDist = 0;
-        int j = -1;
 
         for(int i = 0; i < distMatrix.length; i++){
             if(distMatrix[u][i] == 0)continue;
             cumulativeDist += 1.0 / distMatrix[u][i];
             if(cumulativeDist > r){
-                j = i;
                 double[] t = users[u];
                 users[u] = users[i];
                 users[i] = t;
+                break;
             }
         }
 
@@ -170,6 +169,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
     public List<Chromosome> crossover(Chromosome p2, double weight) {
         double[][] pusers = ((RMF) p2).getUsers();
         double[][] pmovies = ((RMF) p2).getMovies();
+
         double[][] u1 = users.clone();
         double[][] u2 = pusers.clone();
         double[][] m1 = pmovies.clone();
@@ -196,11 +196,11 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] old_users = users.clone();
         RMF best = (RMF) bestParticle;
 
-        lossGradient(old_users,old_movies,gradientWeight);
-        regularizationGradient(old_users,old_movies,gradientWeight);
+        lossGradient(old_users,old_movies,1);
+        regularizationGradient(old_users,old_movies,1);
 
 
-        double weight = learningRate*(1-gradientWeight);
+        double weight = learningRate;
         moveParticleTowardsSwarm(best.users,old_users,users,weight);
         moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
     }
