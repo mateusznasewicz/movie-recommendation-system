@@ -11,7 +11,8 @@ import java.util.List;
 public class KmeansPSO<T extends Entity, G extends Entity> {
     private int swarmSize;
     private int k;
-    List<KMeans<T,G>> kmeans = new ArrayList<>();
+
+    List<KMeans<T,G>> swarm = new ArrayList<>();
     List<KMeans<T,G>> localBest = new ArrayList<>();
     List<KMeans<T,G>> v = new ArrayList<>();
 
@@ -21,7 +22,7 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
         this.swarmSize = swarmSize;
         this.k = k;
         for(int i = 0; i < swarmSize; i++){
-            kmeans.add(new KMeans<>(k,rs));
+            swarm.add(new KMeans<>(k,rs));
         }
     }
 
@@ -34,7 +35,7 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
             int bestID = -1;
 
             for(int i = 0; i < swarmSize; i++){
-                KMeans<T,G> km = kmeans.get(i);
+                KMeans<T,G> km = swarm.get(i);
                 double loss = km.calcLoss();
 
                 if(loss < globalLoss){
@@ -44,16 +45,17 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
 
                 if(loss < localLoss[i]){
                     localLoss[i] = loss;
-                    localBest.set(i,kmeans.get(i));
+                    KMeans<T,G> curr = swarm.get(i);
+                    localBest.set(i,new KMeans<>(curr));
                 }
             }
 
             if(bestID != -1){
-                globalBest = kmeans.get(bestID);
+                globalBest = swarm.get(bestID);
             }
 
             for(int i = 0; i < swarmSize; i++){
-                KMeans<T,G> km = kmeans.get(i);
+                KMeans<T,G> km = swarm.get(i);
                 km.updateVelocity(v.get(i));
                 km.updateParticle();
             }

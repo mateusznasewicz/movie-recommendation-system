@@ -32,6 +32,10 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         }
     }
 
+    public List<Set<Integer>> getMembership() {
+        return membership;
+    }
+
     private void calculateCenter(int c){
         Set<Integer> members = membership.get(c);
         T centroid = centroids.get(c);

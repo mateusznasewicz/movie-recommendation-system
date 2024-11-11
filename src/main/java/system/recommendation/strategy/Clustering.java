@@ -28,11 +28,18 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
 
     public Clustering(int k, RatingService<T, G> ratingService) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(ratingService.getEntityMap(),k);
+        this.ratingService = ratingService;
+        this.clazz = (Class<T>) ratingService.getEntity(1).getClass();
+        this.distFunction = new EuclideanDistance<>(ratingService);
         initCentroids();
     }
 
     protected abstract void step();
     protected abstract double calcLoss();
+
+    public List<T> getCentroids() {
+        return centroids;
+    }
 
     public T randomCentroid(RatingService<T, G> ratingService, Class<T> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         T centroid = clazz.getDeclaredConstructor().newInstance();
