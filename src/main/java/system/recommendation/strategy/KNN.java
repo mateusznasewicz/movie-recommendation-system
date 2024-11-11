@@ -12,8 +12,9 @@ public class KNN<T extends Entity> extends Strategy<T>{
     public KNN(Map<Integer, T> hashmap, int k, Similarity<T> simFunction) {
         super(hashmap, k, simFunction);
     }
-    public KNN(Map<Integer, T> hashmap, int k, double[][] simMatrix) {
-        super(hashmap, k, simMatrix);
+
+    public KNN(Map<Integer, T> hashmap, Similarity<T> simFunction) {
+        super(hashmap,simFunction);
     }
 
     @Override

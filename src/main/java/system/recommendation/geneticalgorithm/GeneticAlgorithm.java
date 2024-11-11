@@ -11,25 +11,19 @@ public class GeneticAlgorithm {
 
         for(int e = 0; e < epochs; e++)
         {
+            System.out.println("===");
             double[] fitness = new double[population.size()];
             double totalFitness = 0;
-
-            int elitismSize = (population.size()/5) / 2;
-            Queue<Integer> elitism = new PriorityQueue<>(elitismSize, (a,b)->Double.compare(fitness[b], fitness[a]));
 
             int bestID = -1;
             for(int i = 0; i < fitness.length; i++){
                 fitness[i] = population.get(i).fitness();
-                totalFitness += fitness[i];
+//                System.out.println(fitness[i]);
+                totalFitness += 1.0 / fitness[i];
 
                 if(fitness[i] < bestFit){
                     bestFit = fitness[i];
                     bestID = i;
-                }
-
-                elitism.add(i);
-                if(elitism.size() > elitismSize){
-                    elitism.poll();
                 }
             }
 
@@ -37,9 +31,19 @@ public class GeneticAlgorithm {
                 best = population.get(bestID).copy();
             }
             List<Chromosome> newPopulation = new ArrayList<>();
-            for(int i = 0; i < (population.size()-elitismSize)/2; i++){
-                Chromosome p1 = rouletteWheel(population,fitness,totalFitness);
-                Chromosome p2 = rouletteWheel(population,fitness,totalFitness);
+            Set<ParentPair> crossovers = new HashSet<>();
+            for(int i = 0; i < population.size()/2; i++){
+                ChromosomePairID pp1 = rouletteWheel(population,fitness,totalFitness);
+                ChromosomePairID pp2;
+                ParentPair pairID;
+                do{
+                     pp2 = rouletteWheel(population,fitness,totalFitness);
+                     pairID = new ParentPair(pp1.getId(),pp2.getId());
+                }while(crossovers.contains(pairID) || pp1.getId() == pp2.getId());
+                crossovers.add(pairID);
+
+                Chromosome p1 = pp1.getChromosome();
+                Chromosome p2 = pp2.getChromosome();
 
                 List<Chromosome> children = p1.crossover(p2,0.4);
                 newPopulation.addAll(children);
@@ -47,35 +51,29 @@ public class GeneticAlgorithm {
 
             for(Chromosome c: newPopulation){
                 c.mutate(0.05);
-            }
-
-            for(Chromosome c: newPopulation){
                 c.memetic(0.3);
-            }
-
-            while(!elitism.isEmpty()){
-                newPopulation.add(population.get(elitism.poll()));
             }
 
             population = newPopulation;
             System.out.println("EPOCH " + e + ": " + bestFit);
+            System.out.println("===");
         }
 
         return best;
     }
 
-    private static Chromosome rouletteWheel(List<Chromosome> population, double[] fitness, double totalFitness){
+    private static ChromosomePairID rouletteWheel(List<Chromosome> population, double[] fitness, double totalFitness){
 
         double r = random.nextDouble(totalFitness);
         double cumulativeFitness = 0;
 
         for(int i = 0; i < fitness.length; i++){
-            cumulativeFitness += fitness[i];
+            cumulativeFitness += 1.0 / fitness[i];
             if(cumulativeFitness > r){
-                return population.get(i);
+                return new ChromosomePairID(i,population.get(i));
             }
         }
 
-        return population.getLast();
+        return new ChromosomePairID(-1,population.get(-1));
     }
 }

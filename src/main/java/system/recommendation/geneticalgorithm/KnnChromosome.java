@@ -108,4 +108,9 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
         var c2 = new KnnChromosome<>(item, ratingService, neighbors, w2);
         return List.of(c1,c2);
     }
+
+    @Override
+    public double[][] getChromosome() {
+        return new double[0][];
+    }
 }

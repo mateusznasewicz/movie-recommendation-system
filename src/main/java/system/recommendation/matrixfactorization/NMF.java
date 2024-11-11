@@ -107,6 +107,11 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
     }
 
     @Override
+    public double[][] getChromosome() {
+        return new double[0][];
+    }
+
+    @Override
     public void updateParticle(Particle bestParticle, double gradientWeight) {
         double[][] old_movies = movies.clone();
         double[][] old_users = users.clone();

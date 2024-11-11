@@ -9,4 +9,6 @@ public interface Chromosome{
     double fitness();
     Chromosome copy();
     List<Chromosome> crossover(Chromosome p2, double weight);
+
+    double[][] getChromosome();
 }

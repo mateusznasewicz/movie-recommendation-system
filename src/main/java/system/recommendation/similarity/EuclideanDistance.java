@@ -24,7 +24,6 @@ public class EuclideanDistance<T extends Entity, G extends Entity> implements Si
             double r1 = ratingService.getRating(aID,id);
             double r2 = ratingService.getRating(bID,id);
             result += Math.pow(r1-r2,2);
-
         }
 
         return Math.sqrt(result);

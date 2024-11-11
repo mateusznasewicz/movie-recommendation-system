@@ -12,7 +12,7 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class MatrixFactorizationTest {
     private final static double learningRate = 0.0002;
-    private final static double regularization = 0.02;
+    private final static double regularization = 0.002;
     private final static int k = 10;
     private final static int populationSize = 100;
     private final static int epochs = 100;
