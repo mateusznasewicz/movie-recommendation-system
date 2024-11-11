@@ -38,6 +38,10 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         return membership;
     }
 
+    public double getRatingCentroid(int c, int i){
+        return centroids.get(c).getRating(i);
+    }
+
     private void calculateCenter(int c){
         Set<Integer> members = membership.get(c);
         T centroid = centroids.get(c);
@@ -119,23 +123,23 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         return null;
     }
 
-    public void updateParticle(double v){
+    public void updateParticle(double[][] v){
 
     }
 
-    public double updateVelocity(double v){
+    public void updateVelocity(double[][] v, KMeans<T,G> local, KMeans<T,G> global){
         double r1 = 0.127;
         double r2 = 0.0975;
         double c1 = 1.42;
         double c2 = 1.42;
         double w = 0.72;
-        double newV = 0;
 
-        int s = ratingService.getItemMap().size();
-        for(int itemID = 1; itemID < s+1; itemID++){
-            
+        for(int c = 0; c < v.length; c++){
+            for(int i = 0; i < v[c].length; i++){
+                double s1 = local.getRatingCentroid(c,i) - getRatingCentroid(c,i);
+                double s2 = global.getRatingCentroid(c,i) - getRatingCentroid(c,i);
+                v[c][i] = v[c][i]*w + c1*r1*s1 + c2*r2*s2;
+            }
         }
-
-        return newV;
     }
 }

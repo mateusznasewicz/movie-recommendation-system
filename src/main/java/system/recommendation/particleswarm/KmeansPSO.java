@@ -17,7 +17,7 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
     List<KMeans<T,G>> localBest = new ArrayList<>();
 
     double[] localLoss = new double[swarmSize];
-    double[] v = new double[swarmSize];
+    double[][][] v;
 
     public KmeansPSO(int swarmSize, int k, RatingService<T,G> rs) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.swarmSize = swarmSize;
@@ -30,6 +30,8 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
         for(int i = 0; i < localLoss.length; i++){
             localLoss[i] = Double.MAX_VALUE;
         }
+
+        v = new double[swarmSize][k][ratingService.getItemMap().size()];
     }
 
     private KMeans<T,G> copyParticle(KMeans<T,G> x) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -67,7 +69,7 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
 
             for(int i = 0; i < swarmSize; i++){
                 KMeans<T,G> km = swarm.get(i);
-                v[i] = km.updateVelocity(v[i]);
+                km.updateVelocity(v[i],localBest.get(i),globalBest);
                 km.updateParticle(v[i]);
             }
 
