@@ -11,7 +11,7 @@ import java.util.*;
 public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<T,G>  {
 
     private double[][] fuzzyMembership;
-    private double fuzzines = 2;
+    private double fuzzines = 1.7;
 
     public FuzzyCMeans(RatingService<T,G> ratingService, Similarity<T> simFunction, int k) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(ratingService, simFunction, k);
@@ -42,16 +42,15 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
 
     private void calculateCenter(int c){
         T centroid = centroids.get(c);
-        double denominator = 0;
-
         int s = ratingService.getItemMap().size();
         for(int itemID = 0 ; itemID < s; itemID++){
             double rating = -1;
+            double denominator = 0;
             for(int u = 0; u < fuzzyMembership.length; u++){
-                if(ratingService.isRatedById(u+1, itemID+1)){
-                    rating += ratingService.getRating(u+1, itemID+1) * Math.pow(fuzzyMembership[u][c],fuzzines);
-                    denominator += Math.pow(fuzzyMembership[u][c],fuzzines);
-                }
+                if(!ratingService.isRatedById(u+1, itemID+1))continue;
+                double w = Math.pow(fuzzyMembership[u][c],fuzzines);
+                rating += ratingService.getRating(u+1, itemID+1) * w;
+                denominator += w;
             }
             if(rating != -1){
                 centroid.setRating(itemID+1, rating/denominator);
@@ -60,6 +59,7 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
     }
 
     private void calcFuzzyMembership() {
+        double pow = 2/(fuzzines-1);
         for(int i = 0; i < fuzzyMembership.length; i++) {
             T entity = ratingService.getEntity(i+1);
             for(int j = 0; j < fuzzyMembership[i].length; j++) {
@@ -69,12 +69,15 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
                 for(int k = 0; k < fuzzyMembership[i].length; k++) {
                     T c2 = centroids.get(k);
                     double d2 = distFunction.calculate(entity, c2);
-                    double pow = 2/(fuzzines-1);
                     sum += Math.pow((d1/d2),pow);
                 }
                 fuzzyMembership[i][j] = 1 / sum;
             }
         }
+        for(double[] membership : fuzzyMembership){
+            System.out.println(Arrays.toString(membership));
+        }
+
     }
 
     private List<Integer> getNeighborsFromCluster(int n, int c, int id){
