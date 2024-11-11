@@ -119,15 +119,23 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         return null;
     }
 
-    public void updateParticle(){
+    public void updateParticle(double v){
 
     }
 
-    public void updateVelocity(KMeans<T,G> v){
+    public double updateVelocity(double v){
         double r1 = 0.127;
         double r2 = 0.0975;
         double c1 = 1.42;
         double c2 = 1.42;
         double w = 0.72;
+        double newV = 0;
+
+        int s = ratingService.getItemMap().size();
+        for(int itemID = 1; itemID < s+1; itemID++){
+            
+        }
+
+        return newV;
     }
 }

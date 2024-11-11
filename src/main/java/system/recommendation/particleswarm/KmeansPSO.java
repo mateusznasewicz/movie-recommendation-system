@@ -15,9 +15,9 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
 
     List<KMeans<T,G>> swarm = new ArrayList<>();
     List<KMeans<T,G>> localBest = new ArrayList<>();
-    List<KMeans<T,G>> v = new ArrayList<>();
 
     double[] localLoss = new double[swarmSize];
+    double[] v = new double[swarmSize];
 
     public KmeansPSO(int swarmSize, int k, RatingService<T,G> rs) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.swarmSize = swarmSize;
@@ -30,6 +30,10 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
         for(int i = 0; i < localLoss.length; i++){
             localLoss[i] = Double.MAX_VALUE;
         }
+    }
+
+    private KMeans<T,G> copyParticle(KMeans<T,G> x) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        return new KMeans<>(x.getMembership(),x.getCentroids(),k,ratingService);
     }
 
     public KMeans<T, G> run(int epochs) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -53,18 +57,18 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
                 if(loss < localLoss[i]){
                     localLoss[i] = loss;
                     KMeans<T,G> curr = swarm.get(i);
-                    localBest.set(i,new KMeans<>(curr.getMembership(),curr.getCentroids(),k,ratingService));
+                    localBest.set(i,copyParticle(curr));
                 }
             }
 
             if(bestID != -1){
-                globalBest = swarm.get(bestID);
+                globalBest = copyParticle(swarm.get(bestID));
             }
 
             for(int i = 0; i < swarmSize; i++){
                 KMeans<T,G> km = swarm.get(i);
-                km.updateVelocity(v.get(i));
-                km.updateParticle();
+                v[i] = km.updateVelocity(v[i]);
+                km.updateParticle(v[i]);
             }
 
             System.out.println("Epoch " + t + "||"+globalLoss);
