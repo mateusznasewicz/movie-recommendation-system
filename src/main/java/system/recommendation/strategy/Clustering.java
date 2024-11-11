@@ -1,7 +1,6 @@
 package system.recommendation.strategy;
 
 import system.recommendation.models.Entity;
-import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
 import system.recommendation.similarity.EuclideanDistance;
 import system.recommendation.similarity.Similarity;
@@ -15,7 +14,7 @@ import java.util.SplittableRandom;
 public abstract class Clustering<T extends Entity, G extends Entity> extends Strategy<T>{
     protected final RatingService<T ,G> ratingService;
     protected final Similarity<T> distFunction;
-    protected final List<T> centroids = new ArrayList<>();
+    protected List<T> centroids = new ArrayList<>();
     protected final SplittableRandom rand = new SplittableRandom();
     private final Class<T> clazz;
 
@@ -31,7 +30,6 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
         this.ratingService = ratingService;
         this.clazz = (Class<T>) ratingService.getEntity(1).getClass();
         this.distFunction = new EuclideanDistance<>(ratingService);
-        initCentroids();
     }
 
     protected abstract void step();
@@ -55,7 +53,7 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
         return centroid;
     }
 
-    private void initCentroids() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    void initCentroids() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         for(int i = 0; i < k; i++){
             T centroid = randomCentroid(ratingService,clazz);
             centroids.add(centroid);
@@ -64,15 +62,16 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
     }
 
     public void calcCentroids(int epochs) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        for(int i = 0; i < k; i++){
-            T centroid = randomCentroid(ratingService,clazz);
-            centroids.add(centroid);
-            ratingService.addEntity(centroid);
-        }
+        initCentroids();
 
         for(int i = 0; i < epochs; i++){
             step();
             System.out.println(i + "||" + calcLoss());
         }
+    }
+
+    public void calcCentroids(int epochs, List<T> centroids) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        this.centroids = centroids;
+        calcCentroids(epochs);
     }
 }

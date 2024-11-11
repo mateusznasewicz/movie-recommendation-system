@@ -12,12 +12,16 @@ import java.util.*;
 public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
     private List<Set<Integer>> membership;
 
-    public KMeans(int k,RatingService<T, G> ratingService, Similarity<T> simFunction){
+    public KMeans(int k,RatingService<T, G> ratingService, Similarity<T> simFunction) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(ratingService, simFunction, k);
+        initCentroids();
+        assignMembership();
     }
 
     public KMeans(int k,RatingService<T, G> ratingService) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(k,ratingService);
+        initCentroids();
+        assignMembership();
     }
 
     public KMeans(List<Set<Integer>> membership, List<T> centroids, int k, RatingService<T, G> ratingService) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -25,7 +29,7 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
 
         this.membership = new ArrayList<>();
         for(Set<Integer> members: membership){
-            membership.add(new HashSet<>(members));
+            this.membership.add(new HashSet<>(members));
         }
         Class<T> clazz = (Class<T>) centroids.getFirst().getClass();
         for(T centroid: centroids){
@@ -124,7 +128,12 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
     }
 
     public void updateParticle(double[][] v){
-
+        for(int c = 0; c < v.length; c++){
+            for(int i = 0; i < v[c].length; i++){
+                double r = getRatingCentroid(c,i+1);
+                centroids.get(c).setRating(i+1,v[c][i]+r);
+            }
+        }
     }
 
     public void updateVelocity(double[][] v, KMeans<T,G> local, KMeans<T,G> global){
@@ -136,8 +145,8 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
 
         for(int c = 0; c < v.length; c++){
             for(int i = 0; i < v[c].length; i++){
-                double s1 = local.getRatingCentroid(c,i) - getRatingCentroid(c,i);
-                double s2 = global.getRatingCentroid(c,i) - getRatingCentroid(c,i);
+                double s1 = local.getRatingCentroid(c,i+1) - getRatingCentroid(c,i+1);
+                double s2 = global.getRatingCentroid(c,i+1) - getRatingCentroid(c,i+1);
                 v[c][i] = v[c][i]*w + c1*r1*s1 + c2*r2*s2;
             }
         }

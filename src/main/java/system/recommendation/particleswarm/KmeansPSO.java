@@ -6,6 +6,7 @@ import system.recommendation.strategy.KMeans;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class KmeansPSO<T extends Entity, G extends Entity> {
@@ -16,22 +17,25 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
     List<KMeans<T,G>> swarm = new ArrayList<>();
     List<KMeans<T,G>> localBest = new ArrayList<>();
 
-    double[] localLoss = new double[swarmSize];
+    double[] localLoss;
     double[][][] v;
 
     public KmeansPSO(int swarmSize, int k, RatingService<T,G> rs) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.swarmSize = swarmSize;
         this.k = k;
+        this.ratingService = rs;
         for(int i = 0; i < swarmSize; i++){
             swarm.add(new KMeans<>(k,rs));
         }
-        this.ratingService = rs;
 
-        for(int i = 0; i < localLoss.length; i++){
-            localLoss[i] = Double.MAX_VALUE;
-        }
+        localLoss = new double[swarmSize];
+        Arrays.fill(localLoss, Double.MAX_VALUE);
 
         v = new double[swarmSize][k][ratingService.getItemMap().size()];
+
+        for(int i = 0; i < swarmSize; i++){
+            localBest.add(copyParticle(swarm.get(i)));
+        }
     }
 
     private KMeans<T,G> copyParticle(KMeans<T,G> x) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -48,7 +52,6 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
 
             for(int i = 0; i < swarmSize; i++){
                 KMeans<T,G> km = swarm.get(i);
-                km.assignMembership();
                 double loss = km.calcLoss();
 
                 if(loss < globalLoss){
@@ -58,8 +61,7 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
 
                 if(loss < localLoss[i]){
                     localLoss[i] = loss;
-                    KMeans<T,G> curr = swarm.get(i);
-                    localBest.set(i,copyParticle(curr));
+                    localBest.set(i,copyParticle(swarm.get(i)));
                 }
             }
 
@@ -71,6 +73,7 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
                 KMeans<T,G> km = swarm.get(i);
                 km.updateVelocity(v[i],localBest.get(i),globalBest);
                 km.updateParticle(v[i]);
+                km.assignMembership();
             }
 
             System.out.println("Epoch " + t + "||"+globalLoss);
