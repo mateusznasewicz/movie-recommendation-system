@@ -50,9 +50,9 @@ public class RMFGA{
         return population;
     }
 
-    public RMF run(int populationSize, int epochs){
+    public RMF run(int populationSize, int epochs, double mutationRate){
         List<Chromosome> population = initPopulation(populationSize);
-        Chromosome best = GeneticAlgorithm.run(population,epochs,0.3);
+        Chromosome best = GeneticAlgorithm.run(population,epochs,mutationRate);
         return (RMF) best;
     }
 }

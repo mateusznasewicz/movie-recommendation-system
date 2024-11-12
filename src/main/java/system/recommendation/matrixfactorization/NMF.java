@@ -31,30 +31,11 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
     protected void gd_step() {
         double[][] old_users = Utils.deepCopy(users);
         double[][] old_movies = Utils.deepCopy(movies);
-        divergenceAdditive(old_users,old_movies,1);
+        euclideanGradient(old_users,old_movies,1);
     }
-
-    private void euclideanAdditive(double[][] old_users, double[][] old_movies,double gradient){
-        for(int u = 0; u < users.length; u++){
-            User entity = userService.getEntity(u+1);
-            Map<Integer, Double> ratings = entity.getRatings();
-            for(Map.Entry<Integer, Double> rating : ratings.entrySet()){
-                double r = rating.getValue();
-                int m = rating.getKey()-1;
-                double predicted = vectorMultiplication(users[u],movies[m]);
-                for(int f = 0; f < users[0].length; f++){
-                    users[u][f] += learningRate*old_movies[m][f]*r - learningRate*old_movies[m][f]*predicted;
-                    movies[m][f] += learningRate*old_users[u][f]*r - learningRate*old_users[u][f]*predicted;
-                }
-            }
-        }
-    }
-
-
 
     private void divergenceAdditive(double[][] old_users, double[][] old_movies, double gradientWeight) {
         double weight = gradientWeight*learningRate;
-
         for(int u = 0; u < users.length; u++){
             User user = userService.getEntity(u+1);
             Map<Integer, Double> ratings = user.getRatings();
@@ -73,13 +54,13 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
 
     @Override
     public void mutate(double chance) {
-        if(rand.nextDouble() >= chance)return;
-        gd_step();
+
     }
 
     @Override
     public void memetic(double chance) {
-
+        if(rand.nextDouble() >= chance)return;
+        gd_step();
     }
 
     @Override
@@ -114,19 +95,30 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
     public List<Chromosome> crossover(Chromosome p2, double weight) {
         double[][] pusers = ((NMF) p2).getUsers();
         double[][] pmovies = ((NMF) p2).getMovies();
+        int k = users[0].length;
+        double[][] u1 = new double[users.length][k];
+        double[][] m1 = new double[movies.length][k];
+        double[][] u2 = new double[users.length][k];
+        double[][] m2 = new double[movies.length][k];
 
-        int u = rand.nextInt(users.length);
-        int m = rand.nextInt(movies.length);
-
-        double[][] u1 = Utils.deepCopy(users);
-        double[][] m1 = Utils.deepCopy(movies);
-        double[][] u2 = Utils.deepCopy(pusers);
-        double[][] m2 = Utils.deepCopy(pmovies);
-
-        u1[u] = pusers[u].clone();
-        m1[m] = pmovies[m].clone();
-        u2[u] = users[u].clone();
-        m2[m] = movies[m].clone();
+        for(int u = 0; u < users.length; u++){
+            if(rand.nextBoolean()){
+                u1[u] = users[u].clone();
+                u2[u] = pusers[u].clone();
+            }else{
+                u2[u] = users[u].clone();
+                u1[u] = pusers[u].clone();
+            }
+        }
+        for(int m = 0; m < movies.length; m++){
+            if(rand.nextBoolean()){
+                m1[m] = movies[m].clone();
+                m2[m] = pmovies[m].clone();
+            }else{
+                m2[m] = movies[m].clone();
+                m1[m] = pmovies[m].clone();
+            }
+        }
 
         return List.of(new NMF(u1,m1,learningRate,userService),new NMF(u2,m2,learningRate,userService));
     }
@@ -141,8 +133,7 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] old_users = Utils.deepCopy(users);
         double[][] old_movies = Utils.deepCopy(movies);
         NMF best = (NMF) bestParticle;
-        divergenceAdditive(old_users,old_movies,gradientWeight);
-
+        euclideanGradient(old_users,old_movies,gradientWeight);
 
         double weight = learningRate*(1-gradientWeight);
         moveParticleTowardsSwarm(best.users,old_users,users,weight);
@@ -152,5 +143,21 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
     @Override
     public double getLoss() {
         return fitness();
+    }
+
+    private void euclideanMultiplicative(double[][] old_users, double[][] old_movies,double gradient){
+        for(int u = 0; u < users.length; u++){
+            User entity = userService.getEntity(u+1);
+            Map<Integer, Double> ratings = entity.getRatings();
+            for(Map.Entry<Integer, Double> rating : ratings.entrySet()){
+                double r = rating.getValue();
+                int m = rating.getKey()-1;
+                double predicted = vectorMultiplication(users[u],movies[m]);
+                for(int f = 0; f < users[0].length; f++){
+                    users[u][f] *= r*old_movies[m][f]/(predicted*old_movies[m][f]+1e-8);
+                    movies[m][f] *= r*old_users[u][f]/(predicted*old_users[u][f]+1e-8);
+                }
+            }
+        }
     }
 }

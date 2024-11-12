@@ -85,6 +85,22 @@ public abstract class MatrixFactorization{
         }
     }
 
+    protected void euclideanGradient(double[][] old_users, double[][] old_movies, double gradientWeight){
+        for(int u = 0; u < users.length; u++){
+            User entity = userService.getEntity(u+1);
+            Map<Integer, Double> ratings = entity.getRatings();
+            for(Map.Entry<Integer, Double> rating : ratings.entrySet()){
+                double r = rating.getValue();
+                int m = rating.getKey()-1;
+                double predicted = vectorMultiplication(users[u],movies[m]);
+                for(int f = 0; f < users[0].length; f++){
+                    users[u][f] += learningRate*old_movies[m][f]*r - learningRate*old_movies[m][f]*predicted;
+                    movies[m][f] += learningRate*old_users[u][f]*r - learningRate*old_users[u][f]*predicted;
+                }
+            }
+        }
+    }
+
     protected double regularizationLoss(){
         double loss = 0;
 

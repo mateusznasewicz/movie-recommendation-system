@@ -55,5 +55,6 @@ Ankara University Computer Engineering Department, Golbasi Campus, 06830, Ankara
 17.Evolutionary Based Matrix Factorization Method For Collaborative
 Filtering Systems
 
-18. Hybrid Measuring the Similarity Value Based on Genetic Algorithm for Improving Prediction in A Collaborative Filtering Recommendation System.
-    Recommendation System. 
+18.Hybrid Measuring the Similarity Value Based on Genetic Algorithm for Improving Prediction in A Collaborative Filtering Recommendation System.
+    Recommendation System.
+19.Genetic Algorithm Based Parallel Matrix Factorization for Recommender Systems

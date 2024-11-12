@@ -11,7 +11,7 @@ public class Main {
 //        KnnTest.run(datasetLoader);
 //        KNNGATEST.run(datasetLoader);
 //        ParticleSwarmTest.run(datasetLoader);
-        MatrixFactorizationTest.run(datasetLoader);
-//        KMeansTest.run(datasetLoader);
+//        MatrixFactorizationTest.run(datasetLoader);
+        KMeansTest.run(datasetLoader);
     }
 }

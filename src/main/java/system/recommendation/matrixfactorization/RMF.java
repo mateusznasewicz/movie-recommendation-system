@@ -44,24 +44,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] old_users = Utils.deepCopy(users);
         double[][] old_movies = Utils.deepCopy(movies);
         regularizationGradient(old_users,old_movies,1);
-        lossGradient(old_users, old_movies,1);
-    }
-
-    private void lossGradient(double[][] old_users, double[][] old_movies, double gradientWeight){
-        for(int u = 0; u < users.length; u++){
-            User user = userService.getEntity(u+1);
-            Map<Integer, Double> ratings = user.getRatings();
-            for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
-                int m = entry.getKey() - 1;
-                double rating = entry.getValue();
-                double e = rating - vectorMultiplication(old_users[u], old_movies[m]);
-                double weight = learningRate*e*gradientWeight;
-                for(int f = 0; f < users[0].length; f++){
-                    users[u][f] += weight*old_movies[m][f];
-                    movies[m][f] += weight*old_users[u][f];
-                }
-            }
-        }
+        euclideanGradient(old_users, old_movies,1);
     }
 
     @Override
@@ -127,7 +110,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
                 e += Math.pow(rating - predicted,2);
             }
         }
-        return e;
+        return e + regularizationLoss();
     }
 
     @Override
@@ -149,31 +132,24 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         int u = rand.nextInt(users.length);
         int m = rand.nextInt(movies.length);
 
-        double[][] u1 = new double[users.length][k];
-        double[][] m1 = new double[movies.length][k];
-        double[][] u2 = new double[users.length][k];
-        double[][] m2 = new double[movies.length][k];
+        double[][] u1 = Utils.deepCopy(users);
+        double[][] m1 = Utils.deepCopy(movies);
+        double[][] u2 = Utils.deepCopy(pusers);
+        double[][] m2 = Utils.deepCopy(pmovies);
 
-        for(int i = 0; i < u; i++){
-            u1[i] = users[i].clone();
-            u2[i] = pusers[i].clone();
-        }
-        for(int i = u; i < users.length; i++){
-            u1[i] = pusers[i].clone();
-            u2[i] = users[i].clone();
-        }
+        u1[u] = pusers[u].clone();
+        m1[m] = pmovies[m].clone();
+        u2[u] = users[u].clone();
+        m2[m] = movies[m].clone();
 
-        for(int i = 0; i < m; i++){
-            m1[i] = pmovies[i].clone();
-            m2[i] = movies[i].clone();
-        }
-        for(int i = m; i < movies.length; i++){
-            m1[i] = movies[i].clone();
-            m2[i] = pmovies[i].clone();
-        }
+
         var c1 = new RMF(u1,m1,learningRate,regularization,userService,distMatrix,totalDist);
         var c2 = new RMF(u2,m2,learningRate,regularization,userService,distMatrix,totalDist);
-//        System.out.println(fitness() + "|" + p2.fitness() +"|"+c1.fitness()+"|"+c2.fitness());
+        if( (c1.fitness() < fitness() && c1.fitness() < p2.fitness()) || (c2.fitness() < fitness() && c2.fitness() < p2.fitness()) ){
+            System.out.println("lepsze dziecko");
+        }else{
+            System.out.println("XD");
+        }
         return List.of(c1,c2);
     }
 
@@ -188,7 +164,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] old_users = Utils.deepCopy(users);
         RMF best = (RMF) bestParticle;
 
-        lossGradient(old_users,old_movies,gradientWeight);
+        euclideanGradient(old_users,old_movies,gradientWeight);
         regularizationGradient(old_users,old_movies,gradientWeight);
 
 
