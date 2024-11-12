@@ -30,7 +30,7 @@ public class MatrixFactorizationTest {
 //        double mae = RMFGAtest(userService)[0];
 //        double mae = MMMFtest(userService)[0];
 //        double mae = swarmTest(userService,rmFprovider)[0];
-        double mae = MMMFtest(userService)[0];
+        double mae = NMFtest(userService)[0];
 
 
 //
