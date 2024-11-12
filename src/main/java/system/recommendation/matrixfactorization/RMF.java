@@ -123,7 +123,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         User entity = userService.getEntity(u+1);
         List<Integer> mIDs = entity.getRatings().keySet().stream().toList();
         int mID =  mIDs.get(rand.nextInt(mIDs.size()));
-        double old_fit = calcFitness(u,mID);
+        double old_fit = calcFitness(u,mID-1);
 
         double[] old_users = users[u].clone();
         double[] old_movies = movies[mID-1].clone();
@@ -134,7 +134,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
             movies[mID-1][f] += weight*old_users[f];
         }
 
-        double new_fit = calcFitness(u,mID);
+        double new_fit = calcFitness(u,mID-1);
         fitness += new_fit - old_fit;
     }
 
@@ -172,8 +172,8 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
         for(int uid: movie.getRated()){
             if(uid == u+1) continue;
-            double rating = userService.getRating(uid,m);
-            double predicted = vectorMultiplication(users[uid], movies[m]);
+            double rating = userService.getRating(uid,m+1);
+            double predicted = vectorMultiplication(users[uid-1], movies[m]);
             e += Math.pow(rating - predicted,2);
         }
         return e;
