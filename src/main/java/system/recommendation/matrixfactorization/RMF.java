@@ -140,6 +140,11 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
     }
 
     @Override
+    public Particle copyParticle() {
+        return new RMF(Utils.deepCopy(users),Utils.deepCopy(movies),learningRate,regularization,userService);
+    }
+
+    @Override
     public List<Chromosome> crossover(Chromosome p2, double weight) {
         double[][] pusers = ((RMF) p2).getUsers();
         double[][] pmovies = ((RMF) p2).getMovies();
@@ -168,11 +173,6 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
     }
 
     @Override
-    public Particle copyParticle() {
-        return new RMF(Utils.deepCopy(users),Utils.deepCopy(movies),learningRate,regularization,userService);
-    }
-
-    @Override
     public void updateParticle(Particle bestParticle, double gradientWeight) {
         double[][] old_movies = Utils.deepCopy(movies);
         double[][] old_users = Utils.deepCopy(users);
@@ -183,8 +183,10 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
 
         double weight = learningRate*gradientWeight;
+        double f = fitness();
         moveParticleTowardsSwarm(best.users,old_users,users,weight);
         moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
+        System.out.println(f + "<><>" + fitness());
     }
 
     @Override

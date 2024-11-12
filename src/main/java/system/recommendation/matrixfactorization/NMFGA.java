@@ -13,13 +13,11 @@ public class NMFGA {
     private final RatingService<User, Movie> userService;
     private final int k;
     private final double learningRate;
-    private final double regularization;
 
-    public NMFGA(RatingService<User, Movie> userService, int k, double learningRate, double regularization) {
+    public NMFGA(RatingService<User, Movie> userService, int k, double learningRate) {
         this.userService = userService;
         this.k = k;
         this.learningRate = learningRate;
-        this.regularization = regularization;
     }
 
     private List<Chromosome> initPopulation(int populationSize){

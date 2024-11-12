@@ -12,10 +12,10 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class MatrixFactorizationTest {
     private final static double learningRate = 0.0002;
-    private final static double regularization = 0.002;
+    private final static double regularization = 0.02;
     private final static int k = 10;
     private final static int populationSize = 50;
-    private final static int epochs = 500;
+    private final static int epochs = 100;
     private static double gradientWeight = 1;
 
     public static void run(DatasetLoader datasetLoader){
@@ -27,20 +27,11 @@ public class MatrixFactorizationTest {
         ParticleProvider rmFprovider = new RMFprovider(userService,k,learningRate,regularization);
 
 
-//        double mae = swarmTest(userService,mmmFprovider)[0];
+        double mae = swarmTest(userService,rmFprovider)[0];
 //        double mae = MMMFtest(userService)[0];
 //        double mae = RMFGAtest(userService)[0];
-        double min = Double.MAX_VALUE;
-        double sum = 0;
-        for(int i =0 ; i < 10; i++){
-            double mae = RMFtest(userService)[0];
-            sum += mae;
-            if(mae<min){
-                min = mae;
-            }
-        }
-        System.out.println("MIN:"+min);
-        System.out.println("AVG:"+sum/10);
+//        double mae = RMFtest(userService)[0];
+        System.out.println(mae);
 
 
 
@@ -91,7 +82,7 @@ public class MatrixFactorizationTest {
     }
 
     private static void NMFGAtest(RatingService<User,Movie> userService){
-        NMFGA mf = new NMFGA(userService,k,learningRate,regularization);
+        NMFGA mf = new NMFGA(userService,k,learningRate);
         NMF best = mf.run(populationSize,epochs);
 
         double[][] ratings = best.getPredictedRatings();

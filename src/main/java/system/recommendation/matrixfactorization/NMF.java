@@ -1,5 +1,6 @@
 package system.recommendation.matrixfactorization;
 
+import system.recommendation.Utils;
 import system.recommendation.geneticalgorithm.Chromosome;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
@@ -28,8 +29,8 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
 
     @Override
     protected void step() {
-        double[][] old_users = users.clone();
-        double[][] old_movies = movies.clone();
+        double[][] old_users = Utils.deepCopy(users);
+        double[][] old_movies = Utils.deepCopy(movies);
         lossGradient(old_users,old_movies,1);
     }
 
@@ -86,22 +87,31 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
 
     @Override
     public Chromosome copy() {
-        return new NMF(users.clone(), movies.clone(), learningRate,userService);
+        return new NMF(Utils.deepCopy(users), Utils.deepCopy(movies), learningRate,userService);
     }
 
     @Override
     public Particle copyParticle(){
-        return new NMF(users.clone(), movies.clone(), learningRate,userService);
+        return new NMF(Utils.deepCopy(users), Utils.deepCopy(movies), learningRate,userService);
     }
 
     @Override
     public List<Chromosome> crossover(Chromosome p2, double weight) {
         double[][] pusers = ((NMF) p2).getUsers();
         double[][] pmovies = ((NMF) p2).getMovies();
-        double[][] u1 = users.clone();
-        double[][] m1 = pmovies.clone();
-        double[][] u2 = pusers.clone();
-        double[][] m2 = movies.clone();
+
+        int u = rand.nextInt(users.length);
+        int m = rand.nextInt(movies.length);
+
+        double[][] u1 = Utils.deepCopy(users);
+        double[][] m1 = Utils.deepCopy(movies);
+        double[][] u2 = Utils.deepCopy(pusers);
+        double[][] m2 = Utils.deepCopy(pmovies);
+
+        u1[u] = pusers[u].clone();
+        m1[m] = pmovies[m].clone();
+        u2[u] = users[u].clone();
+        m2[m] = movies[m].clone();
 
         return List.of(new NMF(u1,m1,learningRate,userService),new NMF(u2,m2,learningRate,userService));
     }
@@ -113,8 +123,8 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
 
     @Override
     public void updateParticle(Particle bestParticle, double gradientWeight) {
-        double[][] old_movies = movies.clone();
-        double[][] old_users = users.clone();
+        double[][] old_users = Utils.deepCopy(users);
+        double[][] old_movies = Utils.deepCopy(movies);
         NMF best = (NMF) bestParticle;
         lossGradient(old_users,old_movies,gradientWeight);
 
