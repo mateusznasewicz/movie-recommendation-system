@@ -10,12 +10,11 @@ import java.util.*;
 public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<T,G>  {
 
     private double[][] fuzzyMembership;
-    private double fuzzines = 1.5;
+    private double fuzzines;
 
-    public FuzzyCMeans(RatingService<T,G> ratingService, Similarity<T> simFunction, int k, double fuzzines) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        super(ratingService, simFunction, k);
-        Map<Integer, T> entityMap = ratingService.getEntityMap();
-        this.fuzzyMembership = new double[entityMap.size()][k];
+    public FuzzyCMeans(RatingService<T,G> bestService, Similarity<T> simFunction, int k, double fuzzines, RatingService<T,G> orgService) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        super(bestService,orgService, simFunction, k);
+        this.fuzzyMembership = new double[orgService.getEntityMap().size()][k];
         this.fuzzines = fuzzines;
     }
 
@@ -130,7 +129,7 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
         for(int cluster: clusters){
             neighbors.addAll(getNeighborsFromCluster(n, cluster, id));
         }
-        System.out.println(neighbors.size());
+
         return neighbors.stream().toList();
     }
 

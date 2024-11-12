@@ -15,11 +15,6 @@ public abstract class Entity{
         this.id = id;
     }
 
-    public Entity(){
-        this.id = unknownID;
-        unknownID--;
-    }
-
     public Entity(int id, double avg, HashMap<Integer, Double> ratings){
         this.id = id;
         this.avgRating = avg;

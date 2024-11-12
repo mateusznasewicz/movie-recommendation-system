@@ -39,7 +39,7 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
     }
 
     private KMeans<T,G> copyParticle(KMeans<T,G> x) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        return new KMeans<>(x.getMembership(),x.getCentroids(),k,ratingService);
+        return new KMeans<>(x.getMembership(),x.getCentroids(),k,x.getRatingService());
     }
 
     public KMeans<T, G> run(int epochs) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {

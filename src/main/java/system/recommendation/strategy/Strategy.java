@@ -40,7 +40,6 @@ public abstract class Strategy<T extends Entity> {
         System.out.println("Generating similarity matrix");
         int size = this.hashmap.size();
         double[][] matrix = new double[size][size];
-        System.out.println(size);
 
         for(int i = 0; i < size; i++){
             for(int j = i; j < size; j++){
