@@ -39,12 +39,12 @@ public class KMeansTest<T extends Entity, G extends Entity> {
     }
 
     public static Strategy<Movie> FuzzyCMeansTest(RatingService<Movie, User> rs,Similarity<Movie> sim) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-//        KmeansPSO<Movie,User> kmpso = new KmeansPSO<>(swarmSize, k, rs);
-//        KMeans<Movie, User> best = kmpso.run(epochs);
-//        FuzzyCMeans<Movie,User> x = new FuzzyCMeans<>(best.getRatingService(), sim,k,fuzzines,rs);
-//        x.calcCentroids(epochs,best.getCentroids());
-        FuzzyCMeans<Movie,User> x = new FuzzyCMeans<>(rs, sim,k,fuzzines);
-        x.calcCentroids(epochs);
+        KmeansPSO<Movie,User> kmpso = new KmeansPSO<>(swarmSize, k, rs);
+        KMeans<Movie, User> best = kmpso.run(epochs);
+        FuzzyCMeans<Movie,User> x = new FuzzyCMeans<>(best.getRatingService(), sim,k,fuzzines,rs);
+        x.calcCentroids(epochs,best.getCentroids());
+//        FuzzyCMeans<Movie,User> x = new FuzzyCMeans<>(rs, sim,k,fuzzines);
+//        x.calcCentroids(epochs);
         return x;
     }
 

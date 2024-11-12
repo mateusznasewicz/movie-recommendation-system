@@ -41,7 +41,7 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
             T entity = ratingService.getEntity(i+1);
             for(int j = 0; j < centroids.size(); j++){
                 T centroid = centroids.get(j);
-                loss += distFunction.calculate(entity,centroid) * fuzzyMembership[i][j];
+                loss += distFunction.calculate(entity,centroid) * Math.pow(fuzzyMembership[i][j],fuzzines);
             }
         }
         return loss;
@@ -85,9 +85,9 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
                 fuzzyMembership[i][j] = 1 / sum;
             }
         }
-//        for(double[] membership : fuzzyMembership){
-//            System.out.println(Arrays.toString(membership));
-//        }
+        for(double[] membership : fuzzyMembership){
+            System.out.println(Arrays.toString(membership));
+        }
     }
 
     private List<Integer> getNeighborsFromCluster(int n, int c, int id){
