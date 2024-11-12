@@ -44,7 +44,7 @@ public class RMFGA{
 
         for(int i = 0; i < populationSize; i++){
             RMF individual = new RMF(userService, k, learningRate, regularization,0.01, distMatrix, total);
-            individual.step();
+            individual.gd_step();
             population.add(individual);
         }
         return population;

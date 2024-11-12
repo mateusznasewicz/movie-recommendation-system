@@ -20,3 +20,11 @@ Item-based Fuzzy Clustering Collaborative Filtering
 8.A movie rating prediction system of user propensity analysis based on collaborative filtering and fuzzy system
 
 9.Analysis of parameter selections for fuzzy c-means
+
+10.Initializing the Fuzzy C-Means Cluster Center With
+Particle Swarm Optimization for Sentiment
+Clustering
+
+11.Fuzzy c-Means with Improved Particle Swarm Optimization
+
+12.A fuzzy clustering technique for enhancing the convergence performance by using improved Fuzzy c-means and Particle Swarm Optimization algorithms

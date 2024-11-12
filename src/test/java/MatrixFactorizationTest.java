@@ -11,11 +11,11 @@ import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class MatrixFactorizationTest {
-    private final static double learningRate = 0.002;
-    private final static double regularization = 0.02;
+    private final static double learningRate = 0.0002;
+    private final static double regularization = 0.002;
     private final static int k = 10;
     private final static int populationSize = 100;
-    private final static int epochs = 5000;
+    private final static int epochs = 200;
     private static double gradientWeight = 1;
 
     public static void run(DatasetLoader datasetLoader){
@@ -29,30 +29,27 @@ public class MatrixFactorizationTest {
 
 //        double mae = RMFGAtest(userService)[0];
 //        double mae = MMMFtest(userService)[0];
-        double mae = RMFGAtest(userService)[0];
-//        double mae = RMFtest(userService)[0];
-        System.out.println(mae);
+//        double mae = swarmTest(userService,rmFprovider)[0];
+        double mae = NMFtest(userService)[0];
 
 
-
-//        NMFtest(userService);
-//        RMFtest(userService);
-//        MMMFtest(userService);
+//
 //        double mae = RMFtest(userService)[0];
 
 
 
 //        RMFtest(userService);
 //        NMFGAtest(userService);
+
+        System.out.println(mae);
     }
 
-    private static void NMFtest(RatingService<User,Movie> userService){
+    private static double[] NMFtest(RatingService<User,Movie> userService){
         MatrixFactorization mf = new NMF(userService,k,learningRate,0.01);
         mf.gd(epochs);
 
         double[][] ratings = mf.getPredictedRatings();
-        System.out.println(QualityMeasure.MAE(ratings,userService));
-        System.out.println(QualityMeasure.RMSE(ratings,userService));
+        return new double[]{QualityMeasure.MAE(ratings,userService),QualityMeasure.RMSE(ratings,userService)};
     }
 
     private static double[] RMFtest(RatingService<User,Movie> userService){

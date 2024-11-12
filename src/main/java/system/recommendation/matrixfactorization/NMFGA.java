@@ -25,7 +25,7 @@ public class NMFGA {
 
         for(int i = 0; i < populationSize; i++){
             NMF individual = new NMF(userService, k, learningRate,0.01);
-            individual.step();
+            individual.gd_step();
             population.add(individual);
         }
         return population;

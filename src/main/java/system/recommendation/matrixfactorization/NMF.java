@@ -28,13 +28,59 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
     }
 
     @Override
-    protected void step() {
+    protected void gd_step() {
         double[][] old_users = Utils.deepCopy(users);
         double[][] old_movies = Utils.deepCopy(movies);
-        lossGradient(old_users,old_movies,1);
+
+        multiplicativeLossGradient(old_users,old_movies,1);
     }
 
-    private void lossGradient(double[][] old_users, double[][] old_movies, double gradientWeight) {
+    private void multiplicativeLossGradient(double[][] old_users, double[][] old_movies, double gradientWeight) {
+        double[] m_denominator = new double[users[0].length];
+        double[] u_denominator = new double[movies[0].length];
+        int k = users[0].length;
+
+        for(int f = 0; f < k; f++) {
+            for(int u = 0; u < users.length; u++) {
+                m_denominator[f] += old_users[u][f];
+            }
+            for(int m = 0; m < movies.length; m++) {
+                u_denominator[f] += old_movies[m][f];
+            }
+        }
+
+        for(int f = 0; f < k; f++) {
+            for(int u = 0; u < users.length; u++) {
+                User user = userService.getEntity(u+1);
+                Map<Integer, Double> ratings = user.getRatings();
+                double sum = 0;
+                for(Map.Entry<Integer, Double> rating : ratings.entrySet()) {
+                    double r = rating.getValue();
+                    int m = rating.getKey()-1;
+                    double predicted = vectorMultiplication(users[u],movies[m]);
+                    double ratio = old_movies[m][f]*r/predicted;
+                    sum += ratio;
+                }
+                users[u][f] *= sum / u_denominator[f];
+            }
+        }
+
+        for(int f = 0; f < k; f++) {
+            for(int m = 0; m < movies.length; m++) {
+                Movie movie = userService.getItem(m+1);
+                double sum = 0;
+                for(int u: movie.getRated()){
+                    double r = userService.getRating(u,m+1);
+                    double predicted = vectorMultiplication(users[u-1],movies[m]);
+                    double ratio = old_users[u-1][f]*r/predicted;
+                    sum += ratio;
+                }
+                movies[m][f] *= sum / m_denominator[f];
+            }
+        }
+    }
+
+    private void additiveLossGradient(double[][] old_users, double[][] old_movies, double gradientWeight) {
         double weight = gradientWeight*learningRate;
 
         for(int u = 0; u < users.length; u++){
@@ -46,11 +92,8 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
                 double predicted = vectorMultiplication(old_users[u], old_movies[mid]);
                 double ratingToPredicted = rating/predicted;
                 for(int f = 0; f < users[0].length; f++){
-                    users[u][f] += weight*old_movies[mid][f]*ratingToPredicted;
-                    movies[mid][f] += weight*old_users[u][f]*ratingToPredicted;
-
-                    users[u][f] -= weight*old_movies[mid][f];
-                    movies[mid][f] -= weight*old_users[u][f];
+                    users[u][f] += weight*old_movies[mid][f]*ratingToPredicted - weight*old_movies[mid][f];
+                    movies[mid][f] += weight*old_users[u][f]*ratingToPredicted - weight*old_users[u][f];
                 }
             }
         }
@@ -59,7 +102,7 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
     @Override
     public void mutate(double chance) {
         if(rand.nextDouble() >= chance)return;
-        step();
+        gd_step();
     }
 
     @Override
@@ -126,7 +169,7 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] old_users = Utils.deepCopy(users);
         double[][] old_movies = Utils.deepCopy(movies);
         NMF best = (NMF) bestParticle;
-        lossGradient(old_users,old_movies,gradientWeight);
+        additiveLossGradient(old_users,old_movies,gradientWeight);
 
 
         double weight = learningRate*(1-gradientWeight);

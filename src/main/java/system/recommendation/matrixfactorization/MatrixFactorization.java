@@ -10,9 +10,10 @@ import java.util.*;
 public abstract class MatrixFactorization{
     protected final double regularization;
     protected double learningRate;
-    protected  double[][] users;
-    protected  double[][] movies;
+    protected double[][] users;
+    protected double[][] movies;
     protected final RatingService<User, Movie> userService;
+    protected final SplittableRandom rand = new SplittableRandom();
 
     public MatrixFactorization(RatingService<User,Movie> userService, int features, double learningRate, double regularization, boolean nonNegative, double stdDev) {
         int u = userService.getEntityMap().size();
@@ -61,11 +62,11 @@ public abstract class MatrixFactorization{
     }
 
     public abstract double[][] getPredictedRatings();
-    protected abstract void step();
+    protected abstract void gd_step();
 
     public void gd(int epochs){
         for(int i = 0; i < epochs; i++) {
-            step();
+            gd_step();
             System.out.println("EPOCH " + i);
         }
     }

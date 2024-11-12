@@ -53,14 +53,16 @@ public class GeneticAlgorithm {
                 newPopulation.addAll(children);
             }
 
+            while(!elitism.isEmpty()){
+                newPopulation.add(population.get(elitism.poll()));
+            }
+
             for(Chromosome c: newPopulation){
 //                c.mutate(0.05);
                 c.memetic(0.3);
             }
 
-            while(!elitism.isEmpty()){
-                newPopulation.add(population.get(elitism.poll()));
-            }
+
 
             population = newPopulation;
             System.out.println("EPOCH " + e + ": " + bestFit);

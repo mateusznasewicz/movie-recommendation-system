@@ -11,33 +11,27 @@ import java.util.*;
 
 public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
-    private final SplittableRandom rand = new SplittableRandom();
     private double[][] distMatrix = null;
     private double[] totalDist = null;
-    private double fitness;
 
     public RMF(RatingService<User, Movie> userService, int k, double learningRate, double regularization,double stdDev) {
         super(userService, k, learningRate, regularization, false, stdDev);
-        this.fitness = 0;
     }
 
-    public RMF(double[][] users, double[][] movies, double learningRate, double regularization, RatingService<User, Movie> userService,double[][] distMatrix, double[] totalDist, double fitness) {
+    public RMF(double[][] users, double[][] movies, double learningRate, double regularization, RatingService<User, Movie> userService,double[][] distMatrix, double[] totalDist) {
         super(users,movies,learningRate,regularization,userService);
         this.distMatrix = distMatrix;
         this.totalDist = totalDist;
-        this.fitness = fitness;
     }
 
     public RMF(double[][] users, double[][] movies, double learningRate, double regularization, RatingService<User, Movie> userService) {
         super(users,movies,learningRate,regularization,userService);
-        this.fitness = 0;
     }
 
     public RMF(RatingService<User, Movie> userService, int k, double learningRate, double regularization,double stdDev,double[][] distMatrix, double[] totalDist) {
         super(userService, k, learningRate, regularization, false, stdDev);
         this.distMatrix = distMatrix;
         this.totalDist = totalDist;
-        this.fitness = 0;
     }
 
     @Override
@@ -46,12 +40,11 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
     }
 
     @Override
-    protected void step() {
+    protected void gd_step() {
         double[][] old_users = Utils.deepCopy(users);
         double[][] old_movies = Utils.deepCopy(movies);
-
-        lossGradient(old_users, old_movies,1);
         regularizationGradient(old_users,old_movies,1);
+        lossGradient(old_users, old_movies,1);
     }
 
     private void lossGradient(double[][] old_users, double[][] old_movies, double gradientWeight){
@@ -59,13 +52,13 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
             User user = userService.getEntity(u+1);
             Map<Integer, Double> ratings = user.getRatings();
             for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
-                int mid = entry.getKey() - 1;
+                int m = entry.getKey() - 1;
                 double rating = entry.getValue();
-                double e = rating - vectorMultiplication(old_users[u], old_movies[mid]);
+                double e = rating - vectorMultiplication(old_users[u], old_movies[m]);
                 double weight = learningRate*e*gradientWeight;
                 for(int f = 0; f < users[0].length; f++){
-                    users[u][f] += weight*old_movies[mid][f];
-                    movies[mid][f] += weight*old_users[u][f];
+                    users[u][f] += weight*old_movies[m][f];
+                    movies[m][f] += weight*old_users[u][f];
                 }
             }
         }
@@ -118,31 +111,12 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
     @Override
     public void memetic(double chance) {
         if(rand.nextDouble() >= chance) return;
-
-        int u = rand.nextInt(users.length);
-        User entity = userService.getEntity(u+1);
-        List<Integer> mIDs = entity.getRatings().keySet().stream().toList();
-        int mID =  mIDs.get(rand.nextInt(mIDs.size()));
-        double old_fit = calcFitness(u,mID-1);
-
-        double[] old_users = users[u].clone();
-        double[] old_movies = movies[mID-1].clone();
-        double e = entity.getRating(mID) - vectorMultiplication(old_users, old_movies);
-        double weight = learningRate*e;
-        for(int f = 0; f < users[0].length; f++){
-            users[u][f] += weight*old_movies[f];
-            movies[mID-1][f] += weight*old_users[f];
-        }
-
-        double new_fit = calcFitness(u,mID-1);
-        fitness += new_fit - old_fit;
+        gd_step();
     }
 
     @Override
     public double fitness() {
-        if(fitness != 0) return fitness;
         double e = 0;
-        System.out.println("LICZY");
         for(int u = 0; u < users.length; u++){
             User user = userService.getEntity(u+1);
             Map<Integer, Double> ratings = user.getRatings();
@@ -153,35 +127,12 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
                 e += Math.pow(rating - predicted,2);
             }
         }
-
-        this.fitness = e;
-        return e;
-    }
-
-    private double calcFitness(int u, int m){
-        double e = 0;
-        User user = userService.getEntity(u+1);
-        Movie movie = userService.getItem(m+1);
-        Map<Integer, Double> ratings = user.getRatings();
-        for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
-            double rating = entry.getValue();
-            int mid = entry.getKey() - 1;
-            double predicted = vectorMultiplication(users[u], movies[mid]);
-            e += Math.pow(rating - predicted,2);
-        }
-
-        for(int uid: movie.getRated()){
-            if(uid == u+1) continue;
-            double rating = userService.getRating(uid,m+1);
-            double predicted = vectorMultiplication(users[uid-1], movies[m]);
-            e += Math.pow(rating - predicted,2);
-        }
         return e;
     }
 
     @Override
     public Chromosome copy() {
-        return new RMF(Utils.deepCopy(users),Utils.deepCopy(movies),learningRate,regularization,userService,distMatrix,totalDist,fitness);
+        return new RMF(Utils.deepCopy(users),Utils.deepCopy(movies),learningRate,regularization,userService,distMatrix,totalDist);
     }
 
     @Override
@@ -194,27 +145,35 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         RMF parent2 = (RMF) p2;
         double[][] pusers = parent2.getUsers();
         double[][] pmovies = parent2.getMovies();
-
+        int k = pusers[0].length;
         int u = rand.nextInt(users.length);
         int m = rand.nextInt(movies.length);
 
-        double[][] u1 = Utils.deepCopy(users);
-        double[][] m1 = Utils.deepCopy(movies);
-        double[][] u2 = Utils.deepCopy(pusers);
-        double[][] m2 = Utils.deepCopy(pmovies);
+        double[][] u1 = new double[users.length][k];
+        double[][] m1 = new double[movies.length][k];
+        double[][] u2 = new double[users.length][k];
+        double[][] m2 = new double[movies.length][k];
 
-        double old1 = this.calcFitness(u,m);
-        double old2 = parent2.calcFitness(u,m);
+        for(int i = 0; i < u; i++){
+            u1[i] = users[i].clone();
+            u2[i] = pusers[i].clone();
+        }
+        for(int i = u; i < users.length; i++){
+            u1[i] = pusers[i].clone();
+            u2[i] = users[i].clone();
+        }
 
-        u1[u] = pusers[u].clone();
-        u2[u] = users[u].clone();
-        RMF c1 = new RMF(u1,m1,learningRate,regularization,userService,distMatrix,totalDist,fitness);
-        RMF c2 = new RMF(u2,m2,learningRate,regularization,userService,distMatrix,totalDist,parent2.fitness);
-
-        double new1 = c1.calcFitness(u,m);
-        double new2 = c2.calcFitness(u,m);
-        c1.fitness +=  new1 - old1;
-        c2.fitness +=  new2 - old2;
+        for(int i = 0; i < m; i++){
+            m1[i] = pmovies[i].clone();
+            m2[i] = movies[i].clone();
+        }
+        for(int i = m; i < movies.length; i++){
+            m1[i] = movies[i].clone();
+            m2[i] = pmovies[i].clone();
+        }
+        var c1 = new RMF(u1,m1,learningRate,regularization,userService,distMatrix,totalDist);
+        var c2 = new RMF(u2,m2,learningRate,regularization,userService,distMatrix,totalDist);
+//        System.out.println(fitness() + "|" + p2.fitness() +"|"+c1.fitness()+"|"+c2.fitness());
         return List.of(c1,c2);
     }
 

@@ -56,10 +56,11 @@ public class MMMF extends MatrixFactorization implements Particle{
     }
 
     @Override
-    protected void step() {
+    protected void gd_step() {
         double[][] old_users = Utils.deepCopy(users);
         double[][] old_movies = Utils.deepCopy(movies);
         double[][] old_margin = Utils.deepCopy(margin);
+
 
         hingeLossGradient(old_users,old_movies,old_margin,1);
         regularizationGradient(old_users,old_movies,1);
