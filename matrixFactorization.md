@@ -16,3 +16,6 @@ for recommender systems,” Computer, vol. 42, pp. 30–37, Aug. 2009
 5.An Efficient Non-Negative Matrix-Factorization-Based
 Approach to Collaborative Filtering for
 Recommender Systems
+
+6.Learning from Incomplete Ratings Using
+Non-negative Matrix Factorization
