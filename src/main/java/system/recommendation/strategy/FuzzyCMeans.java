@@ -18,6 +18,13 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
         this.fuzzines = fuzzines;
     }
 
+    public FuzzyCMeans(RatingService<T,G> rs, Similarity<T>sim,int k,double fuzzines) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        super(rs,sim,k);
+        this.fuzzyMembership = new double[rs.getEntityMap().size()][k];
+        this.fuzzines = fuzzines;
+        initCentroids();
+    }
+
     @Override
     protected void step() {
         calcFuzzyMembership();
@@ -123,7 +130,7 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
 
     public List<Integer> fewClusters(int c, int n, T item){
         int id = item.getId();
-        Set<Integer> neighbors = new HashSet<>();
+        List<Integer> neighbors = new ArrayList<>();
         List<Integer> clusters = getClusters(c, id);
 
         for(int cluster: clusters){
@@ -135,7 +142,7 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
 
     @Override
     public List<Integer> getNeighbors(T item) {
-        return fewClusters(3,100,item);
+        return fewClusters(6,50,item);
 //        return bestCluster(50,item);
     }
 }

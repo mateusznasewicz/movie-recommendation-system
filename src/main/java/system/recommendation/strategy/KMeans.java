@@ -90,6 +90,20 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         return loss;
     }
 
+    public double psoLoss(){
+        double loss = 0;
+        for(int c = 0; c < centroids.size(); c++){
+            T centroid = centroids.get(c);
+            double sum = 0;
+            for(Integer u: membership.get(c)){
+                T member = ratingService.getEntity(u);
+                sum += distFunction.calculate(member,centroid);
+            }
+            loss += sum / membership.get(c).size();
+        }
+        return loss / centroids.size();
+    }
+
     @Override
     protected void step(){
         assignMembership();

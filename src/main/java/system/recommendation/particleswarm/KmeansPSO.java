@@ -52,7 +52,7 @@ public class KmeansPSO<T extends Entity, G extends Entity> {
 
             for(int i = 0; i < swarmSize; i++){
                 KMeans<T,G> km = swarm.get(i);
-                double loss = km.calcLoss();
+                double loss = km.psoLoss();
 
                 if(loss < globalLoss){
                     bestID = i;

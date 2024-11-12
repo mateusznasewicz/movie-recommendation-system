@@ -21,13 +21,13 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
     private final Class<T> clazz;
 
     public Clustering(RatingService<T, G> ratingService, Similarity<T> simFunction, int k) {
-        super(ratingService.getEntityMap(), k, simFunction);
+        super(new HashMap<>(ratingService.getEntityMap()), k, simFunction);
         this.clazz = (Class<T>) ratingService.getEntity(1).getClass();
         newService(ratingService);
     }
 
     public Clustering(int k, RatingService<T, G> ratingService) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        super(ratingService.getEntityMap(),k);
+        super(new HashMap<>(ratingService.getEntityMap()),k);
         this.clazz = (Class<T>) ratingService.getEntity(1).getClass();
         newService(ratingService);
     }
@@ -89,20 +89,15 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
         }
     }
 
-    public void calcCentroids(int epochs) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        initCentroids();
-
+    public void calcCentroids(int epochs) {
         for(int i = 0; i < epochs; i++){
-            step();
             System.out.println(i + "||" + calcLoss());
+            step();
         }
     }
 
-    public void calcCentroids(int epochs, List<T> centroids) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void calcCentroids(int epochs, List<T> centroids){
         this.centroids = centroids;
-        for(int i = 0; i < epochs; i++){
-            step();
-            System.out.println(i + "||" + calcLoss());
-        }
+        calcCentroids(epochs);
     }
 }
