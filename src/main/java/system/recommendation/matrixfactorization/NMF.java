@@ -29,58 +29,30 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
 
     @Override
     protected void gd_step() {
-        double[][] old_users = users.clone();
-        double[][] old_movies = movies.clone();
-        System.out.println(old_users[0][0]);
-        additiveLossGradient(old_users,old_movies,1);
+        double[][] old_users = Utils.deepCopy(users);
+        double[][] old_movies = Utils.deepCopy(movies);
+        euclideanAdditive(old_users,old_movies,1);
     }
 
-    private void multiplicativeLossGradient(double[][] old_users, double[][] old_movies, double gradientWeight) {
-        double[] m_denominator = new double[users[0].length];
-        double[] u_denominator = new double[movies[0].length];
-        int k = users[0].length;
-
-        for(int f = 0; f < k; f++) {
-            for(int u = 0; u < users.length; u++) {
-                m_denominator[f] += old_users[u][f];
-            }
-            for(int m = 0; m < movies.length; m++) {
-                u_denominator[f] += old_movies[m][f];
-            }
-        }
-
-        for(int f = 0; f < k; f++) {
-            for(int u = 0; u < users.length; u++) {
-                User user = userService.getEntity(u+1);
-                Map<Integer, Double> ratings = user.getRatings();
-                double sum = 0;
-                for(Map.Entry<Integer, Double> rating : ratings.entrySet()) {
-                    double r = rating.getValue();
-                    int m = rating.getKey()-1;
-                    double predicted = vectorMultiplication(users[u],movies[m]);
-                    double ratio = old_movies[m][f]*r/predicted;
-                    sum += ratio;
+    private void euclideanAdditive(double[][] old_users, double[][] old_movies,double gradient){
+        for(int u = 0; u < users.length; u++){
+            User entity = userService.getEntity(u+1);
+            Map<Integer, Double> ratings = entity.getRatings();
+            for(Map.Entry<Integer, Double> rating : ratings.entrySet()){
+                double r = rating.getValue();
+                int m = rating.getKey()-1;
+                double predicted = vectorMultiplication(users[u],movies[m]);
+                for(int f = 0; f < users[0].length; f++){
+                    users[u][f] += learningRate*old_movies[m][f]*r - learningRate*old_movies[m][f]*predicted;
+                    movies[m][f] += learningRate*old_users[u][f]*r - learningRate*old_users[u][f]*predicted;
                 }
-                users[u][f] *= sum / u_denominator[f];
-            }
-        }
-
-        for(int f = 0; f < k; f++) {
-            for(int m = 0; m < movies.length; m++) {
-                Movie movie = userService.getItem(m+1);
-                double sum = 0;
-                for(int u: movie.getRated()){
-                    double r = userService.getRating(u,m+1);
-                    double predicted = vectorMultiplication(users[u-1],movies[m]);
-                    double ratio = old_users[u-1][f]*r/predicted;
-                    sum += ratio;
-                }
-                movies[m][f] *= sum / m_denominator[f];
             }
         }
     }
 
-    private void additiveLossGradient(double[][] old_users, double[][] old_movies, double gradientWeight) {
+
+
+    private void divergenceAdditive(double[][] old_users, double[][] old_movies, double gradientWeight) {
         double weight = gradientWeight*learningRate;
 
         for(int u = 0; u < users.length; u++){
@@ -169,7 +141,7 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] old_users = Utils.deepCopy(users);
         double[][] old_movies = Utils.deepCopy(movies);
         NMF best = (NMF) bestParticle;
-        additiveLossGradient(old_users,old_movies,gradientWeight);
+        divergenceAdditive(old_users,old_movies,gradientWeight);
 
 
         double weight = learningRate*(1-gradientWeight);
@@ -180,5 +152,66 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
     @Override
     public double getLoss() {
         return fitness();
+    }
+
+    private void divergenceMultiplicative(double[][] old_users, double[][] old_movies, double gradientWeight) {
+        double[] m_denominator = new double[users[0].length];
+        double[] u_denominator = new double[movies[0].length];
+        int k = users[0].length;
+
+        for(int f = 0; f < k; f++) {
+            for(int u = 0; u < users.length; u++) {
+                m_denominator[f] += old_users[u][f];
+            }
+            for(int m = 0; m < movies.length; m++) {
+                u_denominator[f] += old_movies[m][f];
+            }
+        }
+
+        for(int f = 0; f < k; f++) {
+            for(int u = 0; u < users.length; u++) {
+                User user = userService.getEntity(u+1);
+                Map<Integer, Double> ratings = user.getRatings();
+                double sum = 0;
+                for(Map.Entry<Integer, Double> rating : ratings.entrySet()) {
+                    double r = rating.getValue();
+                    int m = rating.getKey()-1;
+                    double predicted = vectorMultiplication(users[u],movies[m]);
+                    double ratio = old_movies[m][f]*r/predicted;
+                    sum += ratio;
+                }
+                users[u][f] *= sum / u_denominator[f];
+            }
+        }
+
+        for(int f = 0; f < k; f++) {
+            for(int m = 0; m < movies.length; m++) {
+                Movie movie = userService.getItem(m+1);
+                double sum = 0;
+                for(int u: movie.getRated()){
+                    double r = userService.getRating(u,m+1);
+                    double predicted = vectorMultiplication(users[u-1],movies[m]);
+                    double ratio = old_users[u-1][f]*r/predicted;
+                    sum += ratio;
+                }
+                movies[m][f] *= sum / m_denominator[f];
+            }
+        }
+    }
+
+    private void euclideanMultiplicative(double[][] old_users, double[][] old_movies,double gradient){
+        for(int u = 0; u < users.length; u++){
+            User entity = userService.getEntity(u+1);
+            Map<Integer, Double> ratings = entity.getRatings();
+            for(Map.Entry<Integer, Double> rating : ratings.entrySet()){
+                double r = rating.getValue();
+                int m = rating.getKey()-1;
+                double predicted = vectorMultiplication(users[u],movies[m]);
+                for(int f = 0; f < users[0].length; f++){
+                    users[u][f] *= r*old_movies[m][f]/predicted*old_movies[m][f];
+                    movies[m][f] *= r*old_users[u][f]/predicted*old_users[u][f];
+                }
+            }
+        }
     }
 }
