@@ -58,8 +58,7 @@ public class GeneticAlgorithm {
             }
 
             for(Chromosome c: newPopulation){
-//                c.mutate(0.05);
-                c.memetic(0.3);
+                c.memetic(mutationRate);
             }
 
 

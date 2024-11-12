@@ -38,16 +38,16 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
 
     @Override
     public void mutate(double chance){
+
+    }
+
+    @Override
+    public void memetic(double chance) {
         for(int i = 0; i < weights.length; i++) {
             if(random.nextDouble() < chance) {
                 weights[i] = random.nextDouble();
             }
         }
-    }
-
-    @Override
-    public void memetic(double chance) {
-
     }
 
     @Override

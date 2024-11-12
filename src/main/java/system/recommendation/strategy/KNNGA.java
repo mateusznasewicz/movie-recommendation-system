@@ -24,7 +24,7 @@ public class KNNGA<T extends Entity, G extends Entity> extends KNN<T> {
     }
 
     List<Chromosome> initPopulation(T item){
-        List<Integer> neighbors = getNeighbors(item);
+        List<Integer> neighbors = super.getNeighbors(item);
         if(neighbors.isEmpty()) return null;
         List<Chromosome> population = new ArrayList<>();
 
@@ -36,7 +36,6 @@ public class KNNGA<T extends Entity, G extends Entity> extends KNN<T> {
 
     @Override
     public List<Integer> getNeighbors(T item) {
-        System.out.println(item.getId());
         List<Chromosome> population = initPopulation(item);
         if(population == null) return List.of();
 
