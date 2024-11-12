@@ -6,7 +6,7 @@ import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
 
 
-public class MMMFprovider implements ParticleProvider<MMMF> {
+public class MMMFprovider implements ParticleProvider {
 
     private final RatingService<User,Movie> userService;
     private final int features;

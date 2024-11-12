@@ -19,8 +19,6 @@ Computational Sciences and Optimization, pp. 1031–1033, 2009.
 Master’s thesis, Faculty of Engineering, Built Environment and In-
 formation Technology University of Pretoria, Pretoria, South Africa,2010
 
-7.Combining swarm with gradient search for maximum margin matrix factorization
-
 8.Gradient based Hybridization of PSO
 
 9.Combining swarm with gradient search for maximum margin matrix factorization
@@ -45,3 +43,4 @@ International Conference on Neural Information Processing, September 2016, pp
 https://doi.org/10.1016/j.procs.2015.06.051 
 
 15.Ujjin, S., Bentley, P.J.: Particle swarm optimization recommender system. In: Proceedings of the 2003 IEEE Swarm Intelligence Symposium, SIS 2003, pp. 124–131. IEEE (2003) 
+

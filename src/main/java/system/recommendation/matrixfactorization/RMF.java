@@ -1,5 +1,6 @@
 package system.recommendation.matrixfactorization;
 
+import system.recommendation.Utils;
 import system.recommendation.geneticalgorithm.Chromosome;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
@@ -187,7 +188,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
     @Override
     public Particle copyParticle() {
-        return new RMF(users.clone(),movies.clone(),learningRate,regularization,userService);
+        return new RMF(Utils.deepCopy(users),Utils.deepCopy(movies),learningRate,regularization,userService);
     }
 
     @Override
@@ -196,11 +197,11 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] old_users = users.clone();
         RMF best = (RMF) bestParticle;
 
-        lossGradient(old_users,old_movies,1);
-        regularizationGradient(old_users,old_movies,1);
+        lossGradient(old_users,old_movies,gradientWeight);
+        regularizationGradient(old_users,old_movies,gradientWeight);
 
 
-        double weight = learningRate;
+        double weight = learningRate*gradientWeight;
         moveParticleTowardsSwarm(best.users,old_users,users,weight);
         moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
     }

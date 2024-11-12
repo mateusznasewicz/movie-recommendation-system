@@ -40,7 +40,7 @@ public class ParticleSwarm{
                 p.updateParticle(globalBest,gradientWeight);
             }
 
-            System.out.println("Epoch " + t + "||"+globalLoss);
+//            System.out.println("Epoch " + t + "||"+globalLoss);
         }
         return globalBest;
     }

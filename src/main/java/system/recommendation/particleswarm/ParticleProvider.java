@@ -1,6 +1,6 @@
 package system.recommendation.particleswarm;
 
 
-public interface ParticleProvider<T> {
+public interface ParticleProvider {
     Particle initParticle();
 }

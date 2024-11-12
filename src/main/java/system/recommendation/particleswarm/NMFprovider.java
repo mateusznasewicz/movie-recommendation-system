@@ -5,7 +5,7 @@ import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
 
-public class NMFprovider implements ParticleProvider<NMF> {
+public class NMFprovider implements ParticleProvider {
 
     private final RatingService<User, Movie> userService;
     private final int features;
