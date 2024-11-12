@@ -29,10 +29,10 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
 
     @Override
     protected void gd_step() {
-        double[][] old_users = Utils.deepCopy(users);
-        double[][] old_movies = Utils.deepCopy(movies);
-
-        multiplicativeLossGradient(old_users,old_movies,1);
+        double[][] old_users = users.clone();
+        double[][] old_movies = movies.clone();
+        System.out.println(old_users[0][0]);
+        additiveLossGradient(old_users,old_movies,1);
     }
 
     private void multiplicativeLossGradient(double[][] old_users, double[][] old_movies, double gradientWeight) {

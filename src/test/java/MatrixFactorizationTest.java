@@ -15,7 +15,7 @@ public class MatrixFactorizationTest {
     private final static double regularization = 0.002;
     private final static int k = 10;
     private final static int populationSize = 100;
-    private final static int epochs = 200;
+    private final static int epochs = 500;
     private static double gradientWeight = 1;
 
     public static void run(DatasetLoader datasetLoader){
