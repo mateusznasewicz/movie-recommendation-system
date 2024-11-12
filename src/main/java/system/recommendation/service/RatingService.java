@@ -32,6 +32,7 @@ public abstract class RatingService<T extends  Entity,G extends  Entity> {
     public T getEntity(int id){
         return entityMap.get(id);
     }
+    public G getItem(int id) { return itemMap.get(id); }
 
     public Set<Integer> getEntitiesID(){
         return entityMap.keySet();

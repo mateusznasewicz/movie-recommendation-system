@@ -14,6 +14,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
     private final SplittableRandom rand = new SplittableRandom();
     private double[][] distMatrix = null;
     private double[] totalDist = null;
+    private double fitness = 0;
 
     public RMF(RatingService<User, Movie> userService, int k, double learningRate, double regularization,double stdDev) {
         super(userService, k, learningRate, regularization, false, stdDev);
@@ -113,13 +114,33 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
     @Override
     public void memetic(double chance) {
         if(rand.nextDouble() >= chance) return;
-//        gd_step();
+
+        int u = rand.nextInt(users.length);
+        User entity = userService.getEntity(u+1);
+        List<Integer> mIDs = entity.getRatings().keySet().stream().toList();
+        int mID =  mIDs.get(rand.nextInt(mIDs.size()));
+
+        double[] old_users = users[u].clone();
+        double[] old_movies = movies[mID-1].clone();
+        double e = entity.getRating(mID) - vectorMultiplication(old_users, old_movies);
+        double weight = learningRate*e;
+        for(int f = 0; f < users[0].length; f++){
+            users[u][f] += weight*old_movies[f];
+            movies[mID-1][f] += weight*old_users[f];
+        }
+
+        User user = userService.getEntity(u+1);
+        Movie movie = userService.getItem(mID);
+        double old_fit = calcFitness(old_users,old_movies,user,movie);
+        double new_fit = calcFitness(users[u],movies[mID-1],user,movie);
+        fitness += new_fit - old_fit;
     }
 
     @Override
     public double fitness() {
+        if(fitness != 0) return fitness;
         double e = 0;
-
+        System.out.println("LICZY");
         for(int u = 0; u < users.length; u++){
             User user = userService.getEntity(u+1);
             Map<Integer, Double> ratings = user.getRatings();
@@ -131,7 +152,28 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
             }
         }
 
-        return e + regularizationLoss();
+        this.fitness = e;
+        return e;
+    }
+
+    private double calcFitness(double[] u, double[] m, User user, Movie movie){
+        double e = 0;
+        int movieID = movie.getId();
+
+        Map<Integer, Double> ratings = user.getRatings();
+        for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
+            double rating = entry.getValue();
+            int mid = entry.getKey() - 1;
+            double predicted = vectorMultiplication(u, movies[mid]);
+            e += Math.pow(rating - predicted,2);
+        }
+
+        for(Integer uid: movie.getRated()){
+            double rating = userService.getRating(uid,movieID);
+            double predicted = vectorMultiplication(m, users[uid-1]);
+            e += Math.pow(rating - predicted,2);
+        }
+        return e;
     }
 
     @Override
@@ -151,20 +193,31 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
         int u = rand.nextInt(users.length);
         int m = rand.nextInt(movies.length);
+        User user = userService.getEntity(u+1);
+        Movie movie = userService.getItem(m + 1);
 
         double[][] u1 = Utils.deepCopy(users);
         double[][] m1 = Utils.deepCopy(movies);
         double[][] u2 = Utils.deepCopy(pusers);
         double[][] m2 = Utils.deepCopy(pmovies);
 
+        double old1 = calcFitness(u1[u],m1[m],user,movie);
+        double old2 = calcFitness(u2[u],m2[m],user,movie);
+
         u1[u] = pusers[u].clone();
         m1[m] = pmovies[m].clone();
         u2[u] = users[u].clone();
         m2[m] = movies[m].clone();
 
-        List<Chromosome> l = List.of(new RMF(u1,m1,learningRate,regularization,userService,distMatrix,totalDist),new RMF(u2,m2,learningRate,regularization,userService,distMatrix,totalDist));
-//        System.out.println(fitness() + "||" + p2.fitness() + "||" + l.get(0).fitness() + "||" + l.get(1).fitness());
-        return l;
+        double new1 = calcFitness(u1[u],m1[m],user,movie);
+        double new2 = calcFitness(u2[u],m2[m],user,movie);
+
+        RMF c1 = new RMF(u1,m1,learningRate,regularization,userService,distMatrix,totalDist);
+        RMF c2 = new RMF(u2,m2,learningRate,regularization,userService,distMatrix,totalDist);
+
+        c1.fitness +=  new1 - old1;
+        c2.fitness +=  new2 - old2;
+        return List.of(c1,c2);
     }
 
     @Override
@@ -183,14 +236,12 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
 
         double weight = learningRate*gradientWeight;
-        double f = fitness();
         moveParticleTowardsSwarm(best.users,old_users,users,weight);
         moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
-        System.out.println(f + "<><>" + fitness());
     }
 
     @Override
     public double getLoss() {
-        return fitness();
+        return fitness()+regularizationLoss();
     }
 }

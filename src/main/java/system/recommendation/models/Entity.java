@@ -9,7 +9,7 @@ public abstract class Entity{
     protected double avgRating = 0;
     protected final HashMap<Integer, Double> ratings = new HashMap<>();
     protected HashMap<Integer, Double> testRatings = new HashMap<>();
-    private static int unknownID = -1;
+    protected Set<Integer> rated = new HashSet<>();
 
     public Entity(int id){
         this.id = id;
@@ -36,6 +36,14 @@ public abstract class Entity{
 
     public boolean hasRating(int itemID) {
         return this.ratings.containsKey(itemID);
+    }
+
+    public void addRated(int entityID){
+        this.rated.add(entityID);
+    }
+
+    public Set<Integer> getRated(){
+        return this.rated;
     }
 
     public void addRating(int itemID, double rating) {
