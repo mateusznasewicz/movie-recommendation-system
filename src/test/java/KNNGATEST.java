@@ -9,17 +9,37 @@ import system.recommendation.service.UserService;
 import system.recommendation.similarity.PearsonCorrelation;
 import system.recommendation.similarity.Similarity;
 import system.recommendation.strategy.KNNGA;
+import system.recommendation.strategy.SimGa;
 import system.recommendation.strategy.Strategy;
 
 public class KNNGATEST {
+    private static int populationSize = 50;
+    private static int epochs = 50;
+    private static int k = 10;
+
     public static void run(DatasetLoader datasetLoader){
         RatingService<User,Movie> rs = new UserService(datasetLoader.getUsers(), datasetLoader.getMovies());
         Similarity<User> sim = new PearsonCorrelation<>(rs);
-        Strategy<User> strategy = new KNNGA<>(rs,sim,50,10,50);
+        ver2(rs,sim);
+    }
+
+    public static void ver1(RatingService<User,Movie> rs, Similarity<User> sim){
+        Strategy<User> strategy = new KNNGA<>(rs,sim,50,50,50);
         Recommender<User, Movie> recommender = new CollaborativeFiltering<>(rs,strategy);
         double[][] predicted = recommender.getPredictedRating();
 
-        System.out.println(QualityMeasure.MAE(predicted,rs));
+        System.out.println(QualityMeasure.MAE(predicted,rs,false));
+        System.out.println(QualityMeasure.RMSE(predicted,rs));
+    }
+
+    public static void ver2(RatingService<User,Movie> rs, Similarity<User> sim){
+        SimGa<User,Movie> simGa = new SimGa<>(rs,populationSize,k,epochs);
+        Strategy<User> strategy = simGa.run();
+
+        Recommender<User, Movie> recommender = new CollaborativeFiltering<>(rs,strategy);
+        double[][] predicted = recommender.getPredictedRating();
+
+        System.out.println(QualityMeasure.MAE(predicted,rs,false));
         System.out.println(QualityMeasure.RMSE(predicted,rs));
     }
 }

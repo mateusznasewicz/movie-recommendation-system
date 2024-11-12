@@ -49,7 +49,7 @@ public class MatrixFactorizationTest {
         mf.gd(epochs);
 
         double[][] ratings = mf.getPredictedRatings();
-        return new double[]{QualityMeasure.MAE(ratings,userService),QualityMeasure.RMSE(ratings,userService)};
+        return new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
     }
 
     private static double[] RMFtest(RatingService<User,Movie> userService){
@@ -58,7 +58,7 @@ public class MatrixFactorizationTest {
 
         double[][] ratings = mf.getPredictedRatings();
 
-        return new double[]{QualityMeasure.MAE(ratings,userService),QualityMeasure.RMSE(ratings,userService)};
+        return new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
     }
 
     private static double[] MMMFtest(RatingService<User,Movie> userService){
@@ -66,7 +66,7 @@ public class MatrixFactorizationTest {
         mf.gd(epochs);
 
         double[][] ratings = mf.getPredictedRatings();
-        return new double[]{QualityMeasure.MAE(ratings,userService),QualityMeasure.RMSE(ratings,userService)};
+        return new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
     }
 
     private static double[] RMFGAtest(RatingService<User,Movie> userService){
@@ -75,7 +75,7 @@ public class MatrixFactorizationTest {
 
         double[][] ratings = best.getPredictedRatings();
 
-        return new double[]{QualityMeasure.MAE(ratings,userService),QualityMeasure.RMSE(ratings,userService)};
+        return new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
     }
 
     private static void NMFGAtest(RatingService<User,Movie> userService){
@@ -83,7 +83,7 @@ public class MatrixFactorizationTest {
         NMF best = mf.run(populationSize,epochs);
 
         double[][] ratings = best.getPredictedRatings();
-        System.out.println(QualityMeasure.MAE(ratings,userService));
+        System.out.println(QualityMeasure.MAE(ratings,userService,false));
         System.out.println(QualityMeasure.RMSE(ratings,userService));
     }
 
@@ -92,6 +92,6 @@ public class MatrixFactorizationTest {
         T best = (T) ps.run(epochs);
         double[][] predicted = best.getPredictedRatings();
 
-        return new double[]{QualityMeasure.MAE(predicted,ratingService),QualityMeasure.RMSE(predicted,ratingService)};
+        return new double[]{QualityMeasure.MAE(predicted,ratingService,false),QualityMeasure.RMSE(predicted,ratingService)};
     }
 }

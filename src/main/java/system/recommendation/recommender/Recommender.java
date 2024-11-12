@@ -7,6 +7,7 @@ import system.recommendation.strategy.Strategy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class Recommender<T extends Entity,G extends Entity> {
     private final RatingService<T,G> ratingService;
@@ -21,6 +22,8 @@ public abstract class Recommender<T extends Entity,G extends Entity> {
         this.predictedRating = new double[baseHashmap.size()][ratingService.getItemMap().size()];
     }
 
+
+
     public double[][] getPredictedRating(){
         fillRatings();
         return predictedRating;
@@ -30,7 +33,7 @@ public abstract class Recommender<T extends Entity,G extends Entity> {
         for(int eID : baseHashmap.keySet()){
             T entity = baseHashmap.get(eID);
             List<Integer> neighbors = strategy.getNeighbors(entity);
-            for(Integer iID : entity.getTestRatings().keySet()){
+            for(Integer iID :entity.getTestRatings().keySet()){
                 double rating = predict(eID,iID,neighbors);
                 predictedRating[eID-1][iID-1] = rating;
             }
@@ -41,16 +44,12 @@ public abstract class Recommender<T extends Entity,G extends Entity> {
         double numerator = 0;
         double denominator = 0;
         double[][] simMatrix = strategy.getSimMatrix();
-        int ocenilo = 0;
-        int s = 0;
 
         for(Integer nID: neighbors){
             double sim = simMatrix[eID-1][nID-1];
-            if(ratingService.isRatedById(nID,iID))ocenilo++;
-            if(sim <= 0)s++;
             if(!ratingService.isRatedById(nID, iID) || sim < 0) continue;
-            numerator += 1/(sim+0.000000001) * ratingService.getRating(nID,iID);
-            denominator += 1/(sim+0.000000001);
+            numerator += sim * ratingService.getRating(nID,iID);
+            denominator += sim;
         }
 
         if(numerator == 0) return -1;

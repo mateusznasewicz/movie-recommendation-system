@@ -71,8 +71,8 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
     }
 
     @Override
-    public Chromosome copy() {
-        return null;
+    public Chromosome copy(){
+        return new KnnChromosome<>(item,ratingService,neighbors.clone(),weights.clone());
     }
 
     private double predict(int iID){

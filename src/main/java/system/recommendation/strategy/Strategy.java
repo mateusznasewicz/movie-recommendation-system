@@ -30,6 +30,12 @@ public abstract class Strategy<T extends Entity> {
         this.simMatrix = null;
     }
 
+    public Strategy(int k,double[][] simMatrix){
+        this.k = k;
+        this.simMatrix = simMatrix;
+        this.hashmap = null;
+    }
+
     abstract public List<Integer> getNeighbors(T item);
 
     public double[][] getSimMatrix() {

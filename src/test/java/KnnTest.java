@@ -15,11 +15,11 @@ public class KnnTest {
     public static void run(DatasetLoader datasetLoader){
         RatingService<User, Movie> rs = new UserService(datasetLoader.getUsers(), datasetLoader.getMovies());
         Similarity<User> sim = new PearsonCorrelation<>(rs);
-        Strategy<User> strategy = new KNN<>(datasetLoader.getUsers(), 50, sim);
+        Strategy<User> strategy = new KNN<>(datasetLoader.getUsers(), 10, sim);
         Recommender<User, Movie> recommender = new CollaborativeFiltering<>(rs,strategy);
         double[][] predicted = recommender.getPredictedRating();
 
-        System.out.println(QualityMeasure.MAE(predicted,rs));
+        System.out.println(QualityMeasure.MAE(predicted,rs,false));
         System.out.println(QualityMeasure.RMSE(predicted,rs));
     }
 }

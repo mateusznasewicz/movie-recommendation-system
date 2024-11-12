@@ -12,7 +12,6 @@ public class GeneticAlgorithm {
 
         for(int e = 0; e < epochs; e++)
         {
-            System.out.println("===");
             double[] fitness = new double[population.size()];
             double totalFitness = 0;
 
@@ -53,21 +52,17 @@ public class GeneticAlgorithm {
                 newPopulation.addAll(children);
             }
 
-            while(!elitism.isEmpty()){
-                newPopulation.add(population.get(elitism.poll()));
-            }
-
             for(Chromosome c: newPopulation){
                 c.memetic(mutationRate);
             }
 
-
+            while(!elitism.isEmpty()){
+                newPopulation.add(population.get(elitism.poll()));
+            }
 
             population = newPopulation;
-            System.out.println("EPOCH " + e + ": " + bestFit);
-            System.out.println("===");
+            System.out.println("EPOCH " + e + "|" + bestFit);
         }
-
         return best;
     }
 

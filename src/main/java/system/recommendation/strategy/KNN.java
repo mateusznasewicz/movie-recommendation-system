@@ -13,6 +13,10 @@ public class KNN<T extends Entity> extends Strategy<T>{
         super(hashmap, k, simFunction);
     }
 
+    public KNN(int k, double[][] simMatrix) {
+        super(k,simMatrix);
+    }
+
     public KNN(Map<Integer, T> hashmap, Similarity<T> simFunction) {
         super(hashmap,simFunction);
     }
@@ -27,7 +31,7 @@ public class KNN<T extends Entity> extends Strategy<T>{
         int eID = entity.getId();
 
         Queue<Integer> queue = new PriorityQueue<>(k,(a, b) -> Double.compare(simMatrix[eID-1][a-1], simMatrix[eID-1][b-1]));
-        for(int nID = 1; nID < hashmap.size()+1; nID++){
+        for(int nID = 1; nID < simMatrix.length+1; nID++){
             if(nID != eID && simMatrix[eID-1][nID-1] > 0){
                 queue.add(nID);
                 if (queue.size() > k) {

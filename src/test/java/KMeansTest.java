@@ -34,7 +34,7 @@ public class KMeansTest<T extends Entity, G extends Entity> {
         Strategy<Movie> strategy = FuzzyCMeansTest(rs,sim);
         Recommender<Movie, User> recommender = new CollaborativeFiltering<>(rs,strategy);
         double[][] predicted = recommender.getPredictedRating();
-        System.out.println(QualityMeasure.MAE(predicted,rs));
+        System.out.println(QualityMeasure.MAE(predicted,rs,false));
         System.out.println(QualityMeasure.RMSE(predicted,rs));
     }
 

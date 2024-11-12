@@ -8,8 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         DatasetLoader datasetLoader = new DatasetLoader("ml-latest-small",true,false);
-//        KnnTest.run(datasetLoader);
-        KNNGATEST.run(datasetLoader);
+        KnnTest.run(datasetLoader);
+//        KNNGATEST.run(datasetLoader);
 //        ParticleSwarmTest.run(datasetLoader);
 //        MatrixFactorizationTest.run(datasetLoader);
 //        KMeansTest.run(datasetLoader);
