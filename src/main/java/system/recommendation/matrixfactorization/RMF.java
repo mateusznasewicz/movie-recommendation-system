@@ -41,9 +41,9 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
     }
 
     @Override
-    protected void gd_step() {
-        double[][] old_users = users.clone();
-        double[][] old_movies = movies.clone();
+    protected void step() {
+        double[][] old_users = Utils.deepCopy(users);
+        double[][] old_movies = Utils.deepCopy(movies);
 
         lossGradient(old_users, old_movies,1);
         regularizationGradient(old_users,old_movies,1);
@@ -113,34 +113,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
     @Override
     public void memetic(double chance) {
         if(rand.nextDouble() >= chance) return;
-
-        double[][] old_users = users.clone();
-        double[][] old_movies = movies.clone();
-        List<Integer> perm = new ArrayList<>(users.length);
-        for(int i = 0; i < users.length; i++){
-            perm.add(i);
-        }
-        Collections.shuffle(perm);
-
-        for(int u = 0; u < users.length/4; u++){
-            int uid = perm.get(u);
-            User user = userService.getEntity(uid+1);
-            Map<Integer, Double> ratings = user.getRatings();
-            for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
-                int mid = entry.getKey() - 1;
-                double rating = entry.getValue();
-                double e = rating - vectorMultiplication(old_users[uid], old_movies[mid]);
-                double w1 = learningRate*e*2;
-                double w2 = learningRate*regularization;
-                for(int f = 0; f < users[0].length; f++){
-                    users[uid][f] += w1*old_movies[mid][f];
-                    movies[mid][f] += w1*old_users[uid][f];
-
-                    users[uid][f] -= w2*old_users[uid][f];
-                    movies[mid][f] -= w2*old_movies[mid][f];
-                }
-            }
-        }
+//        gd_step();
     }
 
     @Override
@@ -163,7 +136,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
     @Override
     public Chromosome copy() {
-        return new RMF(users.clone(),movies.clone(),learningRate,regularization,userService,distMatrix,totalDist);
+        return new RMF(Utils.deepCopy(users),Utils.deepCopy(movies),learningRate,regularization,userService,distMatrix,totalDist);
     }
 
     @Override
@@ -171,10 +144,18 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] pusers = ((RMF) p2).getUsers();
         double[][] pmovies = ((RMF) p2).getMovies();
 
-        double[][] u1 = users.clone();
-        double[][] u2 = pusers.clone();
-        double[][] m1 = pmovies.clone();
-        double[][] m2 = movies.clone();
+        int u = rand.nextInt(users.length);
+        int m = rand.nextInt(movies.length);
+
+        double[][] u1 = Utils.deepCopy(users);
+        double[][] m1 = Utils.deepCopy(movies);
+        double[][] u2 = Utils.deepCopy(pusers);
+        double[][] m2 = Utils.deepCopy(pmovies);
+
+        u1[u] = pusers[u].clone();
+        m1[m] = pmovies[m].clone();
+        u2[u] = users[u].clone();
+        m2[m] = movies[m].clone();
 
         List<Chromosome> l = List.of(new RMF(u1,m1,learningRate,regularization,userService,distMatrix,totalDist),new RMF(u2,m2,learningRate,regularization,userService,distMatrix,totalDist));
 //        System.out.println(fitness() + "||" + p2.fitness() + "||" + l.get(0).fitness() + "||" + l.get(1).fitness());
@@ -193,8 +174,8 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
     @Override
     public void updateParticle(Particle bestParticle, double gradientWeight) {
-        double[][] old_movies = movies.clone();
-        double[][] old_users = users.clone();
+        double[][] old_movies = Utils.deepCopy(movies);
+        double[][] old_users = Utils.deepCopy(users);
         RMF best = (RMF) bestParticle;
 
         lossGradient(old_users,old_movies,gradientWeight);

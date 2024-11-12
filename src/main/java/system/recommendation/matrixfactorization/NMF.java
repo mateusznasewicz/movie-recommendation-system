@@ -27,7 +27,7 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
     }
 
     @Override
-    protected void gd_step() {
+    protected void step() {
         double[][] old_users = users.clone();
         double[][] old_movies = movies.clone();
         lossGradient(old_users,old_movies,1);
@@ -58,7 +58,7 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
     @Override
     public void mutate(double chance) {
         if(rand.nextDouble() >= chance)return;
-        gd_step();
+        step();
     }
 
     @Override

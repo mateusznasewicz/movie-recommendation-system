@@ -1,5 +1,6 @@
 package system.recommendation.matrixfactorization;
 
+import system.recommendation.Utils;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.particleswarm.Particle;
@@ -55,10 +56,10 @@ public class MMMF extends MatrixFactorization implements Particle{
     }
 
     @Override
-    protected void gd_step() {
-        double[][] old_margin = margin.clone();
-        double[][] old_users = users.clone();
-        double[][] old_movies = movies.clone();
+    protected void step() {
+        double[][] old_users = Utils.deepCopy(users);
+        double[][] old_movies = Utils.deepCopy(movies);
+        double[][] old_margin = Utils.deepCopy(margin);
 
         hingeLossGradient(old_users,old_movies,old_margin,1);
         regularizationGradient(old_users,old_movies,1);
@@ -114,14 +115,14 @@ public class MMMF extends MatrixFactorization implements Particle{
 
     @Override
     public Particle copyParticle() {
-        return new MMMF(users.clone(),movies.clone(),margin.clone(),learningRate,regularization,userService);
+        return new MMMF(Utils.deepCopy(users),Utils.deepCopy(movies),Utils.deepCopy(margin),learningRate,regularization,userService);
     }
 
     @Override
     public void updateParticle(Particle bestParticle, double gradientWeight) {
-        double[][] old_margin = margin.clone();
-        double[][] old_users = users.clone();
-        double[][] old_movies = movies.clone();
+        double[][] old_users = Utils.deepCopy(users);
+        double[][] old_movies = Utils.deepCopy(movies);
+        double[][] old_margin = Utils.deepCopy(margin);
         MMMF best = (MMMF) bestParticle;
 
         //GD part
@@ -129,7 +130,7 @@ public class MMMF extends MatrixFactorization implements Particle{
         regularizationGradient(old_users,old_movies,gradientWeight);
 
         //Swarm moves towards best solution
-        double weight = learningRate*(1-gradientWeight);
+        double weight = learningRate*gradientWeight;
         moveParticleTowardsSwarm(best.users,old_users,users,weight);
         moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
         moveParticleTowardsSwarm(best.margin,old_margin,margin,weight);

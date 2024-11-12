@@ -11,7 +11,6 @@ import system.recommendation.strategy.KNN;
 import system.recommendation.strategy.Strategy;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RMFGA{
@@ -45,7 +44,7 @@ public class RMFGA{
 
         for(int i = 0; i < populationSize; i++){
             RMF individual = new RMF(userService, k, learningRate, regularization,0.01, distMatrix, total);
-            individual.gd_step();
+            individual.step();
             population.add(individual);
         }
         return population;

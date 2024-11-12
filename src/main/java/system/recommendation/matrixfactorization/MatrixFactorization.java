@@ -1,5 +1,6 @@
 package system.recommendation.matrixfactorization;
 
+import system.recommendation.Utils;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
@@ -60,12 +61,12 @@ public abstract class MatrixFactorization{
     }
 
     public abstract double[][] getPredictedRatings();
-    protected abstract void gd_step();
+    protected abstract void step();
 
     public void gd(int epochs){
         for(int i = 0; i < epochs; i++) {
-            gd_step();
-//            System.out.println("EPOCH " + i);
+            step();
+            System.out.println("EPOCH " + i);
         }
     }
 
