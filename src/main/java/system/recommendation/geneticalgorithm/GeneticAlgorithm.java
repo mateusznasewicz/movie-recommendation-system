@@ -8,7 +8,7 @@ public class GeneticAlgorithm {
     public static Chromosome run(List<Chromosome> population, int epochs, double mutationRate){
         Chromosome best = null;
         double bestFit = Double.MAX_VALUE;
-        int elitismSize = (population.size()/10)/2;
+        int elitismSize = (population.size()/5)/2;
 
         for(int e = 0; e < epochs; e++)
         {
@@ -52,12 +52,12 @@ public class GeneticAlgorithm {
                 newPopulation.addAll(children);
             }
 
-            for(Chromosome c: newPopulation){
-                c.memetic(mutationRate);
-            }
-
             while(!elitism.isEmpty()){
                 newPopulation.add(population.get(elitism.poll()));
+            }
+
+            for(Chromosome c: newPopulation){
+                c.memetic(mutationRate);
             }
 
             population = newPopulation;

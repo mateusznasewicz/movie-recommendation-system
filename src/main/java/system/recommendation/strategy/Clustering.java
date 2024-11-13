@@ -91,8 +91,8 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
 
     public void calcCentroids(int epochs) {
         for(int i = 0; i < epochs; i++){
-            System.out.println(i + "||" + calcLoss());
             step();
+            System.out.println(i + "||" + calcLoss());
         }
     }
 

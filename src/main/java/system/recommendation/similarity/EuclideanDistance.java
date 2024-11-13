@@ -17,8 +17,8 @@ public class EuclideanDistance<T extends Entity, G extends Entity> implements Si
         double result = 0;
         Set<Integer> common = a.getCommon(b);
         if(common.isEmpty()) {
-            System.out.println("KJHSDFJHKFSDKJHFSD");
-            return -1;
+            //System.out.println("KJHSDFJHKFSDKJHFSD");
+            return Double.MAX_VALUE;
         }
 
         int aID = a.getId();

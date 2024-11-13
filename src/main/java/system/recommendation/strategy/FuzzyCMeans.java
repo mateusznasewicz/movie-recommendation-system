@@ -85,9 +85,9 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
                 fuzzyMembership[i][j] = 1 / sum;
             }
         }
-        for(double[] membership : fuzzyMembership){
-            System.out.println(Arrays.toString(membership));
-        }
+//        for(double[] membership : fuzzyMembership){
+//            System.out.println(Arrays.toString(membership));
+//        }
     }
 
     private List<Integer> getNeighborsFromCluster(int n, int c, int id){

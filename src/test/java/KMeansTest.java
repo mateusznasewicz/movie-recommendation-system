@@ -27,12 +27,11 @@ public class KMeansTest<T extends Entity, G extends Entity> {
 
     public static void run(DatasetLoader datasetLoader) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         RatingService<Movie, User> rs = new MovieService(datasetLoader.getUsers(), datasetLoader.getMovies());
-        Similarity<Movie> sim = new EuclideanDistance<>(rs);
+        Similarity<Movie> sim = new PearsonCorrelation<>(rs);
 
-//        Strategy<Movie> strategy = KMeansTest(rs,sim);
+       Strategy<Movie> s = FuzzyCMeansTest(rs,sim);
 
-        Strategy<Movie> strategy = FuzzyCMeansTest(rs,sim);
-        Recommender<Movie, User> recommender = new CollaborativeFiltering<>(rs,strategy);
+        Recommender<Movie, User> recommender = new CollaborativeFiltering<>(rs,s);
         double[][] predicted = recommender.getPredictedRating();
         System.out.println(QualityMeasure.MAE(predicted,rs,false));
         System.out.println(QualityMeasure.RMSE(predicted,rs));

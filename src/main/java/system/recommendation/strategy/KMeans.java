@@ -19,6 +19,11 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         assignMembership();
     }
 
+    //po PSO
+    public KMeans(RatingService<T,G> bestService, Similarity<T> simFunction, int k, RatingService<T,G> orgService) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        super(bestService,orgService, simFunction, k);
+    }
+
     //nowe w pso
     public KMeans(int k,RatingService<T, G> ratingService) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(k,ratingService);
@@ -107,7 +112,10 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
     @Override
     protected void step(){
         assignMembership();
-
+        for(int i = 0; i < centroids.size(); i++){
+            System.out.print("<"+i+":"+membership.get(i).size()+">");
+        }
+        System.out.println();
         for(int c = 0; c < centroids.size(); c++){
             calculateCenter(c);
         }
@@ -154,7 +162,7 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
     }
 
     public void updateVelocity(double[][] v, KMeans<T,G> local, KMeans<T,G> global){
-        double r1 = 0.127;
+        double r1 = 0.1270;
         double r2 = 0.0975;
         double c1 = 1.42;
         double c2 = 1.42;
