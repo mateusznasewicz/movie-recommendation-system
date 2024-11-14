@@ -32,7 +32,7 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
     protected void gd_step() {
         double[][] old_users = Utils.deepCopy(users);
         double[][] old_movies = Utils.deepCopy(movies);
-        euclideanMultiplicative(old_users,old_movies,1);
+        divergenceAdditive(old_users,old_movies,1);
     }
 
     private void divergenceAdditive(double[][] old_users, double[][] old_movies, double gradientWeight) {

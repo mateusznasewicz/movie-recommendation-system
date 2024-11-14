@@ -47,17 +47,12 @@ public class GeneticAlgorithm {
 
                 Chromosome p1 = pp1.getChromosome();
                 Chromosome p2 = pp2.getChromosome();
+                List<Chromosome> children = p1.crossover(p2,0.1);
+                newPopulation.addAll(children);
+            }
 
-                if(random.nextDouble() < mutationRate){
-                    p1.memetic(1);
-                    p2.memetic(1);
-                }else{
-                    List<Chromosome> children = p1.crossover(p2,0.1);
-                    p1 = children.getFirst();
-                    p2 = children.getLast();
-                }
-                newPopulation.add(p1.copy());
-                newPopulation.add(p2.copy());
+            for(Chromosome c : newPopulation){
+                c.memetic(0.3);
             }
 
 

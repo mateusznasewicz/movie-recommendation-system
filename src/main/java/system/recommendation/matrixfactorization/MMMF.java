@@ -6,8 +6,10 @@ import system.recommendation.models.User;
 import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
 
+import java.security.SecureRandomSpi;
 import java.util.Map;
 import java.util.Random;
+import java.util.SplittableRandom;
 
 public class MMMF extends MatrixFactorization implements Particle{
     private final double[][] margin;
@@ -16,10 +18,11 @@ public class MMMF extends MatrixFactorization implements Particle{
     public MMMF(RatingService<User, Movie> userService, int features, double learningRate, double regularization, double stdDev){
         super(userService, features, learningRate, regularization, false, stdDev);
         this.margin = new double[users.length][discrete_ratings.length];
-        Random random = new Random();
+        SplittableRandom random = new SplittableRandom();
+        double bound = 1/Math.sqrt(features);
         for(int i = 0; i< users.length; i++){
             for(int j = 0; j < discrete_ratings.length; j++){
-                margin[i][j] = random.nextGaussian() + 0.01;
+                margin[i][j] = random.nextDouble(bound);
             }
         }
     }

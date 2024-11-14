@@ -110,7 +110,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
                 e += Math.pow(rating - predicted,2);
             }
         }
-        return e + regularizationLoss();
+        return e;
     }
 
     @Override
@@ -126,9 +126,9 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
     @Override
     public List<Chromosome> crossover(Chromosome p2, double weight) {
         RMF parent2 = (RMF) p2;
-        double[][] pusers = parent2.getUsers();
-        double[][] pmovies = parent2.getMovies();
-        int k = pusers[0].length;
+        double[][] p2users = parent2.getUsers();
+        double[][] p2movies = parent2.getMovies();
+        int k = p2users[0].length;
 
         double[][] u1 = new double[users.length][k];
         double[][] m1 = new double[movies.length][k];
@@ -140,20 +140,20 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
         for(int i = 0; i < u; i++){
             u1[i] = users[i].clone();
-            u2[i] = pusers[i].clone();
+            u2[i] = p2users[i].clone();
         }
         for(int i = u; i < users.length; i++){
-            u1[i] = pusers[i].clone();
+            u1[i] = p2users[i].clone();
             u2[i] = users[i].clone();
         }
 
         for(int i = 0; i < m; i++){
-            m1[i] = pmovies[i].clone();
+            m1[i] = p2movies[i].clone();
             m2[i] = movies[i].clone();
         }
         for(int i = m; i < movies.length; i++){
             m1[i] = movies[i].clone();
-            m2[i] = pmovies[i].clone();
+            m2[i] = p2movies[i].clone();
         }
 
         var c1 = new RMF(u1,m1,learningRate,regularization,userService,distMatrix,totalDist);
@@ -173,9 +173,8 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] old_users = Utils.deepCopy(users);
         RMF best = (RMF) bestParticle;
 
-        euclideanGradient(old_users,old_movies,gradientWeight);
-        regularizationGradient(old_users,old_movies,gradientWeight);
-
+        euclideanGradient(old_users,old_movies,1);
+        regularizationGradient(old_users,old_movies,1);
 
         double weight = learningRate*gradientWeight;
         moveParticleTowardsSwarm(best.users,old_users,users,weight);

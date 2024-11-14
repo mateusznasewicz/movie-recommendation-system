@@ -94,12 +94,18 @@ public abstract class MatrixFactorization{
                 int m = rating.getKey()-1;
                 double predicted = vectorMultiplication(users[u],movies[m]);
                 for(int f = 0; f < users[0].length; f++){
-                    users[u][f] += learningRate*old_movies[m][f]*r - learningRate*old_movies[m][f]*predicted;
-                    movies[m][f] += learningRate*old_users[u][f]*r - learningRate*old_users[u][f]*predicted;
+                    users[u][f] += 2*learningRate*old_movies[m][f]*(r-predicted);
+                    movies[m][f] += 2*learningRate*old_users[u][f]*(r-predicted);
                 }
             }
         }
     }
+
+//    private gradientHelper()
+//
+//    protected void sgdGradient(double[][] old_users, double[][] old_movies, double gradientWeight){
+//
+//    }
 
     protected double regularizationLoss(){
         double loss = 0;
@@ -116,7 +122,7 @@ public abstract class MatrixFactorization{
             }
         }
 
-        return loss*this.regularization;
+        return loss*this.regularization/2;
     }
 
     public static double vectorMultiplication(double[] f1, double[] f2) {
@@ -141,10 +147,11 @@ public abstract class MatrixFactorization{
     }
 
     private double[] initLatentFeatures(int k, boolean nonNegative, double stdDev) {
+        SplittableRandom random = new SplittableRandom();
         double[] latentFeatures = new double[k];
+        double bound = 1/Math.sqrt(k);
         for(int i = 0; i < k; i++){
-            Random random = new Random();
-            latentFeatures[i] = stdDev * random.nextGaussian();
+            latentFeatures[i] = random.nextDouble(bound);
             if(nonNegative){
                 latentFeatures[i] = Math.abs(latentFeatures[i]);
             }

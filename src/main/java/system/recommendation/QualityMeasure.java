@@ -29,6 +29,7 @@ public class QualityMeasure {
                 if(pr == -1) continue;
 
                 error += Math.abs(pr - rating);
+//                System.out.println(Math.abs(pr - rating));
                 n++;
             }
         }

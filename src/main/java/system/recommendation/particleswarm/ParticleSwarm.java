@@ -14,26 +14,31 @@ public class ParticleSwarm{
         }
     }
 
+    private int findBest(double globalLoss){
+        int bestID = -1;
+        for(int i = 0; i < swarm.size(); i++){
+            Particle p = swarm.get(i);
+            double loss = p.getLoss();
+
+            if(loss < globalLoss){
+                bestID = i;
+                globalLoss = loss;
+            }
+        }
+        return bestID;
+    }
+
     public Particle run(int epochs){
         Particle globalBest = null;
         double globalLoss = Double.MAX_VALUE;
 
         for(int t = 0; t < epochs; t++)
         {
-            int bestID = -1;
-
-            for(int i = 0; i < swarm.size(); i++){
-                Particle p = swarm.get(i);
-                double loss = p.getLoss();
-
-                if(loss < globalLoss){
-                    bestID = i;
-                    globalLoss = loss;
-                }
-            }
+            int bestID = findBest(globalLoss);
 
             if(bestID != -1){
                 globalBest = swarm.get(bestID).copyParticle();
+                globalLoss = globalBest.getLoss();
             }
 
             for(Particle p : swarm){
@@ -42,6 +47,7 @@ public class ParticleSwarm{
 
             System.out.println("Epoch " + t + "||"+globalLoss);
         }
-        return globalBest;
+        int id = findBest(globalLoss);
+        return swarm.get(id);
     }
 }
