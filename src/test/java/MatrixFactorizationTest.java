@@ -11,11 +11,11 @@ import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class MatrixFactorizationTest {
-    private final static double learningRate = 0.0002;
+    private final static double learningRate = 0.002;
     private final static double regularization = 0.02;
     private final static int k = 10;
     private final static int populationSize = 50;
-    private final static int epochs = 100;
+    private final static int epochs = 10;
     private static double gradientWeight = 1;
     private static double mutationRate = 0.3;
 
@@ -35,9 +35,9 @@ public class MatrixFactorizationTest {
 
 
 //
-        double mae = RMFGAtest(userService)[0];
 //        double mae = RMFGAtest(userService)[0];
-//        double mae = NMFtest(userService)[0];
+//        double mae = RMFGAtest(userService)[0];
+        double mae = NMFtest(userService)[0];
 
 
 //        RMFtest(userService);

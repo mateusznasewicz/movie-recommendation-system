@@ -135,23 +135,30 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] u2 = new double[users.length][k];
         double[][] m2 = new double[movies.length][k];
 
-        for(int i = 0; i < users.length; i++){
-            for(int j = 0; j < k; j++){
-                u1[i][j] = weight*users[i][j] + (1-weight)*pusers[i][j];
-                u2[i][j] = (1-weight)*users[i][j] + weight*pusers[i][j];
-            }
+        int u = rand.nextInt(users.length);
+        int m = rand.nextInt(movies.length);
+
+        for(int i = 0; i < u; i++){
+            u1[i] = users[i].clone();
+            u2[i] = pusers[i].clone();
+        }
+        for(int i = u; i < users.length; i++){
+            u1[i] = pusers[i].clone();
+            u2[i] = users[i].clone();
         }
 
-        for(int i = 0; i < movies.length; i++){
-            for(int j = 0; j < k; j++){
-                m1[i][j] = weight*movies[i][j] + (1-weight)*pmovies[i][j];
-                m2[i][j] = (1-weight)*movies[i][j] + weight*pmovies[i][j];
-            }
+        for(int i = 0; i < m; i++){
+            m1[i] = pmovies[i].clone();
+            m2[i] = movies[i].clone();
+        }
+        for(int i = m; i < movies.length; i++){
+            m1[i] = movies[i].clone();
+            m2[i] = pmovies[i].clone();
         }
 
         var c1 = new RMF(u1,m1,learningRate,regularization,userService,distMatrix,totalDist);
         var c2 = new RMF(u2,m2,learningRate,regularization,userService,distMatrix,totalDist);
-        System.out.println(fitness() +"|"+p2.fitness()+"|"+c1.fitness()+"|"+ c2.fitness());
+//        System.out.println(fitness() +"|"+p2.fitness()+"|"+c1.fitness()+"|"+ c2.fitness());
         return List.of(c1,c2);
     }
 

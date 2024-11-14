@@ -2,6 +2,7 @@ package system.recommendation.matrixfactorization;
 
 import system.recommendation.Utils;
 import system.recommendation.geneticalgorithm.Chromosome;
+import system.recommendation.models.Entity;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.particleswarm.Particle;
@@ -31,7 +32,7 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
     protected void gd_step() {
         double[][] old_users = Utils.deepCopy(users);
         double[][] old_movies = Utils.deepCopy(movies);
-        euclideanGradient(old_users,old_movies,1);
+        euclideanMultiplicative(old_users,old_movies,1);
     }
 
     private void divergenceAdditive(double[][] old_users, double[][] old_movies, double gradientWeight) {
@@ -146,18 +147,6 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
     }
 
     private void euclideanMultiplicative(double[][] old_users, double[][] old_movies,double gradient){
-        for(int u = 0; u < users.length; u++){
-            User entity = userService.getEntity(u+1);
-            Map<Integer, Double> ratings = entity.getRatings();
-            for(Map.Entry<Integer, Double> rating : ratings.entrySet()){
-                double r = rating.getValue();
-                int m = rating.getKey()-1;
-                double predicted = vectorMultiplication(users[u],movies[m]);
-                for(int f = 0; f < users[0].length; f++){
-                    users[u][f] *= r*old_movies[m][f]/(predicted*old_movies[m][f]+1e-8);
-                    movies[m][f] *= r*old_users[u][f]/(predicted*old_users[u][f]+1e-8);
-                }
-            }
-        }
+        
     }
 }
