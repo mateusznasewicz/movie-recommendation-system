@@ -151,7 +151,7 @@ public abstract class MatrixFactorization{
         double[] latentFeatures = new double[k];
         double bound = 1/Math.sqrt(k);
         for(int i = 0; i < k; i++){
-            latentFeatures[i] = random.nextDouble(bound);
+            latentFeatures[i] = random.nextDouble();
             if(nonNegative){
                 latentFeatures[i] = Math.abs(latentFeatures[i]);
             }

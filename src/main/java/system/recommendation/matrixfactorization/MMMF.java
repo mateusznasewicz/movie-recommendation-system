@@ -22,7 +22,7 @@ public class MMMF extends MatrixFactorization implements Particle{
         double bound = 1/Math.sqrt(features);
         for(int i = 0; i< users.length; i++){
             for(int j = 0; j < discrete_ratings.length; j++){
-                margin[i][j] = random.nextDouble(bound);
+                margin[i][j] = random.nextDouble()+j*0.5;
             }
         }
     }
