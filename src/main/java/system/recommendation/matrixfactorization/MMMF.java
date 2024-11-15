@@ -130,8 +130,8 @@ public class MMMF extends MatrixFactorization implements Particle{
         MMMF best = (MMMF) bestParticle;
 
         //GD part
-        hingeLossGradient(old_users, old_movies, old_margin,gradientWeight);
-        regularizationGradient(old_users,old_movies,gradientWeight);
+        hingeLossGradient(old_users, old_movies, old_margin,1);
+        regularizationGradient(old_users,old_movies,1);
 
         //Swarm moves towards best solution
         double weight = learningRate*gradientWeight;

@@ -8,14 +8,11 @@ public class GeneticAlgorithm {
     public static Chromosome run(List<Chromosome> population, int epochs, double mutationRate){
         Chromosome best = null;
         double bestFit = Double.MAX_VALUE;
-        int elitismSize = (population.size()/5)/2;
 
         for(int e = 0; e < epochs; e++)
         {
             double[] fitness = new double[population.size()];
             double totalFitness = 0;
-
-//            Queue<Integer> elitism = new PriorityQueue<>(elitismSize, (a,b)->Double.compare(fitness[b], fitness[a]));
 
             int bestID = -1;
             for(int i = 0; i < fitness.length; i++){
@@ -26,11 +23,6 @@ public class GeneticAlgorithm {
                     bestFit = fitness[i];
                     bestID = i;
                 }
-
-//                elitism.add(i);
-//                if(elitism.size() > elitismSize){
-//                    elitism.poll();
-//                }
             }
 
             if(bestID != -1){
@@ -55,18 +47,19 @@ public class GeneticAlgorithm {
                 c.memetic(0.3);
             }
 
-
-//            while(!elitism.isEmpty()){
-//                newPopulation.add(population.get(elitism.poll()));
-//            }
-
-//            for(Chromosome c: newPopulation){
-//                c.memetic(mutationRate);
-//            }
-
             population = newPopulation;
             System.out.println("EPOCH " + e + "|" + bestFit);
         }
+
+        for(int i = 0; i < population.size(); i++){
+            double fit = population.get(i).fitness();
+
+            if(fit < bestFit){
+                bestFit = fit;
+                best = population.get(i).copy();
+            }
+        }
+
         return best;
     }
 

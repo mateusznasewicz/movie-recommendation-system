@@ -28,14 +28,14 @@ public class MatrixFactorizationTest {
         ParticleProvider rmFprovider = new RMFprovider(userService,k,learningRate,regularization);
 
 
-//        double mae = swarmTest(userService,rmFprovider)[0];
-        double mae = MMMFtest(userService)[0];
+//        double mae = swarmTest(userService,mmmFprovider)[0];
+//        double mae = MMMFtest(userService)[0];
 //        double mae = swarmTest(userService,rmFprovider)[0];
 //        double mae = RMFtest(userService)[0];
 
 
 //
-//        double mae = RMFGAtest(userService)[0];
+        double mae = RMFGAtest(userService)[0];
 //        double mae = RMFGAtest(userService)[0];
 //        double mae = NMFtest(userService)[0];
 

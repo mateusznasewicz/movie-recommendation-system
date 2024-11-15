@@ -169,13 +169,15 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         euclideanGradient(old_users,old_movies,1);
         regularizationGradient(old_users,old_movies,1);
 
-        double weight = learningRate*gradientWeight;
+        double weight = learningRate;
+//        double x = getLoss();
         moveParticleTowardsSwarm(best.users,old_users,users,weight);
         moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
+//        System.out.println(x + "|" + getLoss());
     }
 
     @Override
     public double getLoss() {
-        return fitness();
+        return fitness() + regularizationLoss();
     }
 }

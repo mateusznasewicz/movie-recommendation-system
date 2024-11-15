@@ -93,9 +93,10 @@ public abstract class MatrixFactorization{
                 double r = rating.getValue();
                 int m = rating.getKey()-1;
                 double predicted = vectorMultiplication(users[u],movies[m]);
+                double weight = gradientWeight*2*learningRate;
                 for(int f = 0; f < users[0].length; f++){
-                    users[u][f] += 2*learningRate*old_movies[m][f]*(r-predicted);
-                    movies[m][f] += 2*learningRate*old_users[u][f]*(r-predicted);
+                    users[u][f] += weight*old_movies[m][f]*(r-predicted);
+                    movies[m][f] += weight*old_users[u][f]*(r-predicted);
                 }
             }
         }
