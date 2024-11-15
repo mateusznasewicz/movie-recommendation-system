@@ -10,6 +10,7 @@ import system.recommendation.service.RatingService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SplittableRandom;
 
 public class NMF extends MatrixFactorization implements Chromosome, Particle {
@@ -33,6 +34,7 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] old_users = Utils.deepCopy(users);
         double[][] old_movies = Utils.deepCopy(movies);
         divergenceAdditive(old_users,old_movies,1);
+        System.out.println(fitness());
     }
 
     private void divergenceAdditive(double[][] old_users, double[][] old_movies, double gradientWeight) {
@@ -146,7 +148,4 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
         return fitness();
     }
 
-    private void euclideanMultiplicative(double[][] old_users, double[][] old_movies,double gradient){
-        
-    }
 }

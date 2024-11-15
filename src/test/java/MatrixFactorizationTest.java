@@ -16,7 +16,7 @@ public class MatrixFactorizationTest {
     private final static int k = 10;
     private final static int populationSize = 50;
     private final static int epochs = 100;
-    private static double gradientWeight = 0.3;
+    private static double gradientWeight = 0.7;
     private static double mutationRate = 0.3;
 
     public static void run(DatasetLoader datasetLoader){
@@ -29,13 +29,13 @@ public class MatrixFactorizationTest {
 
 
 //        double mae = swarmTest(userService,rmFprovider)[0];
-        double mae = MMMFtest(userService)[0];
+//        double mae = MMMFtest(userService)[0];
 //        double mae = swarmTest(userService,rmFprovider)[0];
 //        double mae = RMFtest(userService)[0];
 
 
 //
-//        double mae = RMFGAtest(userService)[0];
+        double mae = RMFGAtest(userService)[0];
 //        double mae = RMFGAtest(userService)[0];
 //        double mae = NMFtest(userService)[0];
 

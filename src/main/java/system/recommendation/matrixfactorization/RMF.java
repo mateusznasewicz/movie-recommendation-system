@@ -135,25 +135,18 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] u2 = new double[users.length][k];
         double[][] m2 = new double[movies.length][k];
 
-        int u = rand.nextInt(users.length);
-        int m = rand.nextInt(movies.length);
-
-        for(int i = 0; i < u; i++){
-            u1[i] = users[i].clone();
-            u2[i] = p2users[i].clone();
-        }
-        for(int i = u; i < users.length; i++){
-            u1[i] = p2users[i].clone();
-            u2[i] = users[i].clone();
+        for(int u = 0; u < users.length; u++){
+            for(int f = 0; f < k; f++){
+                u1[u][f] = weight*users[u][f] + (1-weight)*p2users[u][f];
+                u2[u][f] = weight*p2users[u][f] + (1-weight)*users[u][f];
+            }
         }
 
-        for(int i = 0; i < m; i++){
-            m1[i] = p2movies[i].clone();
-            m2[i] = movies[i].clone();
-        }
-        for(int i = m; i < movies.length; i++){
-            m1[i] = movies[i].clone();
-            m2[i] = p2movies[i].clone();
+        for(int m = 0; m < movies.length; m++){
+            for(int f = 0; f < k; f++){
+                m1[m][f] = weight*movies[m][f] + (1-weight)*p2movies[m][f];
+                m2[m][f] = weight*p2movies[m][f] + (1-weight)*movies[m][f];
+            }
         }
 
         var c1 = new RMF(u1,m1,learningRate,regularization,userService,distMatrix,totalDist);
@@ -173,10 +166,10 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         double[][] old_users = Utils.deepCopy(users);
         RMF best = (RMF) bestParticle;
 
-        euclideanGradient(old_users,old_movies,1);
-        regularizationGradient(old_users,old_movies,1);
+        euclideanGradient(old_users,old_movies,gradientWeight);
+        regularizationGradient(old_users,old_movies,gradientWeight);
 
-        double weight = learningRate*gradientWeight;
+        double weight = learningRate*(1-gradientWeight);
         moveParticleTowardsSwarm(best.users,old_users,users,weight);
         moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
     }
