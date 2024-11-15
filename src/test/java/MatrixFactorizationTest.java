@@ -15,7 +15,7 @@ public class MatrixFactorizationTest {
     private final static double regularization = 0.02;
     private final static int k = 10;
     private final static int populationSize = 50;
-    private final static int epochs = 20;
+    private final static int epochs = 10;
     private static double gradientWeight = 1;
     private static double mutationRate = 0.3;
 
@@ -29,7 +29,7 @@ public class MatrixFactorizationTest {
 
 
 //        double mae = swarmTest(userService,rmFprovider)[0];
-//        double mae = MMMFtest(userService)[0];
+        double mae = MMMFtest(userService)[0];
 //        double mae = swarmTest(userService,rmFprovider)[0];
 //        double mae = RMFtest(userService)[0];
 
