@@ -102,12 +102,6 @@ public abstract class MatrixFactorization{
         }
     }
 
-//    private gradientHelper()
-//
-//    protected void sgdGradient(double[][] old_users, double[][] old_movies, double gradientWeight){
-//
-//    }
-
     protected double regularizationLoss(){
         double loss = 0;
 
