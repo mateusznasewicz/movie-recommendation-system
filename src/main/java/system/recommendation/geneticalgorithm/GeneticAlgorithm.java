@@ -35,11 +35,11 @@ public class GeneticAlgorithm {
                 best = population.get(bestID).copy();
             }
 
-            RMF b = (RMF) best;
-            double[][] ratings = b.getPredictedRatings();
-            double[] result = new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
-            mae[id][e] = result[0];
-            rmse[id][e] = result[1];
+//            RMF b = (RMF) best;
+//            double[][] ratings = b.getPredictedRatings();
+//            double[] result = new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
+//            mae[id][e] = result[0];
+//            rmse[id][e] = result[1];
 
             List<Chromosome> newPopulation = new ArrayList<>();
             for(int i = 0; i < population.size()/2; i++){

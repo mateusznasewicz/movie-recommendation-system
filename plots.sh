@@ -24,6 +24,14 @@
 # python3 plots.py data/RMF_100_RMSE data/RMF_sqrt100_RMSE --xlabel  "epoki" --ylabel "RMSE" --title "RMF_100_RMSE"           
 # python3 plots.py data/RMF_100_MAE data/RMF_sqrt100_MAE --xlabel  "epoki" --ylabel "MAE" --title "RMF_100_MAE"
 
-#RMF UNIFORM VS GA
-python3 plots.py data/RMF_UNIFORM_RMSE data/GA_OPTYMALNY_RMSE --xlabel  "epoki" --ylabel "RMSE" --title "GA_RMSE"           
-python3 plots.py data/RMF_UNIFORM_MAE data/GA_OPTYMALNY_MAE --xlabel  "epoki" --ylabel "MAE" --title "GA_MAE"   
+#RMF RMF VS GA
+# python3 plots.py data/RMF_UNIFORM_RMSE data/GA_OPTYMALNY_RMSE --xlabel  "epoki" --ylabel "RMSE" --title "GA_RMSE"           
+# python3 plots.py data/RMF_UNIFORM_MAE data/GA_OPTYMALNY_MAE --xlabel  "epoki" --ylabel "MAE" --title "GA_MAE"   
+
+#RMF RMF VS SWARM
+# python3 plots.py data/RMF_UNIFORM_RMSE data/SWARM_OPTYMALNY_RMSE --xlabel  "epoki" --ylabel "RMSE" --title "PSO_RMSE"           
+# python3 plots.py data/RMF_UNIFORM_MAE data/SWARM_OPTYMALNY_MAE --xlabel  "epoki" --ylabel "MAE" --title "PSO_MAE"   
+
+#GA VS SWARM
+python3 plots.py data/GA_OPTYMALNY_RMSE data/SWARM_OPTYMALNY_RMSE --xlabel  "epoki" --ylabel "RMSE" --title "GA_PSO_RMSE"   
+python3 plots.py data/GA_OPTYMALNY_MAE data/SWARM_OPTYMALNY_MAE --xlabel  "epoki" --ylabel "MAE" --title "GA_PSO_MAE"   

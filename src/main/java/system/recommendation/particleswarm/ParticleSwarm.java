@@ -1,7 +1,14 @@
 package system.recommendation.particleswarm;
 
+import system.recommendation.QualityMeasure;
+import system.recommendation.matrixfactorization.RMF;
+import system.recommendation.models.Movie;
+import system.recommendation.models.User;
+import system.recommendation.service.RatingService;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ParticleSwarm{
     private final List<Particle> swarm = new ArrayList<>();
@@ -28,7 +35,7 @@ public class ParticleSwarm{
         return bestID;
     }
 
-    public Particle run(int epochs){
+    public Particle run(int epochs, double[][] mae, double[][] rmse, int i, RatingService<User, Movie> userService){
         Particle globalBest = null;
         double globalLoss = Double.MAX_VALUE;
 
@@ -41,11 +48,17 @@ public class ParticleSwarm{
                 globalLoss = globalBest.getLoss();
             }
 
+            RMF b = (RMF) globalBest;
+            double[][] ratings = b.getPredictedRatings();
+            double[] result = new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
+            mae[i][t] = result[0];
+            rmse[i][t] = result[1];
+
             for(Particle p : swarm){
                 p.updateParticle(globalBest,gradientWeight);
             }
 
-            System.out.println("Epoch " + t + "||"+globalLoss);
+//            System.out.println("Epoch " + t + "||"+globalLoss);
         }
         int id = findBest(globalLoss);
         return swarm.get(id);
