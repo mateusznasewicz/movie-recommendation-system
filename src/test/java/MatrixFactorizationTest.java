@@ -7,6 +7,8 @@ import system.recommendation.particleswarm.*;
 import system.recommendation.service.RatingService;
 import system.recommendation.service.UserService;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
@@ -27,10 +29,10 @@ public class MatrixFactorizationTest {
         ParticleProvider mmmFprovider = new MMMFprovider(userService,k,learningRate,regularization);
         ParticleProvider nmFprovider = new NMFprovider(userService,k,learningRate);
         ParticleProvider rmFprovider = new RMFprovider(userService,k,learningRate,regularization);
-
+        saveToFile(userService,"RMF_UNIFORM");
 
 //        double mae = swarmTest(userService,mmmFprovider)[0];
-        double mae = MMMFtest(userService)[0];
+//        double mae = MMMFtest(userService)[0];
 //        double mae = swarmTest(userService,rmFprovider)[0];
 //        double mae = RMFtest(userService)[0];
 
@@ -44,7 +46,34 @@ public class MatrixFactorizationTest {
 //        RMFtest(userService);
 //        NMFGAtest(userService);
 
-        System.out.println(mae);
+    }
+
+    private static void saveToFile(RatingService<User,Movie> userService, String filename) throws IOException {
+        double[][] mae = new double[10][epochs];
+        double[][] rmse = new double[10][epochs];
+        BufferedWriter maeFile = new BufferedWriter(new FileWriter("data/"+filename+"_MAE"));
+        BufferedWriter rmseFile = new BufferedWriter(new FileWriter("data/"+filename+"_RMSE"));
+        for(int i = 0; i < 10; i++){
+            MatrixFactorization mf = new RMF(userService,k,learningRate,regularization,0.01);
+            mf.gd(epochs,mae,rmse,i);
+            System.out.println("REP:"+i);
+        }
+
+        for(int j = 0; j < epochs; j++){
+            double maeResult = 0;
+            double rmseResult = 0;
+            for(int i = 0; i < 10; i++){
+                maeResult += mae[i][j];
+                rmseResult += rmse[i][j];
+            }
+            maeFile.write(j+1 + " " + maeResult/10);
+            rmseFile.write(j+1 + " " + rmseResult/10);
+            maeFile.newLine();
+            rmseFile.newLine();
+        }
+
+        maeFile.close();
+        rmseFile.close();
     }
 
     private static double[] NMFtest(RatingService<User,Movie> userService) throws IOException {

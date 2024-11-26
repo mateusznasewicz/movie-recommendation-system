@@ -20,10 +20,9 @@ def plot_from_files(file_names, xlabel, ylabel, title):
     
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-    plt.title(title)
     plt.legend()
     plt.grid(True)
-    plt.show()
+    plt.savefig(f'wykresy/{title}', bbox_inches='tight', pad_inches=0)
 
 if __name__ == "__main__":
 

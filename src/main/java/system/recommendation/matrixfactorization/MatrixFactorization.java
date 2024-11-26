@@ -68,21 +68,23 @@ public abstract class MatrixFactorization{
     public abstract double[][] getPredictedRatings();
     protected abstract void gd_step();
 
-    public void gd(int epochs) throws IOException {
-        BufferedWriter mse = new BufferedWriter(new FileWriter("data/MMMF_GAUSSIAN_MAE"));
-        BufferedWriter rmse = new BufferedWriter(new FileWriter("data/MMMF_GAUSSIAN_RMSE"));
+    public void gd(int epochs){
+        for(int i = 0; i < epochs; i++) {
+            gd_step();
+            System.out.println(i);
+        }
+    }
+
+    public void gd(int epochs, double[][] mae, double[][] rmse, int id){
         for(int i = 0; i < epochs; i++) {
             gd_step();
             double[][] ratings = getPredictedRatings();
             double[] result = new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
-            mse.write(i+1 + " " + result[0]);
-            rmse.write(i+1 + " " + result[1]);
-            mse.newLine();
-            rmse.newLine();
+            mae[id][i] = result[0];
+            rmse[id][i] = result[1];
         }
-        mse.close();
-        rmse.close();
     }
+    
 
     protected void regularizationGradient(double[][] old_users, double[][] old_movies, double gradientWeight){
         double weight = gradientWeight*learningRate*regularization;
@@ -157,7 +159,7 @@ public abstract class MatrixFactorization{
         double[] latentFeatures = new double[k];
         double bound = 1/Math.sqrt(k);
         for(int i = 0; i < k; i++){
-            latentFeatures[i] = random.nextGaussian();
+            latentFeatures[i] = random.nextDouble(bound);
             if(nonNegative){
                 latentFeatures[i] = Math.abs(latentFeatures[i]);
             }

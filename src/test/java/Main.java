@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        DatasetLoader datasetLoader = new DatasetLoader("ml-latest-small",true,false);
+        DatasetLoader datasetLoader = new DatasetLoader("ml-latest-small",false,false);
 //        KnnTest.run(datasetLoader);
 //        KNNGATEST.run(datasetLoader);
 //        ParticleSwarmTest.run(datasetLoader);
