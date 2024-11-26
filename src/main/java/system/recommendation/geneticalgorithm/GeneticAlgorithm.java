@@ -1,11 +1,17 @@
 package system.recommendation.geneticalgorithm;
 
+import system.recommendation.QualityMeasure;
+import system.recommendation.matrixfactorization.RMF;
+import system.recommendation.models.Movie;
+import system.recommendation.models.User;
+import system.recommendation.service.RatingService;
+
 import java.util.*;
 
 public class GeneticAlgorithm {
     private static final SplittableRandom random = new SplittableRandom();
 
-    public static Chromosome run(List<Chromosome> population, int epochs, double mutationRate){
+    public static Chromosome run(List<Chromosome> population, int epochs, double mutationRate, double[][] mae, double[][] rmse, RatingService<User, Movie> userService, int id){
         Chromosome best = null;
         double bestFit = Double.MAX_VALUE;
 
@@ -29,6 +35,12 @@ public class GeneticAlgorithm {
                 best = population.get(bestID).copy();
             }
 
+            RMF b = (RMF) best;
+            double[][] ratings = b.getPredictedRatings();
+            double[] result = new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
+            mae[id][e] = result[0];
+            rmse[id][e] = result[1];
+
             List<Chromosome> newPopulation = new ArrayList<>();
             for(int i = 0; i < population.size()/2; i++){
                 ChromosomePairID pp1 = rouletteWheel(population,fitness,totalFitness);
@@ -48,7 +60,6 @@ public class GeneticAlgorithm {
             }
 
             population = newPopulation;
-            System.out.println("EPOCH " + e + "|" + bestFit);
         }
 
         for(int i = 0; i < population.size(); i++){

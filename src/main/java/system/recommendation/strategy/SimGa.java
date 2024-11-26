@@ -4,6 +4,8 @@ import system.recommendation.geneticalgorithm.Chromosome;
 import system.recommendation.geneticalgorithm.GeneticAlgorithm;
 import system.recommendation.geneticalgorithm.SimChromosome;
 import system.recommendation.models.Entity;
+import system.recommendation.models.Movie;
+import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
 
 import java.util.ArrayList;
@@ -48,9 +50,9 @@ public class SimGa <T extends Entity, G extends Entity>{
         return population;
     }
 
-    public SimChromosome<T,G>  run() {
+    public SimChromosome<T,G>  run(double[][] mae, double[][] rmse, int id) {
         List<Chromosome> population = initPopulation();
-        Chromosome best = GeneticAlgorithm.run(population,epochs,0.2);
+        Chromosome best = GeneticAlgorithm.run(population,epochs,0.2,mae,rmse, (RatingService<User, Movie>) ratingService,id);
         return (SimChromosome<T, G>) best;
     }
 }

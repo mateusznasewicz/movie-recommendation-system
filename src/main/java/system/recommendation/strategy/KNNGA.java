@@ -34,12 +34,12 @@ public class KNNGA<T extends Entity, G extends Entity> extends KNN<T> {
         return population;
     }
 
-    @Override
-    public List<Integer> getNeighbors(T item) {
-        List<Chromosome> population = initPopulation(item);
-        if(population == null) return List.of();
-
-        Chromosome best = GeneticAlgorithm.run(population,epochs,0.2);
-        return ((KnnChromosome<T,G>) best).getNeighbors();
-    }
+//    @Override
+//    public List<Integer> getNeighbors(T item) {
+//        List<Chromosome> population = initPopulation(item);
+//        if(population == null) return List.of();
+//
+//        Chromosome best = GeneticAlgorithm.run(population,epochs,0.2);
+//        return ((KnnChromosome<T,G>) best).getNeighbors();
+//    }
 }

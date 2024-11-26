@@ -28,12 +28,6 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         super(users,movies,learningRate,regularization,userService);
     }
 
-    public RMF(RatingService<User, Movie> userService, int k, double learningRate, double regularization,double stdDev,double[][] distMatrix, double[] totalDist) {
-        super(userService, k, learningRate, regularization, false, stdDev);
-        this.distMatrix = distMatrix;
-        this.totalDist = totalDist;
-    }
-
     @Override
     public double[][] getPredictedRatings() {
         return multiplyFactorizedMatrices();
@@ -49,46 +43,7 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
     @Override
     public void mutate(double chance) {
-        if(rand.nextDouble() >= chance)  return;
-        int u;
-        do{
-            u = rand.nextInt(users.length);
-        }while(totalDist[u] == 0);
 
-        double r = rand.nextDouble(totalDist[u]);
-        double cumulativeDist = 0;
-
-        for(int i = 0; i < distMatrix.length; i++){
-            if(distMatrix[u][i] == 0)continue;
-            cumulativeDist += 1.0 / distMatrix[u][i];
-            if(cumulativeDist > r){
-                double[] t = users[u];
-                users[u] = users[i];
-                users[i] = t;
-                break;
-            }
-        }
-
-        User user = userService.getEntity(u+1);
-        Set<Integer> mIDs = user.getRatings().keySet();
-        double min = Double.MAX_VALUE;
-        int bestID = -1;
-        int id1 = mIDs.iterator().next() - 1;
-        double p1 =  vectorMultiplication(users[u],movies[id1]);
-
-        for(int id2: mIDs){
-            if(id1==id2-1)continue;
-            double p2 =  vectorMultiplication(users[u],movies[id2-1]);
-            double dist = Math.abs(p1-p2);
-            if(dist < min){
-                bestID = id2-1;
-                min = dist;
-            }
-        }
-
-        double[] t = movies[id1];
-        movies[id1] = movies[bestID];
-        movies[bestID] = t;
     }
 
     @Override

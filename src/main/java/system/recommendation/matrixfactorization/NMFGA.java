@@ -31,9 +31,9 @@ public class NMFGA {
         return population;
     }
 
-    public NMF run(int populationSize, int epochs, double mutationRate){
-        List<Chromosome> population = initPopulation(populationSize);
-        Chromosome best = GeneticAlgorithm.run(population,epochs,mutationRate);
-        return (NMF) best;
-    }
+//    public NMF run(int populationSize, int epochs, double mutationRate){
+//        List<Chromosome> population = initPopulation(populationSize);
+//        Chromosome best = GeneticAlgorithm.run(population,epochs,mutationRate);
+//        return (NMF) best;
+//    }
 }

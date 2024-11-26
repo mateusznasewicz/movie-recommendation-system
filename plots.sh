@@ -21,5 +21,9 @@
 # python3 plots.py data/RMF_UNIFORM_MAE data/RMF_50_MAE data/RMF_100_MAE --xlabel  "epoki" --ylabel "MAE" --title "RMF_K_MAE"  
 
 #RMF SQRT vs K
-python3 plots.py data/RMF_100_RMSE data/RMF_sqrt100_RMSE --xlabel  "epoki" --ylabel "RMSE" --title "RMF_100_RMSE"           
-python3 plots.py data/RMF_100_MAE data/RMF_sqrt100_MAE --xlabel  "epoki" --ylabel "MAE" --title "RMF_100_MAE"    
+# python3 plots.py data/RMF_100_RMSE data/RMF_sqrt100_RMSE --xlabel  "epoki" --ylabel "RMSE" --title "RMF_100_RMSE"           
+# python3 plots.py data/RMF_100_MAE data/RMF_sqrt100_MAE --xlabel  "epoki" --ylabel "MAE" --title "RMF_100_MAE"
+
+#RMF UNIFORM VS GA
+python3 plots.py data/RMF_UNIFORM_RMSE data/GA_OPTYMALNY_RMSE --xlabel  "epoki" --ylabel "RMSE" --title "GA_RMSE"           
+python3 plots.py data/RMF_UNIFORM_MAE data/GA_OPTYMALNY_MAE --xlabel  "epoki" --ylabel "MAE" --title "GA_MAE"   
