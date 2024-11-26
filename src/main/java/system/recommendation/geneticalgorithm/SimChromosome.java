@@ -3,8 +3,6 @@ package system.recommendation.geneticalgorithm;
 import system.recommendation.QualityMeasure;
 import system.recommendation.Utils;
 import system.recommendation.models.Entity;
-import system.recommendation.recommender.CollaborativeFiltering;
-import system.recommendation.recommender.Recommender;
 import system.recommendation.service.RatingService;
 import system.recommendation.strategy.KNN;
 
@@ -20,8 +18,6 @@ public class SimChromosome<T extends Entity, G extends Entity> extends KNN<T> im
         this.ratingService = ratingService;
     }
 
-
-
     @Override
     public void mutate(double chance){
 
@@ -29,15 +25,22 @@ public class SimChromosome<T extends Entity, G extends Entity> extends KNN<T> im
 
     @Override
     public void memetic(double chance) {
-        if(random.nextDouble() >= chance) return;
-        int i = random.nextInt(this.simMatrix.length);
-        int j;
-        do{
-            j = random.nextInt(this.simMatrix.length);
-        }while(i == j);
-        double r = random.nextDouble();
-        simMatrix[i][j] = r;
-        simMatrix[j][i] = r;
+        for(int i = 0; i < simMatrix.length; i++){
+            for(int j = i+1; j < simMatrix[i].length; j++){
+                if(random.nextDouble() >= chance) continue;
+                double r = random.nextDouble();
+                simMatrix[i][j] = r;
+                simMatrix[j][i] = r;
+            }
+        }
+//        int i = random.nextInt(this.simMatrix.length);
+//        int j;
+//        do{
+//            j = random.nextInt(this.simMatrix.length);
+//        }while(i == j);
+//        double r = random.nextDouble();
+//        simMatrix[i][j] = r;
+//        simMatrix[j][i] = r;
     }
 
     @Override
@@ -61,7 +64,7 @@ public class SimChromosome<T extends Entity, G extends Entity> extends KNN<T> im
 
         for(Integer nID: neighbors){
             double sim = simMatrix[eID-1][nID-1];
-            if(!ratingService.isRatedById(nID, iID) || sim < 0) continue;
+            if(!ratingService.isRatedById(nID, iID) || sim < 0 || nID == eID) continue;
             numerator += sim * ratingService.getRating(nID,iID);
             denominator += sim;
         }
@@ -80,11 +83,10 @@ public class SimChromosome<T extends Entity, G extends Entity> extends KNN<T> im
        double[][] c1 = new double[simMatrix.length][simMatrix.length];
        double[][] c2 = new double[simMatrix.length][simMatrix.length];
 
-
        SimChromosome p2 = (SimChromosome)p;
 
        for(int i = 0; i < simMatrix.length; i++){
-           for(int j = 0; j < simMatrix.length; j++){
+           for(int j = i+1; j < simMatrix.length; j++){
                if(random.nextBoolean()){
                    c1[i][j] = simMatrix[i][j];
                    c2[i][j] = p2.simMatrix[j][i];
@@ -92,8 +94,19 @@ public class SimChromosome<T extends Entity, G extends Entity> extends KNN<T> im
                    c2[i][j] = simMatrix[i][j];
                    c1[i][j] = p2.simMatrix[j][i];
                }
+               c1[j][i] = c1[i][j];
+               c2[j][i] = c2[i][j];
            }
        }
+
+//        for(int i = 0;  i < simMatrix.length;  i++){
+//            for(int j = i+1;  j < simMatrix.length;  j++){
+//                c1[i][j] = p2.simMatrix[i][j]*weight + (1-weight)*simMatrix[i][j];
+//                c2[i][j] = p2.simMatrix[i][j]*(1-weight) + weight*simMatrix[i][j];
+//                c1[j][i] = c1[i][j];
+//                c2[j][i] = c2[i][j];
+//            }
+//        }
 
         return List.of(new SimChromosome<>(ratingService,c1,k),new SimChromosome<>(ratingService,c2,k));
     }

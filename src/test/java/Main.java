@@ -3,10 +3,11 @@ import system.recommendation.geneticalgorithm.GeneticAlgorithm;
 import system.recommendation.strategy.KMeans;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 public class Main {
-    public static void main(String[] args) throws FileNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public static void main(String[] args) throws IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         DatasetLoader datasetLoader = new DatasetLoader("ml-latest-small",true,false);
 //        KnnTest.run(datasetLoader);
 //        KNNGATEST.run(datasetLoader);

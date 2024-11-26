@@ -1,10 +1,14 @@
 package system.recommendation.matrixfactorization;
 
+import system.recommendation.QualityMeasure;
 import system.recommendation.Utils;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public abstract class MatrixFactorization{
@@ -64,20 +68,24 @@ public abstract class MatrixFactorization{
     public abstract double[][] getPredictedRatings();
     protected abstract void gd_step();
 
-    public void gd(int epochs){
+    public void gd(int epochs) throws IOException {
+        BufferedWriter mse = new BufferedWriter(new FileWriter("data/MMMF_GAUSSIAN_MAE"));
+        BufferedWriter rmse = new BufferedWriter(new FileWriter("data/MMMF_GAUSSIAN_RMSE"));
         for(int i = 0; i < epochs; i++) {
             gd_step();
-            System.out.println("EPOCH " + i);
+            double[][] ratings = getPredictedRatings();
+            double[] result = new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
+            mse.write(i+1 + " " + result[0]);
+            rmse.write(i+1 + " " + result[1]);
+            mse.newLine();
+            rmse.newLine();
         }
+        mse.close();
+        rmse.close();
     }
 
     protected void regularizationGradient(double[][] old_users, double[][] old_movies, double gradientWeight){
         double weight = gradientWeight*learningRate*regularization;
-        for(int i = 0; i< users.length; i++){
-            for(int f = 0; f < users[0].length; f++){
-                users[i][f] -= weight*old_users[i][f];
-            }
-        }
         for(int i = 0; i< movies.length; i++){
             for(int f = 0; f < movies[0].length; f++){
                 movies[i][f] -= weight*old_movies[i][f];
@@ -89,18 +97,21 @@ public abstract class MatrixFactorization{
         for(int u = 0; u < users.length; u++){
             User entity = userService.getEntity(u+1);
             Map<Integer, Double> ratings = entity.getRatings();
-            for(Map.Entry<Integer, Double> rating : ratings.entrySet()){
-                double r = rating.getValue();
-                int m = rating.getKey()-1;
-                double predicted = vectorMultiplication(users[u],movies[m]);
-                double weight = gradientWeight*2*learningRate;
-                for(int f = 0; f < users[0].length; f++){
+            for(int f = 0; f < users[0].length; f++){
+                for(Map.Entry<Integer, Double> rating : ratings.entrySet()){
+                    double r = rating.getValue();
+                    int m = rating.getKey()-1;
+                    double predicted = vectorMultiplication(users[u],movies[m]);
+                    double weight = gradientWeight*2*learningRate;
                     users[u][f] += weight*old_movies[m][f]*(r-predicted);
                     movies[m][f] += weight*old_users[u][f]*(r-predicted);
                 }
+                users[u][f] -= learningRate*regularization*old_users[u][f];
             }
         }
     }
+
+
 
     protected double regularizationLoss(){
         double loss = 0;
@@ -146,7 +157,7 @@ public abstract class MatrixFactorization{
         double[] latentFeatures = new double[k];
         double bound = 1/Math.sqrt(k);
         for(int i = 0; i < k; i++){
-            latentFeatures[i] = random.nextDouble();
+            latentFeatures[i] = random.nextGaussian();
             if(nonNegative){
                 latentFeatures[i] = Math.abs(latentFeatures[i]);
             }

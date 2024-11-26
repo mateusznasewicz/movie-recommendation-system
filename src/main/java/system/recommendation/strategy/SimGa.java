@@ -48,7 +48,7 @@ public class SimGa <T extends Entity, G extends Entity>{
         return population;
     }
 
-    public SimChromosome<T,G> run() {
+    public SimChromosome<T,G>  run() {
         List<Chromosome> population = initPopulation();
         Chromosome best = GeneticAlgorithm.run(population,epochs,0.2);
         return (SimChromosome<T, G>) best;

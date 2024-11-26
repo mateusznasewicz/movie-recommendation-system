@@ -39,7 +39,7 @@ public class KNNGA<T extends Entity, G extends Entity> extends KNN<T> {
         List<Chromosome> population = initPopulation(item);
         if(population == null) return List.of();
 
-        Chromosome best = GeneticAlgorithm.run(population,epochs,0.02);
+        Chromosome best = GeneticAlgorithm.run(population,epochs,0.2);
         return ((KnnChromosome<T,G>) best).getNeighbors();
     }
 }

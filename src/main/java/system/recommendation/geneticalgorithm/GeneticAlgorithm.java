@@ -39,12 +39,12 @@ public class GeneticAlgorithm {
 
                 Chromosome p1 = pp1.getChromosome();
                 Chromosome p2 = pp2.getChromosome();
-                List<Chromosome> children = p1.crossover(p2,0.1);
+                List<Chromosome> children = p1.crossover(p2,0.4);
                 newPopulation.addAll(children);
             }
 
             for(Chromosome c : newPopulation){
-                c.memetic(0.3);
+                c.memetic(mutationRate);
             }
 
             population = newPopulation;

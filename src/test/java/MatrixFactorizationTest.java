@@ -7,6 +7,7 @@ import system.recommendation.particleswarm.*;
 import system.recommendation.service.RatingService;
 import system.recommendation.service.UserService;
 
+import java.io.IOException;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
@@ -15,11 +16,11 @@ public class MatrixFactorizationTest {
     private final static double regularization = 0.02;
     private final static int k = 10;
     private final static int populationSize = 50;
-    private final static int epochs = 10;
+    private final static int epochs = 100;
     private static double gradientWeight = 1;
     private static double mutationRate = 0.3;
 
-    public static void run(DatasetLoader datasetLoader){
+    public static void run(DatasetLoader datasetLoader) throws IOException {
         Map<Integer, User> users = datasetLoader.getUsers();
         Map<Integer, Movie> movies = datasetLoader.getMovies();
         RatingService<User,Movie> userService = new UserService(users,movies);
@@ -29,13 +30,13 @@ public class MatrixFactorizationTest {
 
 
 //        double mae = swarmTest(userService,mmmFprovider)[0];
-//        double mae = MMMFtest(userService)[0];
+        double mae = MMMFtest(userService)[0];
 //        double mae = swarmTest(userService,rmFprovider)[0];
 //        double mae = RMFtest(userService)[0];
 
 
 //
-        double mae = RMFGAtest(userService)[0];
+//        double mae = RMFGAtest(userService)[0];
 //        double mae = RMFGAtest(userService)[0];
 //        double mae = NMFtest(userService)[0];
 
@@ -46,7 +47,7 @@ public class MatrixFactorizationTest {
         System.out.println(mae);
     }
 
-    private static double[] NMFtest(RatingService<User,Movie> userService){
+    private static double[] NMFtest(RatingService<User,Movie> userService) throws IOException {
         MatrixFactorization mf = new NMF(userService,k,learningRate,0.01);
         mf.gd(epochs);
 
@@ -54,7 +55,7 @@ public class MatrixFactorizationTest {
         return new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
     }
 
-    private static double[] RMFtest(RatingService<User,Movie> userService){
+    private static double[] RMFtest(RatingService<User,Movie> userService) throws IOException {
         RMF mf = new RMF(userService,k,learningRate,regularization,0.01);
         mf.gd(epochs);
 
@@ -63,7 +64,7 @@ public class MatrixFactorizationTest {
         return new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
     }
 
-    private static double[] MMMFtest(RatingService<User,Movie> userService){
+    private static double[] MMMFtest(RatingService<User,Movie> userService) throws IOException {
         MatrixFactorization mf = new MMMF(userService,k,learningRate,regularization,0.01);
         mf.gd(epochs);
 
