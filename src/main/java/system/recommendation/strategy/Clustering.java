@@ -6,7 +6,9 @@ import system.recommendation.models.User;
 import system.recommendation.service.MovieService;
 import system.recommendation.service.RatingService;
 import system.recommendation.service.UserService;
+import system.recommendation.similarity.AdjustedCosine;
 import system.recommendation.similarity.EuclideanDistance;
+import system.recommendation.similarity.PearsonCorrelation;
 import system.recommendation.similarity.Similarity;
 
 import java.lang.reflect.InvocationTargetException;
@@ -92,7 +94,7 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
     public void calcCentroids(int epochs) {
         for(int i = 0; i < epochs; i++){
             step();
-            System.out.println(i + "||" + calcLoss());
+//            System.out.println(i + "||" + calcLoss());
         }
     }
 

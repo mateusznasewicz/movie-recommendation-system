@@ -9,10 +9,10 @@ import java.lang.reflect.InvocationTargetException;
 public class Main {
     public static void main(String[] args) throws IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         DatasetLoader datasetLoader = new DatasetLoader("ml-latest-small",true,true);
-        KnnTest.run(datasetLoader);
+//        KnnTest.run(datasetLoader);
 //        KNNGATEST.run(datasetLoader);
 //        ParticleSwarmTest.run(datasetLoader);
 //        MatrixFactorizationTest.run(datasetLoader);
-//        KMeansTest.run(datasetLoader);
+        KMeansTest.run(datasetLoader);
     }
 }

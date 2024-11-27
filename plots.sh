@@ -37,9 +37,12 @@
 #python3 plots.py data/GA_OPTYMALNY_MAE data/SWARM_OPTYMALNY_MAE --xlabel  "epoki" --ylabel "MAE" --title "GA_PSO_MAE"
 
 #KNN USER
-python3 plots.py data/knn_user_pearson_RMSE data/knn_user_euclidean_RMSE data/knn_user_adjustedCosine_RMSE --xlabel  "k" --ylabel "RMSE" --title "user_based_RMSE"   
-python3 plots.py data/knn_user_pearson_MAE data/knn_user_euclidean_MAE data/knn_user_adjustedCosine_MAE --xlabel  "k" --ylabel "MAE" --title "user_based_MAE"
+# python3 plots.py data/knn_user_pearson_RMSE data/knn_user_euclidean_RMSE data/knn_user_adjustedCosine_RMSE --xlabel  "k" --ylabel "RMSE" --title "user_based_RMSE"   
+# python3 plots.py data/knn_user_pearson_MAE data/knn_user_euclidean_MAE data/knn_user_adjustedCosine_MAE --xlabel  "k" --ylabel "MAE" --title "user_based_MAE"
 
 #KNN ITEM
-python3 plots.py data/knn_item_pearson_RMSE data/knn_item_euclidean_RMSE data/knn_item_adjustedCosine_RMSE --xlabel  "k" --ylabel "RMSE" --title "item_based_RMSE"   
-python3 plots.py data/knn_item_pearson_MAE data/knn_item_euclidean_MAE data/knn_item_adjustedCosine_MAE --xlabel  "k" --ylabel "MAE" --title "item_based_MAE"
+# python3 plots.py data/knn_item_pearson_RMSE data/knn_item_euclidean_RMSE data/knn_item_adjustedCosine_RMSE --xlabel  "k" --ylabel "RMSE" --title "item_based_RMSE"   
+# python3 plots.py data/knn_item_pearson_MAE data/knn_item_euclidean_MAE data/knn_item_adjustedCosine_MAE --xlabel  "k" --ylabel "MAE" --title "item_based_MAE"
+
+#KMEANS
+# python3 plots.py data/kmeans_MAE data/kmeans_RMSE --xlabel  "k" --ylabel "ERROR" --title "item_based_KMEANS"   

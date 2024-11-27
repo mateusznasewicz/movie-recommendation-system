@@ -112,10 +112,10 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
     @Override
     protected void step(){
         assignMembership();
-        for(int i = 0; i < centroids.size(); i++){
-            System.out.print("<"+i+":"+membership.get(i).size()+">");
-        }
-        System.out.println();
+//        for(int i = 0; i < centroids.size(); i++){
+//            System.out.print("<"+i+":"+membership.get(i).size()+">");
+//        }
+//        System.out.println();
         for(int c = 0; c < centroids.size(); c++){
             calculateCenter(c);
         }
