@@ -6,34 +6,37 @@ import system.recommendation.service.RatingService;
 import java.util.*;
 
 public class KnnChromosome<T extends Entity, G extends Entity> implements Chromosome{
-    private final int[] neighbors;
     private final double[] weights;
+    private int k;
 
     private final T item;
     private final RatingService<T,G> ratingService;
     private final SplittableRandom random = new SplittableRandom();
 
-    public KnnChromosome(T item, RatingService<T,G> ratingService, List<Integer> n, double[][] simMatrix) {
+    public KnnChromosome(T item, RatingService<T,G> ratingService, int k) {
+        this.k = k;
         this.item = item;
         this.ratingService = ratingService;
-        neighbors = new int[n.size()];
-        weights = new double[n.size()];
+        weights = new double[ratingService.getEntityMap().size()];
 
-        for(int i = 0; i < n.size(); i++) {
-            neighbors[i] = n.get(i);
-            weights[i] = simMatrix[item.getId()-1][n.get(i)-1] + random.nextDouble(-0.1, 0.1);
+        for(int i = 0; i < weights.length; i++) {
+            weights[i] = random.nextDouble();
         }
     }
 
-    public KnnChromosome(T item, RatingService<T,G> ratingService, int[] neighbors, double[] weights) {
+    public KnnChromosome(T item, RatingService<T,G> ratingService, double[] weights, int k) {
         this.item = item;
-        this.neighbors = neighbors;
         this.weights = weights;
         this.ratingService = ratingService;
+        this.k = k;
     }
 
-    public List<Integer> getNeighbors(){
-        return Arrays.stream(neighbors).boxed().toList();
+    public int getID(){
+        return this.item.getId();
+    }
+
+    public double[] getWeights(){
+        return this.weights;
     }
 
     @Override
@@ -56,33 +59,49 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
         int n = 0;
 
         Map<Integer,Double> ratings = item.getRatings();
+        List<Integer> nei = neighborsLocal();
 
         for(Map.Entry<Integer,Double> entry : ratings.entrySet()) {
             int iID = entry.getKey();
             double rating = entry.getValue();
-            double predicted = predict(iID);
+
+            double predicted = predict(iID,nei);
 
             if(predicted == -1) continue;
             error += Math.abs(predicted - rating);
             n++;
         }
-
-        return error/n;
+//        System.out.println(error/n + " " + n);
+        if(n == 0) return  Double.MAX_VALUE;
+        return error / n;
     }
 
     @Override
     public Chromosome copy(){
-        return new KnnChromosome<>(item,ratingService,neighbors.clone(),weights.clone());
+        return new KnnChromosome<>(item,ratingService,weights.clone(),k);
     }
 
-    private double predict(int iID){
+    public List<Integer> neighborsLocal(){
+        Queue<Integer> queue = new PriorityQueue<>(k,(a, b) -> Double.compare(weights[a-1], weights[b-1]));
+
+        for(int nID = 1; nID < weights.length+1; nID++){
+            if(nID != item.getId()){
+                queue.add(nID);
+                if (queue.size() > k) {
+                    queue.poll();
+                }
+            }
+        }
+
+        return queue.stream().toList();
+    }
+
+    private double predict(int iID, List<Integer> n){
         double numerator = 0;
         double denominator = 0;
 
-        int i = 0;
-        for(int nID: neighbors){
-            double sim = weights[i];
-            i++;
+        for(int nID: n){
+            double sim = weights[nID-1];
             if(!ratingService.isRatedById(nID, iID))continue;
             numerator += sim * ratingService.getRating(nID,iID);
             denominator += Math.abs(sim);
@@ -104,8 +123,18 @@ public class KnnChromosome<T extends Entity, G extends Entity> implements Chromo
             w2[i] = p2[i]*weight + (1-weight)*p1[i];
         }
 
-        var c1 = new KnnChromosome<>(item, ratingService, neighbors, w1);
-        var c2 = new KnnChromosome<>(item, ratingService, neighbors, w2);
+//        for(int i = 0; i < weights.length; i++) {
+//            if(random.nextBoolean()){
+//                w1[i] = p1[i];
+//                w2[i] = p2[i];
+//            }else  {
+//                w1[i] = p2[i];
+//                w2[i] = p1[i];
+//            }
+//        }
+
+        var c1 = new KnnChromosome<>(item, ratingService, w1, k);
+        var c2 = new KnnChromosome<>(item, ratingService, w2, k);
         return List.of(c1,c2);
     }
 

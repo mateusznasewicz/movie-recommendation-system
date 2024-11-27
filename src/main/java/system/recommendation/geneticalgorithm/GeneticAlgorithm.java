@@ -85,7 +85,7 @@ public class GeneticAlgorithm {
 
             int bestID = -1;
             for(int i = 0; i < fitness.length; i++){
-                fitness[i] = population.get(i).fitness();
+                fitness[i] = population.get(i).fitness() + 0.001;
                 totalFitness += 1.0 / fitness[i];
 
                 if(fitness[i] < bestFit){
@@ -97,7 +97,7 @@ public class GeneticAlgorithm {
             if(bestID != -1){
                 best = population.get(bestID).copy();
             }
-
+//            System.out.println("EPOCH:"+e + "|"+bestFit);
             List<Chromosome> newPopulation = new ArrayList<>();
             for(int i = 0; i < population.size()/2; i++){
                 ChromosomePairID pp1 = rouletteWheel(population,fitness,totalFitness);
@@ -117,7 +117,7 @@ public class GeneticAlgorithm {
             }
 
             population = newPopulation;
-            System.out.println("EPOCH:"+e);
+//            System.out.println("EPOCH:"+e);
         }
 
         for(int i = 0; i < population.size(); i++){
@@ -133,7 +133,6 @@ public class GeneticAlgorithm {
     }
 
     private static ChromosomePairID rouletteWheel(List<Chromosome> population, double[] fitness, double totalFitness){
-
         double r = random.nextDouble(totalFitness);
         double cumulativeFitness = 0;
 

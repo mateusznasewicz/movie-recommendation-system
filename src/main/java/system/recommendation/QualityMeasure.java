@@ -33,7 +33,6 @@ public class QualityMeasure {
                 n++;
             }
         }
-        System.out.println(n+"/"+total);
         return error/n;
     }
 

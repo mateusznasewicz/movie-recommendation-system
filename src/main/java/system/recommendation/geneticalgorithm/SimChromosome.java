@@ -33,14 +33,6 @@ public class SimChromosome<T extends Entity, G extends Entity> extends KNN<T> im
                 simMatrix[j][i] = r;
             }
         }
-//        int i = random.nextInt(this.simMatrix.length);
-//        int j;
-//        do{
-//            j = random.nextInt(this.simMatrix.length);
-//        }while(i == j);
-//        double r = random.nextDouble();
-//        simMatrix[i][j] = r;
-//        simMatrix[j][i] = r;
     }
 
     @Override
@@ -98,15 +90,6 @@ public class SimChromosome<T extends Entity, G extends Entity> extends KNN<T> im
                c2[j][i] = c2[i][j];
            }
        }
-
-//        for(int i = 0;  i < simMatrix.length;  i++){
-//            for(int j = i+1;  j < simMatrix.length;  j++){
-//                c1[i][j] = p2.simMatrix[i][j]*weight + (1-weight)*simMatrix[i][j];
-//                c2[i][j] = p2.simMatrix[i][j]*(1-weight) + weight*simMatrix[i][j];
-//                c1[j][i] = c1[i][j];
-//                c2[j][i] = c2[i][j];
-//            }
-//        }
 
         return List.of(new SimChromosome<>(ratingService,c1,k),new SimChromosome<>(ratingService,c2,k));
     }

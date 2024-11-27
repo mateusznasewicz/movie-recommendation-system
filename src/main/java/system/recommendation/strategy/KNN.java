@@ -17,10 +17,6 @@ public class KNN<T extends Entity> extends Strategy<T>{
         super(k,simMatrix);
     }
 
-    public KNN(Map<Integer, T> hashmap, Similarity<T> simFunction) {
-        super(hashmap,simFunction);
-    }
-
     @Override
     public List<Integer> getNeighbors(T obj){
         Queue<Integer> queue = findNeighbors(this.k,obj);;

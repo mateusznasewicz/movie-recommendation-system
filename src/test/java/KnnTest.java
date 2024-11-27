@@ -19,8 +19,8 @@ import java.io.IOException;
 
 public class KnnTest {
     public static void run(DatasetLoader datasetLoader) throws IOException {
-        saveToFile(datasetLoader,"knn_content");
-//        singleTest(datasetLoader);
+//        saveToFile(datasetLoader,"knn_content");
+        singleTest(datasetLoader);
     }
 
     private static void saveToFile(DatasetLoader datasetLoader, String filename) throws IOException {
@@ -45,9 +45,10 @@ public class KnnTest {
     }
 
     private static void singleTest(DatasetLoader datasetLoader){
-        RatingService<Movie, User> rs = new MovieService(datasetLoader.getUsers(), datasetLoader.getMovies());
-        Strategy<Movie> strategy = new KNN<>(datasetLoader.getMovies(), 10, new Cosine());
-        Recommender<Movie, User> recommender = new ContentBasedFiltering(datasetLoader,rs,strategy);
+        RatingService<User, Movie> rs = new UserService(datasetLoader.getUsers(), datasetLoader.getMovies());
+        Similarity<User> sim = new AdjustedCosine<>(rs);
+        Strategy<User> strategy = new KNN<>(datasetLoader.getUsers(), 10, sim);
+        Recommender<User, Movie> recommender = new CollaborativeFiltering<>(rs,strategy);
         double[][] predicted = recommender.getPredictedRating();
         double[] e = new double[]{QualityMeasure.MAE(predicted,rs,false),QualityMeasure.RMSE(predicted,rs)};
         System.out.println(e[0]);

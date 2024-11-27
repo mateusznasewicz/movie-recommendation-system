@@ -25,22 +25,21 @@ public class KNNGATEST {
     }
 
     public static void ver1(RatingService<User,Movie> rs, Similarity<User> sim){
-        Strategy<User> strategy = new KNNGA<>(rs,sim,50,50,50);
+        Strategy<User> strategy = new KNNGA<>(rs,sim,50,10,50,0.02);
+        Recommender<User, Movie> recommender = new CollaborativeFiltering<>(rs,strategy);
+        double[][] predicted = recommender.getPredictedRating();
+        System.out.println(QualityMeasure.MAE(predicted,rs,false));
+        System.out.println(QualityMeasure.RMSE(predicted,rs));
+    }
+//
+    public static void ver2(RatingService<User,Movie> rs, Similarity<User> sim){
+        SimGa<User,Movie> simGa = new SimGa<>(rs,populationSize,k,epochs);
+        Strategy<User> strategy = simGa.run();
+
         Recommender<User, Movie> recommender = new CollaborativeFiltering<>(rs,strategy);
         double[][] predicted = recommender.getPredictedRating();
 
         System.out.println(QualityMeasure.MAE(predicted,rs,false));
         System.out.println(QualityMeasure.RMSE(predicted,rs));
     }
-//
-//    public static void ver2(RatingService<User,Movie> rs, Similarity<User> sim){
-//        SimGa<User,Movie> simGa = new SimGa<>(rs,populationSize,k,epochs);
-//        Strategy<User> strategy = simGa.run();
-//
-//        Recommender<User, Movie> recommender = new CollaborativeFiltering<>(rs,strategy);
-//        double[][] predicted = recommender.getPredictedRating();
-//
-//        System.out.println(QualityMeasure.MAE(predicted,rs,false));
-//        System.out.println(QualityMeasure.RMSE(predicted,rs));
-//    }
 }
