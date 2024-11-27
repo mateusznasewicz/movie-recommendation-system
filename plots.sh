@@ -51,7 +51,7 @@
 # python3 plots.py data/fcm_MAE data/kmeans_MAE --xlabel  "k" --ylabel "MAE" --title "klastrowanie_MAE"
 # python3 plots.py data/fcm_RMSE data/kmeans_RMSE --xlabel  "k" --ylabel "RMSE" --title "klastrowanie_RMSE"   
 
-#Content Based FilteringPorównanie filtrowania opartego na zawartości i kolaboratywnego, MAE | Porównanie filtrowania opartego na zawartości i kolaboratywnego, RMSE
+#Content Based Filtering
 python3 plots.py data/knn_content_MAE data/knn_item_adjustedCosine_MAE --xlabel  "k" --ylabel "MAE" --title "content_collaborative_MAE"
 python3 plots.py data/knn_content_RMSE data/knn_item_adjustedCosine_RMSE --xlabel  "k" --ylabel "RMSE" --title "content_collaborative_RMSE"
 
