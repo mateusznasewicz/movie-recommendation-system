@@ -33,7 +33,6 @@ public abstract class Recommender<T extends Entity,G extends Entity> {
         for(int eID : baseHashmap.keySet()){
             T entity = baseHashmap.get(eID);
             List<Integer> neighbors = strategy.getNeighbors(entity);
-            System.out.println(eID);
             for(Integer iID :entity.getTestRatings().keySet()){
                 double rating = predict(eID,iID,neighbors);
                 predictedRating[eID-1][iID-1] = rating;

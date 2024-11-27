@@ -7,9 +7,9 @@ import java.util.Set;
 public abstract class Entity{
     protected int id;
     protected double avgRating = 0;
+    protected int rated = 0;
     protected final HashMap<Integer, Double> ratings = new HashMap<>();
     protected HashMap<Integer, Double> testRatings = new HashMap<>();
-    protected Set<Integer> rated = new HashSet<>();
 
     public Entity(int id){
         this.id = id;
@@ -38,12 +38,9 @@ public abstract class Entity{
         return this.ratings.containsKey(itemID);
     }
 
-    public void addRated(int entityID){
-        this.rated.add(entityID);
-    }
-
-    public Set<Integer> getRated(){
-        return this.rated;
+    public void addRated(double rating){
+        this.avgRating = (this.avgRating*rated+rating)/(rated+1);
+        rated++;
     }
 
     public void addRating(int itemID, double rating) {

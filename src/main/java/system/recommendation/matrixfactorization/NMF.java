@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SplittableRandom;
 
-public class NMF extends MatrixFactorization implements Chromosome, Particle {
+public class NMF extends MatrixFactorization {
     private final SplittableRandom rand = new SplittableRandom();
 
     public NMF(RatingService<User, Movie> userService, int features, double learningRate, double stdDev) {
@@ -53,98 +53,4 @@ public class NMF extends MatrixFactorization implements Chromosome, Particle {
             }
         }
     }
-
-    @Override
-    public void mutate(double chance) {
-
-    }
-
-    @Override
-    public void memetic(double chance) {
-        if(rand.nextDouble() >= chance)return;
-        gd_step();
-    }
-
-    @Override
-    public double fitness() {
-        double fit = 0;
-
-        for(int u = 0; u < users.length; u++){
-            User user = userService.getEntity(u+1);
-            Map<Integer, Double> ratings = user.getRatings();
-            for(Map.Entry<Integer, Double> entry : ratings.entrySet()){
-                double rating = entry.getValue();
-                int mid = entry.getKey() - 1;
-                double predicted = vectorMultiplication(users[u], movies[mid]);
-                fit += rating*Math.log(rating/predicted) - rating+predicted;
-            }
-        }
-
-        return fit;
-    }
-
-    @Override
-    public Chromosome copy() {
-        return new NMF(Utils.deepCopy(users), Utils.deepCopy(movies), learningRate,userService);
-    }
-
-    @Override
-    public Particle copyParticle(){
-        return new NMF(Utils.deepCopy(users), Utils.deepCopy(movies), learningRate,userService);
-    }
-
-    @Override
-    public List<Chromosome> crossover(Chromosome p2, double weight) {
-        double[][] pusers = ((NMF) p2).getUsers();
-        double[][] pmovies = ((NMF) p2).getMovies();
-        int k = users[0].length;
-        double[][] u1 = new double[users.length][k];
-        double[][] m1 = new double[movies.length][k];
-        double[][] u2 = new double[users.length][k];
-        double[][] m2 = new double[movies.length][k];
-
-        for(int u = 0; u < users.length; u++){
-            if(rand.nextBoolean()){
-                u1[u] = users[u].clone();
-                u2[u] = pusers[u].clone();
-            }else{
-                u2[u] = users[u].clone();
-                u1[u] = pusers[u].clone();
-            }
-        }
-        for(int m = 0; m < movies.length; m++){
-            if(rand.nextBoolean()){
-                m1[m] = movies[m].clone();
-                m2[m] = pmovies[m].clone();
-            }else{
-                m2[m] = movies[m].clone();
-                m1[m] = pmovies[m].clone();
-            }
-        }
-
-        return List.of(new NMF(u1,m1,learningRate,userService),new NMF(u2,m2,learningRate,userService));
-    }
-
-    @Override
-    public double[][] getChromosome() {
-        return new double[0][];
-    }
-
-    @Override
-    public void updateParticle(Particle bestParticle, double gradientWeight) {
-        double[][] old_users = Utils.deepCopy(users);
-        double[][] old_movies = Utils.deepCopy(movies);
-        NMF best = (NMF) bestParticle;
-        euclideanGradient(old_users,old_movies,gradientWeight);
-
-        double weight = learningRate*(1-gradientWeight);
-        moveParticleTowardsSwarm(best.users,old_users,users,weight);
-        moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
-    }
-
-    @Override
-    public double getLoss() {
-        return fitness();
-    }
-
 }

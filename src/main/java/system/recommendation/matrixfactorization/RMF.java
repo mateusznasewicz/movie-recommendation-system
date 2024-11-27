@@ -106,7 +106,6 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
 
         var c1 = new RMF(u1,m1,learningRate,regularization,userService,distMatrix,totalDist);
         var c2 = new RMF(u2,m2,learningRate,regularization,userService,distMatrix,totalDist);
-//        System.out.println(fitness() +"|"+p2.fitness()+"|"+c1.fitness()+"|"+ c2.fitness());
         return List.of(c1,c2);
     }
 
@@ -125,10 +124,8 @@ public class RMF extends MatrixFactorization implements Chromosome, Particle {
         regularizationGradient(old_users,old_movies,1);
 
         double weight = learningRate;
-//        double x = getLoss();
         moveParticleTowardsSwarm(best.users,old_users,users,weight);
         moveParticleTowardsSwarm(best.movies,old_movies,movies,weight);
-//        System.out.println(x + "|" + getLoss());
     }
 
     @Override

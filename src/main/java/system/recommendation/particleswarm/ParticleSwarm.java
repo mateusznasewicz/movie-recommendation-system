@@ -63,4 +63,26 @@ public class ParticleSwarm{
         int id = findBest(globalLoss);
         return swarm.get(id);
     }
+
+    public Particle run(int epochs){
+        Particle globalBest = null;
+        double globalLoss = Double.MAX_VALUE;
+
+        for(int t = 0; t < epochs; t++)
+        {
+            int bestID = findBest(globalLoss);
+
+            if(bestID != -1){
+                globalBest = swarm.get(bestID).copyParticle();
+                globalLoss = globalBest.getLoss();
+            }
+
+            for(Particle p : swarm){
+                p.updateParticle(globalBest,gradientWeight);
+            }
+            System.out.println("EPOCH:"+t);
+        }
+        int id = findBest(globalLoss);
+        return swarm.get(id);
+    }
 }

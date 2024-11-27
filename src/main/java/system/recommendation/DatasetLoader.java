@@ -89,10 +89,10 @@ public class DatasetLoader {
                 }else{
                     if(itemBased){
                         movie.addRating(userId, rating);
-                        user.addRated(movieId);
+                        user.addRated(rating);
                     }else{
                         user.addRating(movieId, rating);
-                        movie.addRated(userId);
+                        movie.addRated(rating);
                     }
                 }
             }

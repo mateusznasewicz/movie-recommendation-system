@@ -42,4 +42,10 @@ public class RMFGA{
         Chromosome best = GeneticAlgorithm.run(population,epochs,mutationRate,mae,rmse,userService,id);
         return (RMF) best;
     }
+
+    public RMF run(int populationSize, int epochs, double mutationRate){
+        List<Chromosome> population = initPopulation(populationSize);
+        Chromosome best = GeneticAlgorithm.run(population,epochs,mutationRate);
+        return (RMF) best;
+    }
 }
