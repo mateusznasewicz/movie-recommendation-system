@@ -50,9 +50,9 @@ public class SimGa <T extends Entity, G extends Entity>{
         return population;
     }
 
-    public SimChromosome<T,G>  run(double[][] mae, double[][] rmse, int id) {
+    public SimChromosome<T,G>  run() {
         List<Chromosome> population = initPopulation();
-        Chromosome best = GeneticAlgorithm.run(population,epochs,0.2,mae,rmse, (RatingService<User, Movie>) ratingService,id);
+        Chromosome best = GeneticAlgorithm.run(population,epochs,0.2);
         return (SimChromosome<T, G>) best;
     }
 }

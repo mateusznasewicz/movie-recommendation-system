@@ -127,13 +127,13 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         for(int i : ratingService.getEntitiesID()){
             if(i < 0)continue;
 
-            double bestDist = Double.MAX_VALUE;
+            double bestDist = Double.MIN_VALUE;
             int closestID = 0;
             T entity = ratingService.getEntity(i);
 
             for (int c = 0; c < centroids.size() ; c++) {
                 double dist = distFunction.calculate(entity, centroids.get(c));
-                if (dist < bestDist) {
+                if (dist > bestDist) {
                     closestID = c;
                     bestDist = dist;
                 }
