@@ -30,7 +30,7 @@ public class KMeansTest<T extends Entity, G extends Entity> {
     private static final double fuzzines = 1.5;
 
     public static void run(DatasetLoader datasetLoader) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, IOException {
-        saveToFile(datasetLoader,"kmeans");
+        saveToFile(datasetLoader,"fcm");
     }
 
     private static void saveToFile(DatasetLoader datasetLoader, String filename) throws IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -39,8 +39,8 @@ public class KMeansTest<T extends Entity, G extends Entity> {
         BufferedWriter maeFile = new BufferedWriter(new FileWriter("data/"+filename+"_MAE"));
         BufferedWriter rmseFile = new BufferedWriter(new FileWriter("data/"+filename+"_RMSE"));
 
-        for(int k = 1; k < 100; k++){
-            Strategy<Movie> s = KMeansTest(rs,sim,k);
+        for(int k = 10; k < 51; k++){
+            Strategy<Movie> s = FuzzyCMeansTest(rs,sim,k);
             Recommender<Movie, User> recommender = new CollaborativeFiltering<>(rs,s);
             double[][] predicted = recommender.getPredictedRating();
             double[] e = new double[]{QualityMeasure.MAE(predicted,rs,false),QualityMeasure.RMSE(predicted,rs)};
@@ -55,13 +55,13 @@ public class KMeansTest<T extends Entity, G extends Entity> {
         rmseFile.close();
     }
 
-    public static Strategy<Movie> FuzzyCMeansTest(RatingService<Movie, User> rs,Similarity<Movie> sim) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        KmeansPSO<Movie,User> kmpso = new KmeansPSO<>(swarmSize, 0, rs);
-        KMeans<Movie, User> best = kmpso.run(epochs);
-        FuzzyCMeans<Movie,User> x = new FuzzyCMeans<>(best.getRatingService(), sim,0,fuzzines,rs);
-        x.calcCentroids(epochs,best.getCentroids());
-//        FuzzyCMeans<Movie,User> x = new FuzzyCMeans<>(rs, sim,k,fuzzines);
-//        x.calcCentroids(epochs);
+    public static Strategy<Movie> FuzzyCMeansTest(RatingService<Movie, User> rs,Similarity<Movie> sim, int k) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+//        KmeansPSO<Movie,User> kmpso = new KmeansPSO<>(swarmSize, k, rs);
+//        KMeans<Movie, User> best = kmpso.run(epochs);
+//        FuzzyCMeans<Movie,User> x = new FuzzyCMeans<>(best.getRatingService(), sim,0,fuzzines,rs);
+//        x.calcCentroids(epochs,best.getCentroids());
+        FuzzyCMeans<Movie,User> x = new FuzzyCMeans<>(rs, sim,k,fuzzines);
+        x.calcCentroids(epochs);
         return x;
     }
 

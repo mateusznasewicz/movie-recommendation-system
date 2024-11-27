@@ -45,4 +45,9 @@
 # python3 plots.py data/knn_item_pearson_MAE data/knn_item_euclidean_MAE data/knn_item_adjustedCosine_MAE --xlabel  "k" --ylabel "MAE" --title "item_based_MAE"
 
 #KMEANS
-python3 plots.py data/kmeans_MAE data/kmeans_RMSE --xlabel  "k" --ylabel "ERROR" --title "item_based_KMEANS"   
+# python3 plots.py data/kmeans_MAE data/kmeans_RMSE --xlabel  "k" --ylabel "ERROR" --title "item_based_KMEANS"   
+
+#FCM
+python3 plots.py data/fcm_MAE data/kmeans_MAE --xlabel  "k" --ylabel "MAE" --title "klastrowanie_MAE"
+python3 plots.py data/fcm_RMSE data/kmeans_RMSE --xlabel  "k" --ylabel "RMSE" --title "klastrowanie_RMSE"   
+

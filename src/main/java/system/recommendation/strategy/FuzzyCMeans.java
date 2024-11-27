@@ -113,21 +113,6 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
         return clusters.stream().toList();
     }
 
-    public List<Integer> bestCluster(int n, T item){
-        int id = item.getId();
-        double[] membership = fuzzyMembership[id-1];
-
-        int cluster = 0;
-        double best = membership[0];
-        for(int i = 0; i < membership.length; i++){
-            if(membership[i] < best){
-                cluster = i;
-                best = membership[i];
-            }
-        }
-        return getNeighborsFromCluster(n, cluster, id);
-    }
-
     public List<Integer> fewClusters(int c, int n, T item){
         int id = item.getId();
         List<Integer> neighbors = new ArrayList<>();
@@ -142,7 +127,8 @@ public class FuzzyCMeans<T extends Entity, G extends Entity> extends Clustering<
 
     @Override
     public List<Integer> getNeighbors(T item) {
-        return fewClusters(6,50,item);
-//        return bestCluster(50,item);
+        int perCluster = fuzzyMembership.length / k;
+        int clusters = k / 4;
+        return fewClusters(clusters, perCluster/clusters, item);
     }
 }
