@@ -1,7 +1,12 @@
 package system.recommendation.particleswarm;
 
+import java.lang.reflect.InvocationTargetException;
+
+/*
+Particle używany w algorytmie PSO
+ */
 public interface Particle {
-    Particle copyParticle();
+    Particle copyParticle() throws InvocationTargetException;
     void updateParticle(Particle bestParticle, double gradientWeight);
     double getLoss();
 

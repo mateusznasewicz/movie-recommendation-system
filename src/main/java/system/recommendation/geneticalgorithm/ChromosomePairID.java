@@ -1,5 +1,8 @@
 package system.recommendation.geneticalgorithm;
 
+/*
+Para : chromosom, id
+ */
 public class ChromosomePairID {
     private int id;
     private Chromosome chromosome;

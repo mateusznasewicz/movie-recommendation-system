@@ -3,6 +3,9 @@ package system.recommendation.geneticalgorithm;
 
 import java.util.List;
 
+/*
+Chromosom używany w algorytmie genetycznym
+ */
 public interface Chromosome{
     void mutate(double chance);
     void memetic(double chance);

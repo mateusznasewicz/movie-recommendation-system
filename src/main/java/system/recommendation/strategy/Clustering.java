@@ -6,14 +6,15 @@ import system.recommendation.models.User;
 import system.recommendation.service.MovieService;
 import system.recommendation.service.RatingService;
 import system.recommendation.service.UserService;
-import system.recommendation.similarity.AdjustedCosine;
 import system.recommendation.similarity.EuclideanDistance;
-import system.recommendation.similarity.PearsonCorrelation;
 import system.recommendation.similarity.Similarity;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+/*
+Abstrakcyjna klasa strategii klastryzacji, podstawa dla FCM oraz KMEANS
+ */
 @SuppressWarnings("unchecked")
 public abstract class Clustering<T extends Entity, G extends Entity> extends Strategy<T>{
     protected RatingService<T ,G> ratingService;
@@ -65,10 +66,6 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
         return ratingService;
     }
 
-    public Similarity<T> getDistFunction() {
-        return distFunction;
-    }
-
     public T randomCentroid(int id, RatingService<T, G> ratingService, Class<T> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         T centroid = clazz.getDeclaredConstructor(int.class).newInstance(id);
 
@@ -94,7 +91,6 @@ public abstract class Clustering<T extends Entity, G extends Entity> extends Str
     public void calcCentroids(int epochs) {
         for(int i = 0; i < epochs; i++){
             step();
-//            System.out.println(i + "||" + calcLoss());
         }
     }
 

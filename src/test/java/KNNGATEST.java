@@ -22,17 +22,17 @@ public class KNNGATEST {
         RatingService<User,Movie> rs = new UserService(datasetLoader.getUsers(), datasetLoader.getMovies());
         Similarity<User> sim = new AdjustedCosine<>(rs);
         ver1(rs,sim);
+        ver2(rs);
     }
 
     public static void ver1(RatingService<User,Movie> rs, Similarity<User> sim){
-        Strategy<User> strategy = new KNNGA<>(rs,sim,50,10,50,0.02);
+        Strategy<User> strategy = new KNNGA<>(rs,sim,populationSize,k,epochs,0.02);
         Recommender<User, Movie> recommender = new CollaborativeFiltering<>(rs,strategy);
         double[][] predicted = recommender.getPredictedRating();
         System.out.println(QualityMeasure.MAE(predicted,rs,false));
         System.out.println(QualityMeasure.RMSE(predicted,rs));
     }
-//
-    public static void ver2(RatingService<User,Movie> rs, Similarity<User> sim){
+    public static void ver2(RatingService<User,Movie> rs){
         SimGa<User,Movie> simGa = new SimGa<>(rs,populationSize,k,epochs);
         Strategy<User> strategy = simGa.run();
 

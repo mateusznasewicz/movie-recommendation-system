@@ -4,7 +4,10 @@ import system.recommendation.models.Entity;
 import system.recommendation.service.RatingService;
 
 import java.util.*;
-
+/*
+Chromosom do algorytmu genetycznego.
+Chromosom składa się z sąsiedztwa dla jednego użytkownika, ale bierze pod uwage wszystkich, a nie tylko najlepszych k (wersja ulepszona)
+ */
 public class KnnChromosome<T extends Entity, G extends Entity> implements Chromosome{
     private final double[] weights;
     private int k;

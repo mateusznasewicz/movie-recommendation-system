@@ -4,7 +4,9 @@ import system.recommendation.matrixfactorization.RMF;
 import system.recommendation.models.Movie;
 import system.recommendation.models.User;
 import system.recommendation.service.RatingService;
-
+/*
+implementacja interfejsu dostarczającego cząsteczki RMF do algorytmu PSO
+ */
 public class RMFprovider implements ParticleProvider{
     private final RatingService<User, Movie> userService;
     private final int features;

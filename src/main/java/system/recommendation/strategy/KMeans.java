@@ -2,6 +2,7 @@ package system.recommendation.strategy;
 
 
 import system.recommendation.models.Entity;
+import system.recommendation.particleswarm.Particle;
 import system.recommendation.service.RatingService;
 import system.recommendation.similarity.Similarity;
 
@@ -9,8 +10,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 @SuppressWarnings("unchecked")
-public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
+public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G> implements Particle {
     private List<Set<Integer>> membership;
+    private double[][] v;
+    private KMeans<T,G> local;
+    double loss = Double.MAX_VALUE;
 
     //do przewidywania
     public KMeans(int k,RatingService<T, G> ratingService, Similarity<T> simFunction) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -19,9 +23,10 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         assignMembership();
     }
 
-    //po PSO
+    //po PSO, dodatkowym argumentem serwis z najlepszej cząsteczki
     public KMeans(RatingService<T,G> bestService, Similarity<T> simFunction, int k, RatingService<T,G> orgService) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(bestService,orgService, simFunction, k);
+        System.out.println(centroids.size());
     }
 
     //nowe w pso
@@ -29,12 +34,16 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         super(k,ratingService);
         initCentroids();
         assignMembership();
+
+        this.v = new double[k][ratingService.getItemMap().size()];
+        this.local = (KMeans<T, G>) copyParticle();
+        this.loss = calcLoss();
     }
 
     //kopiowanie w pso
-    public KMeans(List<Set<Integer>> membership, List<T> centroids, int k, RatingService<T, G> ratingService) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public KMeans(List<Set<Integer>> membership, List<T> centroids, int k, RatingService<T, G> ratingService, double loss) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(k,ratingService);
-
+        this.loss = loss;
         this.membership = new ArrayList<>();
         for(Set<Integer> members: membership){
             this.membership.add(new HashSet<>(members));
@@ -44,10 +53,6 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
             T c = clazz.getConstructor(int.class,double.class,HashMap.class).newInstance(centroid.getId(),centroid.getAvgRating(),centroid.getRatings());
             this.centroids.add(c);
         }
-    }
-
-    public List<Set<Integer>> getMembership() {
-        return membership;
     }
 
     public double getRatingCentroid(int c, int i){
@@ -95,27 +100,10 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         return loss;
     }
 
-    public double psoLoss(){
-        double loss = 0;
-        for(int c = 0; c < centroids.size(); c++){
-            T centroid = centroids.get(c);
-            double sum = 0;
-            for(Integer u: membership.get(c)){
-                T member = ratingService.getEntity(u);
-                sum += distFunction.calculate(member,centroid);
-            }
-            loss += sum / membership.get(c).size();
-        }
-        return loss / centroids.size();
-    }
-
     @Override
     protected void step(){
         assignMembership();
-//        for(int i = 0; i < centroids.size(); i++){
-//            System.out.print("<"+i+":"+membership.get(i).size()+">");
-//        }
-//        System.out.println();
+        System.out.println(calcLoss());
         for(int c = 0; c < centroids.size(); c++){
             calculateCenter(c);
         }
@@ -127,13 +115,13 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         for(int i : ratingService.getEntitiesID()){
             if(i < 0)continue;
 
-            double bestDist = Double.MIN_VALUE;
+            double bestDist = Double.MAX_VALUE;
             int closestID = 0;
             T entity = ratingService.getEntity(i);
 
             for (int c = 0; c < centroids.size() ; c++) {
                 double dist = distFunction.calculate(entity, centroids.get(c));
-                if (dist > bestDist) {
+                if (dist < bestDist) {
                     closestID = c;
                     bestDist = dist;
                 }
@@ -152,21 +140,14 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
         return null;
     }
 
-    public void updateParticle(double[][] v){
-        for(int c = 0; c < v.length; c++){
-            for(int i = 0; i < v[c].length; i++){
-                double r = getRatingCentroid(c,i+1);
-                centroids.get(c).setRating(i+1,v[c][i]+r);
-            }
-        }
-    }
-
-    public void updateVelocity(double[][] v, KMeans<T,G> local, KMeans<T,G> global){
-        double r1 = 0.1270;
-        double r2 = 0.0975;
+    public void updateVelocity(Particle g){
+        double r1 = rand.nextDouble();
+        double r2 = rand.nextDouble();
         double c1 = 1.42;
         double c2 = 1.42;
         double w = 0.72;
+
+        KMeans<T,G> global = (KMeans <T,G>) g;
 
         for(int c = 0; c < v.length; c++){
             for(int i = 0; i < v[c].length; i++){
@@ -175,5 +156,38 @@ public class KMeans<T extends Entity, G extends Entity> extends Clustering<T,G>{
                 v[c][i] = v[c][i]*w + c1*r1*s1 + c2*r2*s2;
             }
         }
+    }
+
+    @Override
+    public Particle copyParticle(){
+        try {
+            return new KMeans<>(membership, centroids, k, ratingService, loss);
+        } catch (InvocationTargetException | IllegalAccessException | InstantiationException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void updateParticle(Particle bestParticle, double gradientWeight) {
+        assignMembership();
+        updateVelocity(bestParticle);
+
+        for(int c = 0; c < v.length; c++){
+            for(int i = 0; i < v[c].length; i++){
+                double r = getRatingCentroid(c,i+1);
+                centroids.get(c).setRating(i+1,v[c][i]+r);
+            }
+        }
+
+        double old = this.loss;
+        this.loss = calcLoss();
+        if(old > this.loss){
+            this.local = (KMeans<T, G>) copyParticle();
+        }
+    }
+
+    @Override
+    public double getLoss() {
+        return loss;
     }
 }

@@ -20,32 +20,24 @@ public abstract class RatingService<T extends  Entity,G extends  Entity> {
     public double getRating(int id1, int id2){
         return entityMap.get(id1).getRating(id2);
     }
-
     public double getAvg(int id){
         return itemMap.get(id).getAvgRating();
     }
-
     public boolean isRatedById(int id1, int id2){
         return entityMap.get(id1).hasRating(id2);
     }
-
     public T getEntity(int id){
         return entityMap.get(id);
     }
-    public G getItem(int id) { return itemMap.get(id); }
-
     public Set<Integer> getEntitiesID(){
         return entityMap.keySet();
     }
-
     public Map<Integer,T> getEntityMap(){
         return this.entityMap;
     }
-
     public Map<Integer,G> getItemMap(){
         return this.itemMap;
     }
-
     public void addEntity(T entity){
         this.entityMap.put(entity.getId(), entity);
     }

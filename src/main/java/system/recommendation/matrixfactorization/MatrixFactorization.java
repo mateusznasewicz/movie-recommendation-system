@@ -75,17 +75,6 @@ public abstract class MatrixFactorization{
         }
     }
 
-    public void gd(int epochs, double[][] mae, double[][] rmse, int id){
-        for(int i = 0; i < epochs; i++) {
-            gd_step();
-            double[][] ratings = getPredictedRatings();
-            double[] result = new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
-            mae[id][i] = result[0];
-            rmse[id][i] = result[1];
-        }
-    }
-    
-
     protected void regularizationGradient(double[][] old_users, double[][] old_movies, double gradientWeight){
         double weight = gradientWeight*learningRate*regularization;
         for(int i = 0; i< movies.length; i++){

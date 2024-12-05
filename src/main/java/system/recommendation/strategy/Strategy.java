@@ -18,12 +18,6 @@ public abstract class Strategy<T extends Entity> {
         this.simMatrix = computeNeighbors(simFunction);
     }
 
-    public Strategy(Map<Integer, T> hashmap, Similarity<T> simFunction){
-        this.hashmap = hashmap;
-        this.simMatrix = computeNeighbors(simFunction);
-        this.k = 0;
-    }
-
     public Strategy(Map<Integer,T> hashmap,int k){
         this.k = k;
         this.hashmap = hashmap;

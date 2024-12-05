@@ -1,15 +1,12 @@
 package system.recommendation.particleswarm;
 
-import system.recommendation.QualityMeasure;
-import system.recommendation.matrixfactorization.RMF;
-import system.recommendation.models.Movie;
-import system.recommendation.models.User;
-import system.recommendation.service.RatingService;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
+/*
+PSO
+ */
 public class ParticleSwarm{
     private final List<Particle> swarm = new ArrayList<>();
     private final double gradientWeight;
@@ -35,36 +32,7 @@ public class ParticleSwarm{
         return bestID;
     }
 
-    public Particle run(int epochs, double[][] mae, double[][] rmse, int i, RatingService<User, Movie> userService){
-        Particle globalBest = null;
-        double globalLoss = Double.MAX_VALUE;
-
-        for(int t = 0; t < epochs; t++)
-        {
-            int bestID = findBest(globalLoss);
-
-            if(bestID != -1){
-                globalBest = swarm.get(bestID).copyParticle();
-                globalLoss = globalBest.getLoss();
-            }
-
-            RMF b = (RMF) globalBest;
-            double[][] ratings = b.getPredictedRatings();
-            double[] result = new double[]{QualityMeasure.MAE(ratings,userService,false),QualityMeasure.RMSE(ratings,userService)};
-            mae[i][t] = result[0];
-            rmse[i][t] = result[1];
-
-            for(Particle p : swarm){
-                p.updateParticle(globalBest,gradientWeight);
-            }
-
-//            System.out.println("Epoch " + t + "||"+globalLoss);
-        }
-        int id = findBest(globalLoss);
-        return swarm.get(id);
-    }
-
-    public Particle run(int epochs){
+    public Particle run(int epochs) throws InvocationTargetException {
         Particle globalBest = null;
         double globalLoss = Double.MAX_VALUE;
 
@@ -81,8 +49,11 @@ public class ParticleSwarm{
                 p.updateParticle(globalBest,gradientWeight);
             }
             System.out.println("EPOCH:"+t);
+            System.out.println(globalBest.getLoss());
         }
+
         int id = findBest(globalLoss);
-        return swarm.get(id);
+        if(id != -1) return  swarm.get(id);
+        return globalBest;
     }
 }

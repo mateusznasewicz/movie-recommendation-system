@@ -8,7 +8,9 @@ import system.recommendation.strategy.KNN;
 
 import java.util.List;
 import java.util.SplittableRandom;
-
+/*
+Chromosom macierzy podobieństwa
+ */
 public class SimChromosome<T extends Entity, G extends Entity> extends KNN<T> implements Chromosome{
     private final RatingService<T,G> ratingService;
     private final SplittableRandom random = new SplittableRandom();
